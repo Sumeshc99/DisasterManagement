@@ -8,6 +8,8 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SplashScreen from '../screens/SplashScreen';
 import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
+import CitizenDashbord from '../screens/citizen/CitizenDashbord';
+import MainAppSelector from './MainAppSelector';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -33,6 +35,7 @@ const AppNavigation = () => {
         <Stack.Screen name="splashScreen" component={SplashScreen} />
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
+        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -49,4 +52,5 @@ type AppStackParamList = {
   splashScreen: undefined;
   selectLanguage: undefined;
   loginScreen: undefined;
+  mainAppSelector: undefined;
 };

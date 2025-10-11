@@ -1,15 +1,15 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const CitizenDashbord = () => {
+const Community = () => {
   return (
     <SafeAreaView>
-      <Text>CitizenDashbord</Text>
+      <Text>Community</Text>
     </SafeAreaView>
   );
 };
 
-export default CitizenDashbord;
+export default Community;
 
 const styles = StyleSheet.create({});

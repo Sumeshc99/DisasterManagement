@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { HEIGHT } from '../../config/AppConst';
+import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 
 interface TehsilOption {
   label: string;
@@ -19,7 +20,7 @@ interface TehsilOption {
 }
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -39,6 +40,7 @@ const LoginScreen = () => {
       return;
     }
     console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
+    navigation.replace('mainAppSelector');
     // Handle login logic
   };
 
