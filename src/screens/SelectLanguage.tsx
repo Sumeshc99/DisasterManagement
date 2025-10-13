@@ -12,36 +12,59 @@ import { WIDTH } from '../config/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import WaveBackgroundHeader from './auth/WaveBackgroundHeader';
+import { useTranslation } from 'react-i18next';
+import '../../i18n';
 
 const SelectLanguage = () => {
+  const { i18n } = useTranslation();
+
+  // const languages = [
+  //   { code: 'en', name: 'English' },
+  //   { code: 'hi', name: 'हिन्दी' },
+  //   { code: 'mr', name: 'मराठी' }
+  // ];
+
+
+
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-
-  const languages = [
+  console.log(selectedLanguage)
+  const languages: any = [
     {
       id: 1,
       name: 'English',
+      code: 'en',
       subText: '',
       icon: require('../assets/citizen/english-icon.png'),
     },
     {
       id: 2,
       name: 'Marathi',
+      code: 'mr',
       subText: 'मराठी',
       icon: require('../assets/citizen/hindi-icon.png'),
     },
     {
       id: 3,
       name: 'Hindi',
+      code: 'hi',
       subText: 'हिन्दी',
       icon: require('../assets/citizen/hindi-icon.png'),
     },
   ];
 
-  const handleNext = () => {
-    console.log('Selected language:', selectedLanguage);
+  const handleNext = async (langCode: string): Promise<void> => {
+    console.log(langCode)
+    await i18n.changeLanguage(langCode);
+    selectedLanguage?.(langCode);
     navigation.navigate('loginScreen');
   };
+  // const handleNext = () => {
+  //   console.log('Selected language:', selectedLanguage);
+  //   await i18n.changeLanguage(langCode);
+  //   onLanguageChange?.(langCode);
+  //   navigation.navigate('loginScreen');
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
