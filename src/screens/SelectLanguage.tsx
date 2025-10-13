@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WIDTH } from '../config/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
+import WaveBackgroundHeader from './auth/WaveBackgroundHeader';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -47,13 +48,17 @@ const SelectLanguage = () => {
       <StatusBar backgroundColor="#1E4A92" barStyle="light-content" />
 
       {/* Blue Header */}
-      <View style={styles.header}>
+      <View>
+        <WaveBackgroundHeader></WaveBackgroundHeader>
+      </View>
+
+      {/* <View style={styles.header}>
         <Image
           source={require('../assets/citizen/logo.png')}
           style={styles.logo}
         />
         <Text style={styles.headerTitle}>Select Language</Text>
-      </View>
+      </View> */}
 
       {/* Curved White Section */}
       <View style={styles.contentContainer}>
@@ -101,18 +106,17 @@ const SelectLanguage = () => {
           <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F3F3' },
-  header: {
-    backgroundColor: '#1E4A92',
-    alignItems: 'center',
-    paddingVertical: 40,
-    borderBottomLeftRadius: 80,
-  },
+  // header: {
+  //   backgroundColor: '#1E4A92',
+  //   alignItems: 'center',
+  //   paddingVertical: 40,
+  // },
   logo: {
     width: 100,
     height: 100,
