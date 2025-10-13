@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import {
   createNativeStackNavigator,
@@ -8,6 +7,7 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SplashScreen from '../screens/SplashScreen';
 import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
+import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -34,6 +34,7 @@ const AppNavigation = () => {
         <Stack.Screen name="splashScreen" component={SplashScreen} />
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
+        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
         <Stack.Screen name="OTPVerification" component={OTPVerification} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -42,8 +43,6 @@ const AppNavigation = () => {
 
 export default AppNavigation;
 
-const styles = StyleSheet.create({});
-
 export type AppStackNavigationProp<T extends keyof AppStackParamList> =
   NativeStackNavigationProp<AppStackParamList, T>;
 
@@ -51,5 +50,6 @@ type AppStackParamList = {
   splashScreen: undefined;
   selectLanguage: undefined;
   loginScreen: undefined;
+  mainAppSelector: undefined;
   OTPVerification: undefined;
 };
