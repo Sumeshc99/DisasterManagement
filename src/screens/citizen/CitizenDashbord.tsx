@@ -1,11 +1,18 @@
-import { StyleSheet, Text } from 'react-native';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DashBoardHeader from '../../components/header/DashBoardHeader';
+import { COLOR } from '../../config/Colors';
+import OpenStreetMap from '../../components/OpenStreetMap';
 
 const CitizenDashbord = () => {
   return (
-    <SafeAreaView>
-      <Text>CitizenDashbord</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.blue }}>
+      <DashBoardHeader />
+
+      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
+        <OpenStreetMap />
+      </View>
     </SafeAreaView>
   );
 };

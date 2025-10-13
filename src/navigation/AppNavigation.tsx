@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import {
   createNativeStackNavigator,
@@ -8,7 +7,6 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SplashScreen from '../screens/SplashScreen';
 import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
-import CitizenDashbord from '../screens/citizen/CitizenDashbord';
 import MainAppSelector from './MainAppSelector';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -42,8 +40,6 @@ const AppNavigation = () => {
 };
 
 export default AppNavigation;
-
-const styles = StyleSheet.create({});
 
 export type AppStackNavigationProp<T extends keyof AppStackParamList> =
   NativeStackNavigationProp<AppStackParamList, T>;
