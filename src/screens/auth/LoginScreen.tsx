@@ -12,7 +12,8 @@ import {
   Alert,
 } from 'react-native';
 import { HEIGHT } from '../../config/AppConst';
-
+import Svg, { Path } from 'react-native-svg';
+import WaveBackground from './WaveBackground';
 interface TehsilOption {
   label: string;
   value: string;
@@ -20,6 +21,7 @@ interface TehsilOption {
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  console.log(navigation.navigate('OTPVerification'))
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -32,12 +34,16 @@ const LoginScreen = () => {
     { label: 'Nashik', value: 'nashik' },
     { label: 'Thane', value: 'thane' },
   ];
+  const handleNext = () => {
+    // console.log('Selected language:', selectedLanguage);
 
+  };
   const handleLogin = () => {
     if (!phoneNumber || !selectedTehsil) {
       Alert.alert('Please fill all required fields');
       return;
     }
+    // navigation.navigate('OTPVerification');
     console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
     // Handle login logic
   };
@@ -119,7 +125,7 @@ const LoginScreen = () => {
                     style={[
                       styles.dropdownItem,
                       index === tehsilOptions.length - 1 &&
-                        styles.dropdownItemLast,
+                      styles.dropdownItemLast,
                     ]}
                     onPress={() => handleTehsilSelect(option.value)}
                     activeOpacity={0.7}
@@ -148,9 +154,13 @@ const LoginScreen = () => {
       </ScrollView>
 
       {/* Bottom Wave */}
-      <View style={styles.waveContainer}>
+      {/* <View style={styles.waveContainer}>
         <View style={styles.wave} />
-      </View>
+      </View> */}
+      {/* <View style={styles.container}> */}
+      <WaveBackground />
+
+      {/* </View> */}
     </View>
   );
 };
@@ -305,7 +315,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 200,
+    height: 150,
     overflow: 'hidden',
   },
   wave: {
@@ -313,10 +323,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 250,
+    height: 180,
     backgroundColor: '#1565C0',
-    borderTopLeftRadius: 200,
-    borderTopRightRadius: 200,
+    borderTopLeftRadius: 250,
+    borderTopRightRadius: 250,
     transform: [{ scaleX: 1.5 }],
   },
 });

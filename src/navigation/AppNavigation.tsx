@@ -8,6 +8,7 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SplashScreen from '../screens/SplashScreen';
 import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
+import OTPVerification from '../screens/auth/OTPVerification';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -33,6 +34,7 @@ const AppNavigation = () => {
         <Stack.Screen name="splashScreen" component={SplashScreen} />
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
+        <Stack.Screen name="OTPVerification" component={OTPVerification} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -49,4 +51,5 @@ type AppStackParamList = {
   splashScreen: undefined;
   selectLanguage: undefined;
   loginScreen: undefined;
+  OTPVerification: undefined;
 };
