@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -13,10 +13,10 @@ import {
 export default function OTPVerification() {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
-    const inputRefs = useRef([]);
+    const inputRefs = useRef<TextInput[]>([]);
     const [timeLeft, setTimeLeft] = useState(540); // 9 minutes in seconds
 
-    React.useEffect(() => {
+    useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 0) {
@@ -35,7 +35,7 @@ export default function OTPVerification() {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    const handleKeyPress = (index, value) => {
+    const handleKeyPress = (index: number, value: string) => {
         if (!/^\d*$/.test(value)) return;
 
         const newOtp = [...otp];
@@ -57,17 +57,17 @@ export default function OTPVerification() {
         Alert.alert('Success', `OTP Verified: ${otpString}`);
     };
 
+    const isOtpComplete = otp.every(digit => digit !== '');
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             {/* Logo */}
             <View style={styles.logoContainer}>
-                {/* <View style={styles.logoBorder}> */}
                 <Image
                     source={require('../../assets/logo.png')}
                     resizeMode="contain"
-                    style={{ width: 100, height: 100, marginTop: 40 }}
+                    style={styles.logo}
                 />
-                {/* </View> */}
             </View>
 
             {/* Title */}
@@ -87,14 +87,12 @@ export default function OTPVerification() {
                 {otp.map((digit, index) => (
                     <TextInput
                         key={index}
-                        ref={el => inputRefs.current[index] = el}
+                        ref={el => (inputRefs.current[index] = el!)}
                         style={styles.otpInput}
                         maxLength={1}
                         keyboardType="numeric"
                         value={digit}
-                        onChangeText={(value) => handleKeyPress(index, value)}
-                        placeholder=""
-                        placeholderTextColor="#ccc"
+                        onChangeText={value => handleKeyPress(index, value)}
                     />
                 ))}
             </View>
@@ -112,8 +110,18 @@ export default function OTPVerification() {
             </Text>
 
             {/* Next Button */}
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-                <Text style={styles.nextButtonText}>Next</Text>
+            <TouchableOpacity
+                style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
+                onPress={handleNext}
+            >
+                <Text
+                    style={[
+                        styles.nextButtonText,
+                        isOtpComplete && styles.nextButtonTextActive,
+                    ]}
+                >
+                    Next
+                </Text>
             </TouchableOpacity>
         </ScrollView>
     );
@@ -137,19 +145,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    logoBorder: {
-        width: '100%',
-        height: '100%',
-        borderWidth: 4,
-        borderColor: '#2563eb',
-        borderRadius: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logoText: {
-        fontSize: 36,
-        fontWeight: 'bold',
-        color: '#2563eb',
+    logo: {
+        width: 100,
+        height: 100,
+        marginTop: 40,
     },
     title: {
         fontSize: 28,
@@ -219,14 +218,20 @@ const styles = StyleSheet.create({
     nextButton: {
         width: 130,
         paddingVertical: 12,
-        backgroundColor: '#d1d5db',
+        backgroundColor: '#d1d5db', // default gray
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    nextButtonActive: {
+        backgroundColor: '#2563eb', // blue when OTP complete
     },
     nextButtonText: {
         fontSize: 16,
         fontWeight: '600',
         color: '#4b5563',
+    },
+    nextButtonTextActive: {
+        color: '#ffffff',
     },
 });

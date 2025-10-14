@@ -19,7 +19,7 @@ const WaveBackgroundHeader = () => {
                 {/* Header text */}
                 <Text style={styles.headerTitle}>Select Language</Text>
 
-                {/* White wave at bottom */}
+                {/* White wave at bottom (flipped horizontally) */}
                 <Svg
                     width={width}
                     height={110}
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     blueBackground: {
-        backgroundColor: '#125FAA', // Blue color
+        backgroundColor: '#125FAA',
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 100,
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         left: 0,
+        transform: [{ scaleX: -1 }], // 👈 flips the wave horizontally
     },
 });
 

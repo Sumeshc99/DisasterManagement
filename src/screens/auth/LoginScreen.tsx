@@ -10,13 +10,16 @@ import {
   Image,
   ScrollView,
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { HEIGHT } from '../../config/AppConst';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
-import Svg, { Path } from 'react-native-svg';
-import WaveBackground from './WaveBackground';
 import { useTranslation } from 'react-i18next';
 import '../../../i18n';
+import Svg, { Path } from 'react-native-svg';
 
 interface TehsilOption {
   label: string;
@@ -26,9 +29,7 @@ interface TehsilOption {
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'otpVerification'>>();
   const { t, i18n } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = React.useState<string>(i18n.language);
-
-  console.log("trans", t)
+  const [selectedLanguage] = React.useState<string>(i18n.language);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -41,18 +42,22 @@ const LoginScreen = () => {
     { label: 'Nashik', value: 'nashik' },
     { label: 'Thane', value: 'thane' },
   ];
-  const handleNext = () => {
-    // console.log('Selected language:', selectedLanguage);
 
+  const handlePhoneChange = (text: string) => {
+    if (text.length <= 10) {
+      setPhoneNumber(text);
+      if (text.length === 10) {
+        Keyboard.dismiss();
+      }
+    }
   };
+
   const handleLogin = () => {
     if (!phoneNumber || !selectedTehsil) {
       Alert.alert('Please fill all required fields');
       return;
     }
     navigation.navigate('otpVerification');
-    console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
-    // Handle login logic
   };
 
   const handleTehsilSelect = (value: string) => {
@@ -61,114 +66,127 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title}> Please enter your Mobile</Text>
-        <Text style={styles.title}>Number and Tehsil</Text>
-
-        {/* Form Container */}
-        <View style={styles.formContainer}>
-          {/* Phone Number Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Your Phone Number <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your phone number"
-              placeholderTextColor="#999999"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType="phone-pad"
-              maxLength={10}
-            />
-          </View>
-
-          {/* Tehsil Dropdown */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Select Tehsil <Text style={styles.required}>*</Text>
-            </Text>
-            <TouchableOpacity
-              style={styles.dropdown}
-              onPress={() => setShowTehsilDropdown(!showTehsilDropdown)}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !selectedTehsil && styles.placeholderText,
-                ]}
-              >
-                {selectedTehsil
-                  ? tehsilOptions.find(t => t.value === selectedTehsil)?.label
-                  : 'Select tehsil'}
-              </Text>
-              <Text style={styles.dropdownArrow}>▼</Text>
-            </TouchableOpacity>
-
-            {/* Dropdown Options */}
-            {showTehsilDropdown && (
-              <View style={styles.dropdownList}>
-                {tehsilOptions.map((option, index) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.dropdownItem,
-                      index === tehsilOptions.length - 1 &&
-                      styles.dropdownItemLast,
-                    ]}
-                    onPress={() => handleTehsilSelect(option.value)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.dropdownItemText}>{option.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Login Button */}
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-            activeOpacity={0.8}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.loginButtonContent}>
-              <View style={styles.userIcon}>
-                <Text style={styles.userIconText}>👤</Text>
-              </View>
-              <Text style={styles.loginButtonText}>Login</Text>
+            {/* Logo */}
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
             </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
 
-      {/* Bottom Wave */}
-      {/* <View style={styles.waveContainer}>
-        <View style={styles.wave} />
-      </View> */}
-      {/* <View style={styles.container}> */}
-      <WaveBackground />
+            {/* Title */}
+            <Text style={styles.title}>Please enter your Mobile</Text>
+            <Text style={styles.title}>Number and Tehsil</Text>
 
-      {/* </View> */}
-    </View>
+            {/* Form */}
+            <View style={styles.formContainer}>
+              {/* Phone Number Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>
+                  Your Phone Number <Text style={styles.required}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your phone number"
+                  placeholderTextColor="#999999"
+                  value={phoneNumber}
+                  onChangeText={handlePhoneChange}
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                />
+              </View>
+
+              {/* Tehsil Dropdown */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>
+                  Select Tehsil <Text style={styles.required}>*</Text>
+                </Text>
+                <TouchableOpacity
+                  style={styles.dropdown}
+                  onPress={() => setShowTehsilDropdown(!showTehsilDropdown)}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.dropdownText,
+                      !selectedTehsil && styles.placeholderText,
+                    ]}
+                  >
+                    {selectedTehsil
+                      ? tehsilOptions.find(t => t.value === selectedTehsil)?.label
+                      : 'Select tehsil'}
+                  </Text>
+                  <Text style={styles.dropdownArrow}>▼</Text>
+                </TouchableOpacity>
+
+                {showTehsilDropdown && (
+                  <View style={styles.dropdownList}>
+                    {tehsilOptions.map((option, index) => (
+                      <TouchableOpacity
+                        key={option.value}
+                        style={[
+                          styles.dropdownItem,
+                          index === tehsilOptions.length - 1 &&
+                          styles.dropdownItemLast,
+                        ]}
+                        onPress={() => handleTehsilSelect(option.value)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.dropdownItemText}>{option.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              {/* Login Button */}
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={handleLogin}
+                activeOpacity={0.8}
+              >
+                <View style={styles.loginButtonContent}>
+                  <View style={styles.userIcon}>
+                    <Text style={styles.userIconText}>👤</Text>
+                  </View>
+                  <Text style={styles.loginButtonText}>Login</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+
+          </ScrollView>
+          {/* 👇 Wave as footer inside scroll */}
+          <View style={styles.footerWave}>
+            <Svg
+              height="100"
+              width="100%"
+              viewBox="0 0 512 230"
+              preserveAspectRatio="none"
+            >
+              <Path
+                d="M0,180 C100,120 250,240 400,160 C470,120 512,50 512,50 L512,230 L0,230 Z"
+                fill="#125FAA"
+              />
+            </Svg>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -179,13 +197,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingTop: HEIGHT(16),
-    paddingBottom: 200,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginTop: 20,
   },
   logo: {
     width: 100,
@@ -257,13 +274,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     zIndex: 1000,
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   dropdownItem: {
     paddingHorizontal: 16,
@@ -284,13 +294,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginTop: 16,
     alignItems: 'center',
-    shadowColor: '#1565C0',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
     elevation: 8,
   },
   loginButtonContent: {
@@ -317,24 +320,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  waveContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 100,
-    overflow: 'hidden',
-  },
-  wave: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 180,
-    backgroundColor: '#1565C0',
-    borderTopLeftRadius: 250,
-    borderTopRightRadius: 250,
-    transform: [{ scaleX: 1.5 }],
+  footerWave: {
+    marginTop: 60,
   },
 });
 
