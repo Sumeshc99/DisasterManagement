@@ -35,7 +35,7 @@ const AppNavigation = () => {
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
         <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
-        <Stack.Screen name="OTPVerification" component={OTPVerification} />
+        <Stack.Screen name="otpVerification" component={OTPVerification} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -51,5 +51,5 @@ type AppStackParamList = {
   selectLanguage: undefined;
   loginScreen: undefined;
   mainAppSelector: undefined;
-  OTPVerification: undefined;
+  otpVerification: undefined;
 };

@@ -53,18 +53,16 @@ const SelectLanguage = () => {
     },
   ];
 
-  const handleNext = async (langCode: string): Promise<void> => {
-    console.log(langCode)
-    await i18n.changeLanguage(langCode);
-    selectedLanguage?.(langCode);
-    navigation.navigate('loginScreen');
-  };
-  // const handleNext = () => {
-  //   console.log('Selected language:', selectedLanguage);
-  //   await i18n.changeLanguage(langCode);
-  //   onLanguageChange?.(langCode);
+  // const handleNext = async (langCode: string): Promise<void> => {
+  //   console.log(langCode)
+  //   await i18n.changeLanguage('mr');
+  //   selectedLanguage?.(langCode);
   //   navigation.navigate('loginScreen');
   // };
+  const handleNext = () => {
+    console.log('Selected language:', selectedLanguage);
+    navigation.navigate('loginScreen');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -134,7 +132,7 @@ const SelectLanguage = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3F3F3' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   // header: {
   //   backgroundColor: '#1E4A92',
   //   alignItems: 'center',

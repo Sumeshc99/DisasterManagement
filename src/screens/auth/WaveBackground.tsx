@@ -7,7 +7,7 @@ const WaveBackground = () => {
     return (
         <View style={styles.container}>
             <Svg
-                height="200"
+                height="130"
                 width="100%"
                 viewBox="0 0 512 230"
                 preserveAspectRatio="none"

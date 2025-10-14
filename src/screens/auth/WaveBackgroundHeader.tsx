@@ -39,13 +39,14 @@ const WaveBackgroundHeader = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
+        backgroundColor: 'transparent',
     },
     blueBackground: {
         backgroundColor: '#125FAA', // Blue color
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 100,
+        paddingBottom: 100,
         position: 'relative',
     },
     logo: {

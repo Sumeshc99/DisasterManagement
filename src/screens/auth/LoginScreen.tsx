@@ -15,6 +15,8 @@ import { HEIGHT } from '../../config/AppConst';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import Svg, { Path } from 'react-native-svg';
 import WaveBackground from './WaveBackground';
+import { useTranslation } from 'react-i18next';
+import '../../../i18n';
 
 interface TehsilOption {
   label: string;
@@ -22,8 +24,11 @@ interface TehsilOption {
 }
 
 const LoginScreen = () => {
-  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  
+  const navigation = useNavigation<AppStackNavigationProp<'otpVerification'>>();
+  const { t, i18n } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>(i18n.language);
+
+  console.log("trans", t)
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -45,9 +50,8 @@ const LoginScreen = () => {
       Alert.alert('Please fill all required fields');
       return;
     }
-    // navigation.navigate('OTPVerification');
+    navigation.navigate('otpVerification');
     console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
-    navigation.replace('mainAppSelector');
     // Handle login logic
   };
 
@@ -75,7 +79,7 @@ const LoginScreen = () => {
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>Please enter your Mobile</Text>
+        <Text style={styles.title}> Please enter your Mobile</Text>
         <Text style={styles.title}>Number and Tehsil</Text>
 
         {/* Form Container */}
@@ -171,7 +175,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     flexGrow: 1,
@@ -318,7 +322,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 150,
+    height: 100,
     overflow: 'hidden',
   },
   wave: {

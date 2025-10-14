@@ -122,7 +122,7 @@ export default function OTPVerification() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f4f8',
+        backgroundColor: '#FFFFFF',
         marginTop: 30,
     },
     contentContainer: {
