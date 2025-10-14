@@ -10,8 +10,8 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CitizenDashbord from '../screens/citizen/CitizenDashbord';
 import Community from '../screens/citizen/Community';
-import { COLOR } from '../config/Colors';
-import { WIDTH } from '../config/AppConst';
+import { COLOR } from '../themes/Colors';
+import { WIDTH } from '../themes/AppConst';
 
 const Tab = createBottomTabNavigator();
 

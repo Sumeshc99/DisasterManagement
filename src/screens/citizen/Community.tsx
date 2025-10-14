@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLOR } from '../../config/Colors';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
+import { COLOR } from '../../themes/Colors';
 
 const Community = () => {
   return (

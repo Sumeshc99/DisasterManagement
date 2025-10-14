@@ -11,10 +11,10 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { HEIGHT } from '../../config/AppConst';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
-import Svg, { Path } from 'react-native-svg';
 import WaveBackground from './WaveBackground';
+import { HEIGHT } from '../../themes/AppConst';
+import { COLOR } from '../../themes/Colors';
 
 interface TehsilOption {
   label: string;
@@ -23,7 +23,7 @@ interface TehsilOption {
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  
+
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -36,10 +36,11 @@ const LoginScreen = () => {
     { label: 'Nashik', value: 'nashik' },
     { label: 'Thane', value: 'thane' },
   ];
+
   const handleNext = () => {
     // console.log('Selected language:', selectedLanguage);
-
   };
+
   const handleLogin = () => {
     if (!phoneNumber || !selectedTehsil) {
       Alert.alert('Please fill all required fields');
@@ -47,7 +48,7 @@ const LoginScreen = () => {
     }
     // navigation.navigate('OTPVerification');
     console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
-    navigation.replace('mainAppSelector');
+    navigation.replace('OTPVerification');
     // Handle login logic
   };
 
@@ -128,7 +129,7 @@ const LoginScreen = () => {
                     style={[
                       styles.dropdownItem,
                       index === tehsilOptions.length - 1 &&
-                      styles.dropdownItemLast,
+                        styles.dropdownItemLast,
                     ]}
                     onPress={() => handleTehsilSelect(option.value)}
                     activeOpacity={0.7}
@@ -156,14 +157,7 @@ const LoginScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Bottom Wave */}
-      {/* <View style={styles.waveContainer}>
-        <View style={styles.wave} />
-      </View> */}
-      {/* <View style={styles.container}> */}
       <WaveBackground />
-
-      {/* </View> */}
     </View>
   );
 };
@@ -171,7 +165,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLOR.white,
   },
   scrollContent: {
     flexGrow: 1,

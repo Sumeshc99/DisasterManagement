@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { COLOR } from '../../config/Colors';
+import { COLOR } from '../../themes/Colors';
 
 const DashBoardHeader = () => {
   return (

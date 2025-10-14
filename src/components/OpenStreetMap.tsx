@@ -1,8 +1,8 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import MapView, { UrlTile } from 'react-native-maps';
-import { COLOR } from '../config/Colors';
-import { HEIGHT, WIDTH } from '../config/AppConst';
+import { COLOR } from '../themes/Colors';
+import { WIDTH } from '../themes/AppConst';
 
 const OpenStreetMap = ({
   latitude = 20.5937,
@@ -22,8 +22,13 @@ const OpenStreetMap = ({
         }}
         //   provider={null} // important: not Google
       >
-        <UrlTile
+        {/* <UrlTile
           urlTemplate="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+          maximumZ={19}
+          flipY={false}
+        /> */}
+        <UrlTile
+          urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
           flipY={false}
         />

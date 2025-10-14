@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
-import { COLOR } from '../../config/Colors';
 import OpenStreetMap from '../../components/OpenStreetMap';
+import { COLOR } from '../../themes/Colors';
 
 const CitizenDashbord = () => {
   return (

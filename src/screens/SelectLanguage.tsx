@@ -8,10 +8,11 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WIDTH } from '../config/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import WaveBackgroundHeader from './auth/WaveBackgroundHeader';
+import { WIDTH } from '../themes/AppConst';
+import { COLOR } from '../themes/Colors';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -22,19 +23,22 @@ const SelectLanguage = () => {
       id: 1,
       name: 'English',
       subText: '',
-      icon: require('../assets/citizen/english-icon.png'),
+      icon: require('../assets/e.png'),
+      icon1: require('../assets/e1.png'),
     },
     {
       id: 2,
       name: 'Marathi',
       subText: 'मराठी',
-      icon: require('../assets/citizen/hindi-icon.png'),
+      icon: require('../assets/h.png'),
+      icon1: require('../assets/h1.png'),
     },
     {
       id: 3,
       name: 'Hindi',
       subText: 'हिन्दी',
-      icon: require('../assets/citizen/hindi-icon.png'),
+      icon: require('../assets/m.png'),
+      icon1: require('../assets/m1.png'),
     },
   ];
 
@@ -45,20 +49,10 @@ const SelectLanguage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1E4A92" barStyle="light-content" />
+      <StatusBar backgroundColor={COLOR.blue} barStyle="light-content" />
 
       {/* Blue Header */}
-      <View>
-        <WaveBackgroundHeader></WaveBackgroundHeader>
-      </View>
-
-      {/* <View style={styles.header}>
-        <Image
-          source={require('../assets/citizen/logo.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.headerTitle}>Select Language</Text>
-      </View> */}
+      <WaveBackgroundHeader />
 
       {/* Curved White Section */}
       <View style={styles.contentContainer}>
@@ -82,11 +76,21 @@ const SelectLanguage = () => {
                   {lang.name}
                 </Text>
                 {lang.subText ? (
-                  <Text style={styles.subText}>{lang.subText}</Text>
+                  <Text
+                    style={[
+                      styles.subText,
+                      selectedLanguage === lang.name && styles.selectedText,
+                    ]}
+                  >
+                    {lang.subText}
+                  </Text>
                 ) : null}
               </View>
 
-              <Image source={lang.icon} style={styles.icon} />
+              <Image
+                source={selectedLanguage === lang.name ? lang.icon1 : lang.icon}
+                style={styles.icon}
+              />
               <View
                 style={[
                   styles.radioOuter,
@@ -106,12 +110,12 @@ const SelectLanguage = () => {
           <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3F3F3' },
+  container: { flex: 1, backgroundColor: COLOR.white },
   // header: {
   //   backgroundColor: '#1E4A92',
   //   alignItems: 'center',
@@ -132,10 +136,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 40,
     alignItems: 'center',
+    paddingHorizontal: WIDTH(6),
   },
   languageRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     gap: 16,
     marginBottom: 20,
     flexWrap: 'wrap',
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   selectedCard: {
-    backgroundColor: '#1E4A92',
+    backgroundColor: COLOR.blue,
   },
   languageText: {
     fontWeight: 'bold',
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
   },
   radioSelected: { borderColor: '#fff' },
   nextButton: {
-    backgroundColor: '#1E4A92',
+    backgroundColor: COLOR.blue,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
