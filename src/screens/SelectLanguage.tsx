@@ -52,70 +52,74 @@ const SelectLanguage = () => {
       <StatusBar backgroundColor={COLOR.blue} barStyle="light-content" />
 
       {/* Blue Header */}
-      <WaveBackgroundHeader />
+      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
+        <WaveBackgroundHeader />
 
-      {/* Curved White Section */}
-      <View style={styles.contentContainer}>
-        <View style={styles.languageRow}>
-          {languages.map(lang => (
-            <TouchableOpacity
-              key={lang.id}
-              style={[
-                styles.languageCard,
-                selectedLanguage === lang.name && styles.selectedCard,
-              ]}
-              onPress={() => setSelectedLanguage(lang.name)}
-            >
-              <View>
-                <Text
-                  style={[
-                    styles.languageText,
-                    selectedLanguage === lang.name && styles.selectedText,
-                  ]}
-                >
-                  {lang.name}
-                </Text>
-                {lang.subText ? (
+        {/* Curved White Section */}
+        <View style={styles.contentContainer}>
+          <View style={styles.languageRow}>
+            {languages.map(lang => (
+              <TouchableOpacity
+                key={lang.id}
+                style={[
+                  styles.languageCard,
+                  selectedLanguage === lang.name && styles.selectedCard,
+                ]}
+                onPress={() => setSelectedLanguage(lang.name)}
+              >
+                <View>
                   <Text
                     style={[
-                      styles.subText,
+                      styles.languageText,
                       selectedLanguage === lang.name && styles.selectedText,
                     ]}
                   >
-                    {lang.subText}
+                    {lang.name}
                   </Text>
-                ) : null}
-              </View>
+                  {lang.subText ? (
+                    <Text
+                      style={[
+                        styles.subText,
+                        selectedLanguage === lang.name && styles.selectedText,
+                      ]}
+                    >
+                      {lang.subText}
+                    </Text>
+                  ) : null}
+                </View>
 
-              <Image
-                source={selectedLanguage === lang.name ? lang.icon1 : lang.icon}
-                style={styles.icon}
-              />
-              <View
-                style={[
-                  styles.radioOuter,
-                  selectedLanguage === lang.name && styles.radioSelected,
-                ]}
-              >
-                {selectedLanguage === lang.name && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
-            </TouchableOpacity>
-          ))}
+                <Image
+                  source={
+                    selectedLanguage === lang.name ? lang.icon1 : lang.icon
+                  }
+                  style={styles.icon}
+                />
+                <View
+                  style={[
+                    styles.radioOuter,
+                    selectedLanguage === lang.name && styles.radioSelected,
+                  ]}
+                >
+                  {selectedLanguage === lang.name && (
+                    <View style={styles.radioInner} />
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Next Button */}
+          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <Text style={styles.nextText}>Next</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Next Button */}
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextText}>Next</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.white },
+  container: { flex: 1, backgroundColor: COLOR.blue },
   // header: {
   //   backgroundColor: '#1E4A92',
   //   alignItems: 'center',

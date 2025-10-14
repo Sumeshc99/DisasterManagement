@@ -46,10 +46,8 @@ const LoginScreen = () => {
       Alert.alert('Please fill all required fields');
       return;
     }
-    // navigation.navigate('OTPVerification');
     console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
-    navigation.replace('OTPVerification');
-    // Handle login logic
+    navigation.replace('pinLoginScreen');
   };
 
   const handleTehsilSelect = (value: string) => {
@@ -269,12 +267,12 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   loginButton: {
-    backgroundColor: '#1565C0',
+    backgroundColor: COLOR.blue,
     borderRadius: 30,
     paddingVertical: 14,
     marginTop: 16,
     alignItems: 'center',
-    shadowColor: '#1565C0',
+    shadowColor: COLOR.blue,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -321,7 +319,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 180,
-    backgroundColor: '#1565C0',
+    backgroundColor: COLOR.blue,
     borderTopLeftRadius: 250,
     borderTopRightRadius: 250,
     transform: [{ scaleX: 1.5 }],

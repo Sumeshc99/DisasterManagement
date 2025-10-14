@@ -9,6 +9,8 @@ import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
 import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
+import PinLoginScreen from '../screens/auth/PinLoginScreen';
+import PinResetScreen from '../screens/auth/PinResetScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -34,6 +36,8 @@ const AppNavigation = () => {
         <Stack.Screen name="splashScreen" component={SplashScreen} />
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
+        <Stack.Screen name="pinLoginScreen" component={PinLoginScreen} />
+        <Stack.Screen name="pinResetScreen" component={PinResetScreen} />
         <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
         <Stack.Screen name="OTPVerification" component={OTPVerification} />
       </Stack.Navigator>
@@ -52,4 +56,6 @@ type AppStackParamList = {
   loginScreen: undefined;
   mainAppSelector: undefined;
   OTPVerification: undefined;
+  pinLoginScreen: undefined;
+  pinResetScreen: undefined;
 };

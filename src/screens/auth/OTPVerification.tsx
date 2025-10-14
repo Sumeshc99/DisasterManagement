@@ -11,6 +11,7 @@ import {
   Image,
 } from 'react-native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
+import { COLOR } from '../../themes/Colors';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -64,6 +65,8 @@ export default function OTPVerification() {
     Alert.alert('Success', `OTP Verified: ${otpString}`);
     navigation.replace('mainAppSelector');
   };
+
+  const isOtpComplete = otp.every(digit => digit !== '');
 
   return (
     <ScrollView
@@ -124,8 +127,18 @@ export default function OTPVerification() {
       </Text>
 
       {/* Next Button */}
-      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>Next</Text>
+      <TouchableOpacity
+        style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
+        onPress={handleNext}
+      >
+        <Text
+          style={[
+            styles.nextButtonText,
+            isOtpComplete && styles.nextButtonTextActive,
+          ]}
+        >
+          Next
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -134,39 +147,26 @@ export default function OTPVerification() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: COLOR.white,
   },
   contentContainer: {
     alignItems: 'center',
-    paddingVertical: 40,
     paddingHorizontal: 20,
+    paddingBottom: 40,
+    paddingTop: 100, // ⬅️ increased from 40 to 100 for better vertical centering
   },
   logoContainer: {
     width: 100,
     height: 100,
-    marginBottom: 30,
+    marginBottom: 40, // slightly more spacing
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  logoBorder: {
-    width: '100%',
-    height: '100%',
-    borderWidth: 4,
-    borderColor: '#2563eb',
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#2563eb',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#1f2937',
-    marginTop: 20,
+    marginTop: 30, // slightly more space below logo
   },
   description: {
     fontSize: 14,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 40, // more breathing room before OTP inputs
     gap: 8,
   },
   phoneNumber: {
@@ -194,15 +194,15 @@ const styles = StyleSheet.create({
   otpInputContainer: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 16,
+    marginBottom: 20,
     justifyContent: 'center',
   },
   otpInput: {
-    width: 48,
-    height: 48,
+    width: 50,
+    height: 50,
     borderWidth: 2,
     borderColor: '#d1d5db',
-    borderRadius: 8,
+    borderRadius: 6,
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
@@ -228,16 +228,23 @@ const styles = StyleSheet.create({
     color: '#1f2937',
   },
   nextButton: {
-    width: 130,
-    paddingVertical: 12,
+    width: 140,
+    paddingVertical: 14,
     backgroundColor: '#d1d5db',
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 20,
   },
   nextButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#4b5563',
+  },
+  nextButtonActive: {
+    backgroundColor: COLOR.blue,
+  },
+  nextButtonTextActive: {
+    color: '#ffffff',
   },
 });
