@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLOR } from './Colors';
 
 const Navbar = () => {
   const insets = useSafeAreaInsets();
@@ -11,7 +12,7 @@ const Navbar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: COLOR.blue,
     alignItems: 'center',
     justifyContent: 'center',
   },

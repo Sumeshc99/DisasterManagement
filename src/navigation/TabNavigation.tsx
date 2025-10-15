@@ -12,10 +12,14 @@ import CitizenDashbord from '../screens/citizen/CitizenDashbord';
 import Community from '../screens/citizen/Community';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
+import { useNavigation } from '@react-navigation/native';
+import { AppStackNavigationProp } from './AppNavigation';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -66,7 +70,7 @@ const TabNavigation = () => {
           tabBarButton: () => (
             <TouchableOpacity
               style={styles.sosButtonContainer}
-              onPress={() => Alert.alert('SOS Triggered!')}
+              onPress={() => navigation.navigate('createIncidentScreen')}
             >
               <Image
                 source={require('../assets/sosImg.png')}

@@ -2,6 +2,7 @@ import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainIndex from './src/MainIndex';
 import CustomStatusBar from './src/themes/CustomStatusBar';
+import Navbar from './src/themes/Navbar';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -11,6 +12,7 @@ function App() {
       {/* <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} /> */}
       {/* <CustomStatusBar /> */}
       <MainIndex />
+      {/* <Navbar /> */}
     </SafeAreaProvider>
   );
 }

@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.11.3",
     "@react-native/new-app-screen": "0.82.0",
     "@react-navigation/bottom-tabs": "^7.4.8",
     "@react-navigation/native": "^7.1.18",
@@ -17,11 +18,14 @@
     "lucide-react": "^0.545.0",
     "react": "19.1.1",
     "react-native": "0.82.0",
+    "react-native-dropdown-picker": "^5.4.6",
     "react-native-geolocation-service": "^5.3.1",
+    "react-native-image-picker": "^8.2.1",
     "react-native-maps": "^1.26.14",
     "react-native-otp-textinput": "^1.1.7",
     "react-native-paper": "^5.14.5",
     "react-native-permissions": "^5.4.2",
+    "react-native-raw-bottom-sheet": "^3.0.0",
     "react-native-responsive-dimensions": "^3.1.1",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.16.0",
