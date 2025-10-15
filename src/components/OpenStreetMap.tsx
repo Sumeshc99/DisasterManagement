@@ -1,8 +1,11 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { UrlTile } from 'react-native-maps';
 import { COLOR } from '../config/Colors';
 import { HEIGHT, WIDTH } from '../config/AppConst';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const OpenStreetMap = ({
   latitude = 20.5937,
@@ -10,6 +13,15 @@ const OpenStreetMap = ({
   latitudeDelta = 10,
   longitudeDelta = 10,
 }) => {
+
+  const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
+
+
+  const responderList = () => {
+    console.log("kk")
+    navigation.navigate('respondersList');
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <MapView
@@ -20,7 +32,7 @@ const OpenStreetMap = ({
           latitudeDelta,
           longitudeDelta,
         }}
-        //   provider={null} // important: not Google
+      //   provider={null} // important: not Google
       >
         <UrlTile
           urlTemplate="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
@@ -69,11 +81,14 @@ const OpenStreetMap = ({
             right: 10,
           }}
         >
-          <Image
-            source={require('../assets/res1.png')}
-            resizeMode="contain"
-            style={{ width: 70, height: 70 }}
-          />
+          <TouchableOpacity onPress={() => responderList()}>
+            <Image
+              source={require('../assets/res1.png')}
+              resizeMode="contain"
+              style={{ width: 70, height: 70 }}
+            />
+          </TouchableOpacity>
+
           <Image
             source={require('../assets/res2.png')}
             resizeMode="contain"

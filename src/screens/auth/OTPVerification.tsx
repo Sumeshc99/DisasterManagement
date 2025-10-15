@@ -9,12 +9,14 @@ import {
     ScrollView,
     Image
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function OTPVerification() {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const inputRefs = useRef<TextInput[]>([]);
     const [timeLeft, setTimeLeft] = useState(540); // 9 minutes in seconds
+    const navigation = useNavigation<AppStackNavigationProp<'mainAppSelector'>>();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -54,7 +56,8 @@ export default function OTPVerification() {
             setError('Please enter a valid 6-digit OTP');
             return;
         }
-        Alert.alert('Success', `OTP Verified: ${otpString}`);
+        navigation.navigate('mainAppSelector');
+        // Alert.alert('Success', `OTP Verified: ${otpString}`);
     };
 
     const isOtpComplete = otp.every(digit => digit !== '');
