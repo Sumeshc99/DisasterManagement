@@ -111,6 +111,7 @@ const HomeScreen: React.FC = () => {
                     source={require('../../../src/assets/res2.png')}
                     resizeMode="contain"
                     style={{ width: 70, height: 70 }}
+
                 />
                 <Image
                     source={require('../../../src/assets/res3.png')}
