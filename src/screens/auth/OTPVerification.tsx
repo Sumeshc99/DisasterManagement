@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
   Image,
+  ImageBackground,
 } from 'react-native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
@@ -55,73 +56,80 @@ export default function OTPVerification() {
   const isOtpComplete = otp.length === 6;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+    <ImageBackground
+      source={require('../../assets/bg2.png')}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      imageStyle={{ opacity: 0.95 }}
     >
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../../assets/logo.png')}
-          resizeMode="contain"
-          style={{ width: 100, height: 100, marginTop: 60 }}
-        />
-      </View>
-
-      {/* Title */}
-      <Text style={styles.title}>OTP Verification</Text>
-
-      {/* Description */}
-      <Text style={styles.description}>Please enter the OTP sent to</Text>
-      <View style={styles.phoneContainer}>
-        <Text style={styles.phoneNumber}>8626054838</Text>
-        <TouchableOpacity style={styles.editIcon}>
-          <Text style={styles.editIconText}>✎</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Reusable OTP Component */}
-      <OTPInput
-        onChangeOTP={value => {
-          setOtp(value);
-          setError('');
-        }}
-      />
-
-      {/* Error Message */}
-      {error ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>⚠ {error}</Text>
-        </View>
-      ) : null}
-
-      {/* Timer */}
-      <Text style={styles.timerText}>
-        OTP will expire in:{' '}
-        <Text style={styles.timerValue}>{formatTime()} minutes</Text>
-      </Text>
-
-      {/* Next Button */}
-      <TouchableOpacity
-        style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
-        onPress={handleNext}
-        disabled={!isOtpComplete}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
       >
-        <Text
-          style={[
-            styles.nextButtonText,
-            isOtpComplete && styles.nextButtonTextActive,
-          ]}
-        >
-          Next
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')}
+            resizeMode="contain"
+            style={{ width: 100, height: 100, marginTop: 60 }}
+          />
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title}>OTP Verification</Text>
+
+        {/* Description */}
+        <Text style={styles.description}>Please enter the OTP sent to</Text>
+        <View style={styles.phoneContainer}>
+          <Text style={styles.phoneNumber}>8626054838</Text>
+          <TouchableOpacity style={styles.editIcon}>
+            <Text style={styles.editIconText}>✎</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Reusable OTP Component */}
+        <OTPInput
+          onChangeOTP={value => {
+            setOtp(value);
+            setError('');
+          }}
+        />
+
+        {/* Error Message */}
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>⚠ {error}</Text>
+          </View>
+        ) : null}
+
+        {/* Timer */}
+        <Text style={styles.timerText}>
+          OTP will expire in:{' '}
+          <Text style={styles.timerValue}>{formatTime()} minutes</Text>
         </Text>
-      </TouchableOpacity>
-    </ScrollView>
+
+        {/* Next Button */}
+        <TouchableOpacity
+          style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
+          onPress={handleNext}
+          disabled={!isOtpComplete}
+        >
+          <Text
+            style={[
+              styles.nextButtonText,
+              isOtpComplete && styles.nextButtonTextActive,
+            ]}
+          >
+            Next
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.white },
+  container: { flex: 1 },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,

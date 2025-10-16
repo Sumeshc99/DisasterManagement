@@ -45,7 +45,7 @@ export default function OTPVerification() {
   };
 
   const handleForgotPin = () => {
-    navigation.navigate('pinResetScreen'); // replace with your reset screen name
+    navigation.navigate('pinResetScreen');
   };
 
   return (
@@ -63,15 +63,11 @@ export default function OTPVerification() {
       </View>
 
       {/* Title */}
-      <Text style={styles.title}>OTP Verification</Text>
+      <Text style={styles.title}>Login</Text>
 
-      <Text style={styles.description}>Please enter the OTP sent to</Text>
-      <View style={styles.phoneContainer}>
-        <Text style={styles.phoneNumber}>8626054838</Text>
-        <TouchableOpacity style={styles.editIcon}>
-          <Text style={styles.editIconText}>✎</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.description}>
+        Please enter your PIN code to log in
+      </Text>
 
       {/* Reusable OTP Component */}
       <OTPInput
@@ -131,7 +127,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
-  description: { fontSize: 14, color: '#9ca3af', marginBottom: 6 },
+  description: {
+    fontSize: 16,
+    color: '#525151',
+    marginBottom: 20,
+    fontWeight: '500',
+    marginTop: 20,
+  },
   phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',

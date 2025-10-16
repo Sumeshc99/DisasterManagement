@@ -50,7 +50,9 @@ export default function PinResetScreen() {
 
       {/* Title */}
       <Text style={styles.title}>PIN Reset</Text>
-      <Text style={styles.subtitle}>Securely reset your PIN in minutes.</Text>
+      <Text style={styles.description}>
+        Securely reset your PIN in minutes.
+      </Text>
 
       {/* New PIN */}
       <View style={styles.pinSection}>
@@ -131,4 +133,11 @@ const styles = StyleSheet.create({
   submitButtonActive: { backgroundColor: COLOR.blue },
   submitText: { fontSize: 16, fontWeight: '600', color: '#4b5563' },
   submitTextActive: { color: '#ffffff' },
+  description: {
+    fontSize: 16,
+    color: '#525151',
+    marginBottom: 20,
+    fontWeight: '500',
+    marginTop: 10,
+  },
 });
