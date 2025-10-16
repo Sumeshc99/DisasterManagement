@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -12,16 +11,16 @@ import {
 } from 'react-native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
+import OTPInput from '../../components/OTPInput';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
 
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(''); // OTP as string
   const [error, setError] = useState('');
-  const inputRefs = useRef([]);
-  const [timeLeft, setTimeLeft] = useState(540);
+  const [timeLeft, setTimeLeft] = useState(540); // 9 minutes
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 0) {
@@ -31,6 +30,7 @@ export default function OTPVerification() {
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -43,30 +43,16 @@ export default function OTPVerification() {
     )}`;
   };
 
-  const handleKeyPress = (index: number, value: any) => {
-    if (!/^\d*$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1);
-    setOtp(newOtp);
-    setError('');
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
   const handleNext = () => {
-    const otpString = otp.join('');
-    if (otpString.length !== 6) {
+    if (otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
       return;
     }
-    Alert.alert('Success', `OTP Verified: ${otpString}`);
+    Alert.alert('Success', `OTP Verified: ${otp}`);
     navigation.replace('mainAppSelector');
   };
 
-  const isOtpComplete = otp.every(digit => digit !== '');
+  const isOtpComplete = otp.length === 6;
 
   return (
     <ScrollView
@@ -75,13 +61,11 @@ export default function OTPVerification() {
     >
       {/* Logo */}
       <View style={styles.logoContainer}>
-        {/* <View style={styles.logoBorder}> */}
         <Image
           source={require('../../assets/logo.png')}
           resizeMode="contain"
           style={{ width: 100, height: 100, marginTop: 60 }}
         />
-        {/* </View> */}
       </View>
 
       {/* Title */}
@@ -96,22 +80,13 @@ export default function OTPVerification() {
         </TouchableOpacity>
       </View>
 
-      {/* OTP Input Fields */}
-      <View style={styles.otpInputContainer}>
-        {otp.map((digit, index) => (
-          <TextInput
-            key={index}
-            ref={el => (inputRefs.current[index] = el)}
-            style={styles.otpInput}
-            maxLength={1}
-            keyboardType="numeric"
-            value={digit}
-            onChangeText={value => handleKeyPress(index, value)}
-            placeholder=""
-            placeholderTextColor="#ccc"
-          />
-        ))}
-      </View>
+      {/* Reusable OTP Component */}
+      <OTPInput
+        onChangeOTP={value => {
+          setOtp(value);
+          setError('');
+        }}
+      />
 
       {/* Error Message */}
       {error ? (
@@ -130,6 +105,7 @@ export default function OTPVerification() {
       <TouchableOpacity
         style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
         onPress={handleNext}
+        disabled={!isOtpComplete}
       >
         <Text
           style={[
@@ -145,88 +121,40 @@ export default function OTPVerification() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLOR.white,
-  },
+  container: { flex: 1, backgroundColor: COLOR.white },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 40,
-    paddingTop: 100, // ⬅️ increased from 40 to 100 for better vertical centering
+    paddingTop: 100,
   },
   logoContainer: {
     width: 100,
     height: 100,
-    marginBottom: 40, // slightly more spacing
+    marginBottom: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginTop: 30, // slightly more space below logo
-  },
-  description: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginBottom: 6,
-  },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
+  description: { fontSize: 14, color: '#9ca3af', marginBottom: 6 },
   phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 40, // more breathing room before OTP inputs
+    marginBottom: 40,
     gap: 8,
   },
-  phoneNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  editIcon: {
-    padding: 4,
-  },
-  editIconText: {
-    fontSize: 16,
-    color: '#9ca3af',
-  },
-  otpInputContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 20,
-    justifyContent: 'center',
-  },
-  otpInput: {
-    width: 50,
-    height: 50,
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    borderRadius: 6,
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1f2937',
-  },
+  phoneNumber: { fontSize: 16, fontWeight: '600', color: '#1f2937' },
+  editIcon: { padding: 4 },
+  editIconText: { fontSize: 16, color: '#9ca3af' },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 12,
   },
-  errorText: {
-    fontSize: 13,
-    color: '#ef4444',
-  },
-  timerText: {
-    fontSize: 13,
-    color: '#4b5563',
-    marginBottom: 24,
-  },
-  timerValue: {
-    fontWeight: '600',
-    color: '#1f2937',
-  },
+  errorText: { fontSize: 13, color: '#ef4444' },
+  timerText: { fontSize: 13, color: '#4b5563', marginVertical: 24 },
+  timerValue: { fontWeight: '600', color: '#1f2937' },
   nextButton: {
     width: 140,
     paddingVertical: 14,
@@ -236,15 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#4b5563',
-  },
-  nextButtonActive: {
-    backgroundColor: COLOR.blue,
-  },
-  nextButtonTextActive: {
-    color: '#ffffff',
-  },
+  nextButtonText: { fontSize: 16, fontWeight: '600', color: '#4b5563' },
+  nextButtonActive: { backgroundColor: COLOR.blue },
+  nextButtonTextActive: { color: '#ffffff' },
 });

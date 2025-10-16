@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
-import WaveBackgroundHeader from './auth/WaveBackgroundHeader';
-import { WIDTH } from '../themes/AppConst';
+import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
 
 const SelectLanguage = () => {
@@ -48,15 +48,24 @@ const SelectLanguage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={COLOR.blue} barStyle="light-content" />
+    <ImageBackground
+      source={require('../assets/bg1.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+      imageStyle={{ opacity: 0.95 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor={COLOR.blue} barStyle="light-content" />
 
-      {/* Blue Header */}
-      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
-        <WaveBackgroundHeader />
-
-        {/* Curved White Section */}
+        {/* Content Section */}
         <View style={styles.contentContainer}>
+          <Image
+            source={require('../assets/citizen/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Select Your Language</Text>
+
           <View style={styles.languageRow}>
             {languages.map(lang => (
               <TouchableOpacity
@@ -76,6 +85,7 @@ const SelectLanguage = () => {
                   >
                     {lang.name}
                   </Text>
+
                   {lang.subText ? (
                     <Text
                       style={[
@@ -94,6 +104,7 @@ const SelectLanguage = () => {
                   }
                   style={styles.icon}
                 />
+
                 <View
                   style={[
                     styles.radioOuter,
@@ -113,47 +124,52 @@ const SelectLanguage = () => {
             <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
+export default SelectLanguage;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.blue },
-  // header: {
-  //   backgroundColor: '#1E4A92',
-  //   alignItems: 'center',
-  //   paddingVertical: 40,
-  // },
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
-    marginBottom: 10,
+  backgroundImage: {
+    flex: 1,
   },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   contentContainer: {
     flex: 1,
-    paddingTop: 40,
     alignItems: 'center',
+    marginTop: HEIGHT(6),
     paddingHorizontal: WIDTH(6),
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLOR.white,
+    marginBottom: 30,
   },
   languageRow: {
     flexDirection: 'row',
     gap: 16,
-    marginBottom: 20,
+    marginTop: HEIGHT(10),
     flexWrap: 'wrap',
   },
   languageCard: {
-    backgroundColor: '#dcdcdcff',
+    backgroundColor: '#dcdcdc',
     borderRadius: 12,
     width: WIDTH(42),
     flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
+    position: 'relative',
   },
   selectedCard: {
     backgroundColor: COLOR.blue,
@@ -174,7 +190,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     resizeMode: 'contain',
-    marginTop: 8,
+    marginLeft: 'auto',
+    marginRight: 25,
   },
   radioOuter: {
     position: 'absolute',
@@ -184,7 +201,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#828282ff',
+    borderColor: '#828282',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -194,7 +211,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#fff',
   },
-  radioSelected: { borderColor: '#fff' },
+  radioSelected: {
+    borderColor: '#fff',
+  },
   nextButton: {
     backgroundColor: COLOR.blue,
     paddingVertical: 12,
@@ -208,5 +227,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default SelectLanguage;

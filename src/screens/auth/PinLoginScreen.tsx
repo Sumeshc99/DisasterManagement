@@ -1,43 +1,46 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
   ScrollView,
   Image,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
+import OTPInput from '../../components/OTPInput';
 
-export default function PinLoginScreen() {
+export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  const [pin, setPin] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const inputRefs = useRef([]);
+  const [timeLeft, setTimeLeft] = useState(540);
 
-  const handlePinChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
-    const newValue = value.slice(-1);
-    const updatedPin = [...pin];
-    updatedPin[index] = newValue;
-    setPin(updatedPin);
-    setError('');
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev <= 0 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    if (newValue && index < 5) inputRefs.current[index + 1]?.focus();
+  const formatTime = () => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+      2,
+      '0',
+    )}`;
   };
 
   const handleNext = () => {
-    const enteredPin = pin.join('');
-    if (enteredPin.length !== 6) {
-      setError('Please enter a valid 6-digit PIN');
+    if (otp.length !== 6) {
+      setError('Please enter a valid 6-digit OTP');
       return;
     }
-
-    Alert.alert('Success', `Logged in with PIN: ${enteredPin}`);
+    // Alert.alert('Success', `OTP Verified: ${otp}`);
     navigation.replace('mainAppSelector');
   };
 
@@ -45,136 +48,107 @@ export default function PinLoginScreen() {
     navigation.navigate('pinResetScreen'); // replace with your reset screen name
   };
 
-  const isComplete = pin.every(digit => digit !== '');
-
   return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Logo */}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {/* Logo */}
+      <View style={styles.logoContainer}>
         <Image
           source={require('../../assets/logo.png')}
           resizeMode="contain"
-          style={styles.logo}
+          style={{ width: 100, height: 100, marginTop: 60 }}
         />
+      </View>
 
-        {/* Title */}
-        <Text style={styles.title}>Login</Text>
-        <Text style={styles.subtitle}>
-          Please enter your PIN code to log in
+      {/* Title */}
+      <Text style={styles.title}>OTP Verification</Text>
+
+      <Text style={styles.description}>Please enter the OTP sent to</Text>
+      <View style={styles.phoneContainer}>
+        <Text style={styles.phoneNumber}>8626054838</Text>
+        <TouchableOpacity style={styles.editIcon}>
+          <Text style={styles.editIconText}>✎</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Reusable OTP Component */}
+      <OTPInput
+        onChangeOTP={value => {
+          setOtp(value);
+          setError('');
+        }}
+      />
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      <TouchableOpacity
+        style={{
+          flex: 1,
+          alignItems: 'flex-end',
+          alignSelf: 'flex-end',
+        }}
+        onPress={handleForgotPin}
+      >
+        <Text style={styles.forgotText}>Forgot PIN...?</Text>
+      </TouchableOpacity>
+
+      {/* <Text style={styles.timerText}>
+        OTP will expire in:{' '}
+        <Text style={styles.timerValue}>{formatTime()} minutes</Text>
+      </Text> */}
+
+      <TouchableOpacity
+        style={[styles.nextButton, otp.length === 6 && styles.nextButtonActive]}
+        onPress={handleNext}
+      >
+        <Text
+          style={[
+            styles.nextButtonText,
+            otp.length === 6 && styles.nextButtonTextActive,
+          ]}
+        >
+          Next
         </Text>
-
-        {/* PIN Input */}
-        <View style={styles.pinContainer}>
-          {pin.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={el => (inputRefs.current[index] = el)}
-              style={styles.pinInput}
-              maxLength={1}
-              keyboardType="numeric"
-              value={digit}
-              onChangeText={value => handlePinChange(index, value)}
-            />
-          ))}
-        </View>
-
-        {/* Forgot PIN */}
-        <TouchableOpacity
-          style={{
-            flex: 1,
-            alignItems: 'flex-end',
-            alignSelf: 'flex-end',
-          }}
-          onPress={handleForgotPin}
-        >
-          <Text style={styles.forgotText}>Forgot PIN...?</Text>
-        </TouchableOpacity>
-
-        {/* Error */}
-        {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
-
-        {/* Next Button */}
-        <TouchableOpacity
-          style={[styles.nextButton, isComplete && styles.nextButtonActive]}
-          onPress={handleNext}
-        >
-          <Text
-            style={[
-              styles.nextButtonText,
-              isComplete && styles.nextButtonTextActive,
-            ]}
-          >
-            Next
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-
-      {/* Bottom Blue Wave */}
-      {/* <View style={styles.waveContainer}>
-        <View style={styles.waveShape} />
-      </View> */}
-    </View>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLOR.white,
-  },
+  container: { flex: 1, backgroundColor: COLOR.white },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 140,
     paddingBottom: 40,
+    paddingTop: 100,
   },
-  logo: {
+  logoContainer: {
     width: 100,
     height: 100,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6b7280',
     marginBottom: 40,
-    textAlign: 'center',
-  },
-  pinContainer: {
-    flexDirection: 'row',
     justifyContent: 'center',
-    gap: 10,
-    marginBottom: 10,
+    alignItems: 'center',
   },
-  pinInput: {
-    width: 50,
-    height: 50,
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    borderRadius: 6,
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1f2937',
+  title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
+  description: { fontSize: 14, color: '#9ca3af', marginBottom: 6 },
+  phoneContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 40,
+    gap: 8,
   },
-  forgotText: {
-    color: COLOR.blue,
-    fontWeight: 700,
-    fontSize: 14,
-  },
-  errorText: {
-    color: '#ef4444',
+  phoneNumber: { fontSize: 16, fontWeight: '600', color: '#1f2937' },
+  editIcon: { padding: 4 },
+  editIconText: { fontSize: 16, color: '#9ca3af' },
+  errorText: { fontSize: 13, color: '#ef4444', marginTop: 8 },
+  timerText: {
     fontSize: 13,
-    marginBottom: 10,
+    color: '#4b5563',
+    marginBottom: 24,
+    marginTop: 20,
   },
+  timerValue: { fontWeight: '600', color: '#1f2937' },
   nextButton: {
     width: 140,
     paddingVertical: 14,
@@ -182,35 +156,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 20,
+  },
+  nextButtonText: { fontSize: 16, fontWeight: '600', color: '#4b5563' },
+  nextButtonActive: { backgroundColor: COLOR.blue },
+  nextButtonTextActive: { color: '#ffffff' },
+  forgotText: {
     marginTop: 10,
-  },
-  nextButtonActive: {
-    backgroundColor: COLOR.blue,
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#4b5563',
-  },
-  nextButtonTextActive: {
-    color: '#ffffff',
-  },
-  waveContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 120,
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-  },
-  waveShape: {
-    position: 'absolute',
-    bottom: -20,
-    width: '200%',
-    height: 200,
-    backgroundColor: COLOR.blue,
-    borderTopLeftRadius: 200,
-    borderTopRightRadius: 200,
-    transform: [{ scaleX: 0.6 }],
+    color: COLOR.blue,
+    fontWeight: 700,
+    fontSize: 14,
   },
 });
