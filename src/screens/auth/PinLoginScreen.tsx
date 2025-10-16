@@ -7,11 +7,13 @@ import {
   Alert,
   ScrollView,
   Image,
+  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
+import { HEIGHT } from '../../themes/AppConst';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -49,82 +51,89 @@ export default function OTPVerification() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+    <ImageBackground
+      source={require('../../assets/bg2.png')}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      imageStyle={{ opacity: 0.95 }}
     >
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../../assets/logo.png')}
-          resizeMode="contain"
-          style={{ width: 100, height: 100, marginTop: 60 }}
-        />
-      </View>
-
-      {/* Title */}
-      <Text style={styles.title}>Login</Text>
-
-      <Text style={styles.description}>
-        Please enter your PIN code to log in
-      </Text>
-
-      {/* Reusable OTP Component */}
-      <OTPInput
-        onChangeOTP={value => {
-          setOtp(value);
-          setError('');
-        }}
-      />
-
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <TouchableOpacity
-        style={{
-          flex: 1,
-          alignItems: 'flex-end',
-          alignSelf: 'flex-end',
-        }}
-        onPress={handleForgotPin}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
       >
-        <Text style={styles.forgotText}>Forgot PIN...?</Text>
-      </TouchableOpacity>
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')}
+            resizeMode="contain"
+            style={{ width: 100, height: 100, marginTop: 60 }}
+          />
+        </View>
 
-      {/* <Text style={styles.timerText}>
+        {/* Title */}
+        <Text style={styles.title}>Login</Text>
+
+        <Text style={styles.description}>
+          Please enter your PIN code to log in
+        </Text>
+
+        {/* Reusable OTP Component */}
+        <OTPInput
+          onChangeOTP={value => {
+            setOtp(value);
+            setError('');
+          }}
+        />
+
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            alignItems: 'flex-end',
+            alignSelf: 'flex-end',
+          }}
+          onPress={handleForgotPin}
+        >
+          <Text style={styles.forgotText}>Forgot PIN...?</Text>
+        </TouchableOpacity>
+
+        {/* <Text style={styles.timerText}>
         OTP will expire in:{' '}
         <Text style={styles.timerValue}>{formatTime()} minutes</Text>
       </Text> */}
 
-      <TouchableOpacity
-        style={[styles.nextButton, otp.length === 6 && styles.nextButtonActive]}
-        onPress={handleNext}
-      >
-        <Text
+        <TouchableOpacity
           style={[
-            styles.nextButtonText,
-            otp.length === 6 && styles.nextButtonTextActive,
+            styles.nextButton,
+            otp.length === 6 && styles.nextButtonActive,
           ]}
+          onPress={handleNext}
         >
-          Next
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+          <Text
+            style={[
+              styles.nextButtonText,
+              otp.length === 6 && styles.nextButtonTextActive,
+            ]}
+          >
+            Next
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.white },
+  container: { flex: 1 },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 40,
-    paddingTop: 100,
+    marginTop: HEIGHT(14),
   },
   logoContainer: {
     width: 100,
     height: 100,
     marginBottom: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
   description: {

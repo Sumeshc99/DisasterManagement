@@ -7,11 +7,13 @@ import {
   ScrollView,
   Image,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
+import { HEIGHT } from '../../themes/AppConst';
 
 export default function PinResetScreen() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -37,71 +39,78 @@ export default function PinResetScreen() {
   const isComplete = newPin.length === 6 && confirmPin.length === 6;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+    <ImageBackground
+      source={require('../../assets/bg2.png')}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+      imageStyle={{ opacity: 0.95 }}
     >
-      {/* Logo */}
-      <Image
-        source={require('../../assets/logo.png')}
-        resizeMode="contain"
-        style={styles.logo}
-      />
-
-      {/* Title */}
-      <Text style={styles.title}>PIN Reset</Text>
-      <Text style={styles.description}>
-        Securely reset your PIN in minutes.
-      </Text>
-
-      {/* New PIN */}
-      <View style={styles.pinSection}>
-        <Text style={styles.label}>New PIN</Text>
-        <OTPInput
-          onChangeOTP={value => {
-            setNewPin(value);
-            setError('');
-          }}
-        />
-      </View>
-
-      {/* Confirm PIN */}
-      <View style={styles.pinSection}>
-        <Text style={styles.label}>Confirm PIN</Text>
-        <OTPInput
-          onChangeOTP={value => {
-            setConfirmPin(value);
-            setError('');
-          }}
-        />
-      </View>
-
-      {/* Error Message */}
-      {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
-
-      {/* Submit Button */}
-      <TouchableOpacity
-        style={[styles.submitButton, isComplete && styles.submitButtonActive]}
-        onPress={handleSubmit}
-        disabled={!isComplete}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
       >
-        <Text
-          style={[styles.submitText, isComplete && styles.submitTextActive]}
-        >
-          Submit
+        {/* Logo */}
+        <Image
+          source={require('../../assets/logo.png')}
+          resizeMode="contain"
+          style={styles.logo}
+        />
+
+        {/* Title */}
+        <Text style={styles.title}>PIN Reset</Text>
+        <Text style={styles.description}>
+          Securely reset your PIN in minutes.
         </Text>
-      </TouchableOpacity>
-    </ScrollView>
+
+        {/* New PIN */}
+        <View style={styles.pinSection}>
+          <Text style={styles.label}>New PIN</Text>
+          <OTPInput
+            onChangeOTP={value => {
+              setNewPin(value);
+              setError('');
+            }}
+          />
+        </View>
+
+        {/* Confirm PIN */}
+        <View style={styles.pinSection}>
+          <Text style={styles.label}>Confirm PIN</Text>
+          <OTPInput
+            onChangeOTP={value => {
+              setConfirmPin(value);
+              setError('');
+            }}
+          />
+        </View>
+
+        {/* Error Message */}
+        {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          style={[styles.submitButton, isComplete && styles.submitButtonActive]}
+          onPress={handleSubmit}
+          disabled={!isComplete}
+        >
+          <Text
+            style={[styles.submitText, isComplete && styles.submitTextActive]}
+          >
+            Submit
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLOR.white },
+  container: { flex: 1 },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 60,
-    paddingTop: 120,
+    paddingBottom: 40,
+    marginTop: HEIGHT(14),
   },
   logo: { width: 100, height: 100, marginBottom: 30 },
   title: {

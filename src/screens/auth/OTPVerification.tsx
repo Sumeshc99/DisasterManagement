@@ -17,9 +17,9 @@ import OTPInput from '../../components/OTPInput';
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
 
-  const [otp, setOtp] = useState(''); // OTP as string
+  const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [timeLeft, setTimeLeft] = useState(540); // 9 minutes
+  const [timeLeft, setTimeLeft] = useState(540);
 
   useEffect(() => {
     const timer = setInterval(() => {
