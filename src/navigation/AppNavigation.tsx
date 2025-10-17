@@ -10,6 +10,7 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
 import RespondersList from '../screens/citizen/RespondersList';
+import Profile from '../screens/auth/Profile';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -38,6 +39,7 @@ const AppNavigation = () => {
         <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
         <Stack.Screen name="otpVerification" component={OTPVerification} />
         <Stack.Screen name="respondersList" component={RespondersList} />
+        <Stack.Screen name="profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

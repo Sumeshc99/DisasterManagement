@@ -16,7 +16,7 @@ export default function OTPVerification() {
     const [error, setError] = useState('');
     const inputRefs = useRef<TextInput[]>([]);
     const [timeLeft, setTimeLeft] = useState(540); // 9 minutes in seconds
-    const navigation = useNavigation<AppStackNavigationProp<'mainAppSelector'>>();
+    const navigation = useNavigation<AppStackNavigationProp<'profile'>>();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -56,7 +56,7 @@ export default function OTPVerification() {
             setError('Please enter a valid 6-digit OTP');
             return;
         }
-        navigation.navigate('mainAppSelector');
+        navigation.navigate('profile');
         // Alert.alert('Success', `OTP Verified: ${otpString}`);
     };
 

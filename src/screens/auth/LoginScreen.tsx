@@ -28,8 +28,8 @@ interface TehsilOption {
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'otpVerification'>>();
-  const { t, i18n } = useTranslation();
-  const [selectedLanguage] = React.useState<string>(i18n.language);
+  const { t } = useTranslation();
+  // const [selectedLanguage] = React.useState<string>(i18n.language);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [selectedTehsil, setSelectedTehsil] = useState<string>('');
   const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
@@ -89,6 +89,7 @@ const LoginScreen = () => {
             </View>
 
             {/* Title */}
+            <Text style={styles.title}>{t('welcome')}</Text>
             <Text style={styles.title}>Please enter your Mobile</Text>
             <Text style={styles.title}>Number and Tehsil</Text>
 
