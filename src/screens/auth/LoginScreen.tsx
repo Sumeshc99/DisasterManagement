@@ -19,6 +19,13 @@ import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import { HEIGHT, WIDTH } from '../../themes/AppConst';
 import { CustomDropdown } from '../../components/inputs/CustomDropdown';
+import { useTranslation } from 'react-i18next';
+import '../../../i18n';
+
+interface TehsilOption {
+  label: string;
+  value: string;
+}
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();

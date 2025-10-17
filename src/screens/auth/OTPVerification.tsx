@@ -19,7 +19,7 @@ export default function OTPVerification() {
 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [timeLeft, setTimeLeft] = useState(540);
+  const [timeLeft, setTimeLeft] = useState(540); // 9 minutes
 
   useEffect(() => {
     const timer = setInterval(() => {

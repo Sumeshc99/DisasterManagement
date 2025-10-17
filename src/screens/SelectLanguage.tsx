@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,15 +13,17 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
+import { saveLanguage, getSavedLanguage } from '../../i18n';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
-  const languages = [
+  const languages: any = [
     {
       id: 1,
       name: 'English',
+      code: 'en',
       subText: '',
       icon: require('../assets/e.png'),
       icon1: require('../assets/e1.png'),
@@ -29,6 +31,7 @@ const SelectLanguage = () => {
     {
       id: 2,
       name: 'Marathi',
+      code: 'mr',
       subText: 'मराठी',
       icon: require('../assets/h.png'),
       icon1: require('../assets/h1.png'),
@@ -36,11 +39,26 @@ const SelectLanguage = () => {
     {
       id: 3,
       name: 'Hindi',
+      code: 'hi',
       subText: 'हिन्दी',
       icon: require('../assets/m.png'),
       icon1: require('../assets/m1.png'),
     },
   ];
+
+  useEffect(() => {
+    loadSavedLanguage();
+  }, []);
+
+  const loadSavedLanguage = async () => {
+    const savedLang = await getSavedLanguage();
+    setSelectedLanguage(savedLang);
+  };
+
+  const handleLanguageSelect = async (langCode: string) => {
+    setSelectedLanguage(langCode);
+    await saveLanguage(langCode);
+  };
 
   const handleNext = () => {
     console.log('Selected language:', selectedLanguage);
@@ -67,7 +85,7 @@ const SelectLanguage = () => {
           <Text style={styles.title}>Select Your Language</Text>
 
           <View style={styles.languageRow}>
-            {languages.map(lang => (
+            {languages.map((lang: any) => (
               <TouchableOpacity
                 key={lang.id}
                 style={[
@@ -177,6 +195,7 @@ const styles = StyleSheet.create({
   languageText: {
     fontWeight: 'bold',
     color: '#000',
+    fontSize: 16,
   },
   selectedText: {
     color: '#fff',
@@ -220,6 +239,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   nextText: {
     color: '#fff',

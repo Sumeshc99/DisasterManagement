@@ -12,7 +12,8 @@ import OTPVerification from '../screens/auth/OTPVerification';
 import PinLoginScreen from '../screens/auth/PinLoginScreen';
 import PinResetScreen from '../screens/auth/PinResetScreen';
 import CreateIncidentScreen from '../screens/citizen/CreateIncidentScreen';
-
+import RespondersList from '../screens/citizen/RespondersList';
+import Profile from '../screens/auth/Profile';
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 const AppNavigation = () => {
@@ -45,6 +46,9 @@ const AppNavigation = () => {
           name="createIncidentScreen"
           component={CreateIncidentScreen}
         />
+        <Stack.Screen name="otpVerification" component={OTPVerification} />
+        <Stack.Screen name="respondersList" component={RespondersList} />
+        <Stack.Screen name="profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -64,4 +68,7 @@ type AppStackParamList = {
   pinLoginScreen: undefined;
   pinResetScreen: undefined;
   createIncidentScreen: undefined;
+  otpVerification: undefined;
+  respondersList: undefined;
+  profile: undefined;
 };

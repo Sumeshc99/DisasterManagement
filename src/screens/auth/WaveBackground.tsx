@@ -1,4 +1,4 @@
-// WaveBackground.js
+// WaveBackground.js (or .tsx)
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -7,7 +7,7 @@ const WaveBackground = () => {
     return (
         <View style={styles.container}>
             <Svg
-                height="200"
+                height="130"
                 width="100%"
                 viewBox="0 0 512 230"
                 preserveAspectRatio="none"
@@ -23,7 +23,7 @@ const WaveBackground = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
+        backgroundColor: 'transparent', // make it transparent
     },
 });
 

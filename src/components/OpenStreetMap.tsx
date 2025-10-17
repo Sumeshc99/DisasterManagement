@@ -1,8 +1,10 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { UrlTile } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
+import { useNavigation } from '@react-navigation/native';
+import { AppStackNavigationProp } from '../navigation/AppNavigation';
 
 const OpenStreetMap = ({
   latitude = 20.5937,
@@ -10,6 +12,13 @@ const OpenStreetMap = ({
   latitudeDelta = 10,
   longitudeDelta = 10,
 }) => {
+  const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
+
+  const responderList = () => {
+    console.log('kk');
+    navigation.navigate('respondersList');
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <MapView
@@ -74,11 +83,14 @@ const OpenStreetMap = ({
             right: 10,
           }}
         >
-          <Image
-            source={require('../assets/res1.png')}
-            resizeMode="contain"
-            style={{ width: 70, height: 70 }}
-          />
+          <TouchableOpacity onPress={() => responderList()}>
+            <Image
+              source={require('../assets/res1.png')}
+              resizeMode="contain"
+              style={{ width: 70, height: 70 }}
+            />
+          </TouchableOpacity>
+
           <Image
             source={require('../assets/res2.png')}
             resizeMode="contain"

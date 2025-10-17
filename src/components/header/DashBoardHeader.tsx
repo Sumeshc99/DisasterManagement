@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLOR } from '../../themes/Colors';
+import { useNavigation } from '@react-navigation/native';
+import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 
 const DashBoardHeader = () => {
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>
@@ -34,9 +38,12 @@ const DashBoardHeader = () => {
           />
         </TouchableOpacity>
 
-        <View style={styles.userCircle}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('profile')}
+          style={styles.userCircle}
+        >
           <Text style={styles.userText}>UN</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
