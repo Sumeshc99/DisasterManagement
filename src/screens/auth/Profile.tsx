@@ -737,7 +737,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
     gap: 24,
-    paddingTop: 10,
+    paddingVertical: 10,
   },
   tab: {
     height: 40,
