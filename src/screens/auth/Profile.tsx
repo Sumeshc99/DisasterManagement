@@ -15,9 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
-import Svg, { Polygon } from 'react-native-svg';
 import { COLOR } from '../../themes/Colors';
-import { HEIGHT, WIDTH } from '../../themes/AppConst';
+import { useNavigation } from '@react-navigation/native';
+import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 
 interface FormData {
   fullName: string;
@@ -49,6 +49,8 @@ interface FormErrors {
 }
 
 const Profile: React.FC = () => {
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showBlockDropdown, setShowBlockDropdown] = useState(false);
@@ -221,8 +223,11 @@ const Profile: React.FC = () => {
 
       {/* Title Bar */}
       <View style={styles.titleBar}>
-        <TouchableOpacity style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Image source={require('../../assets/backArrow.png')} />
         </TouchableOpacity>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.backButton} />
@@ -711,10 +716,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    paddingVertical: 8,
   },
   backButton: {
     width: 40,
@@ -737,14 +739,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
     gap: 24,
-    paddingVertical: 10,
+    paddingBottom: 10,
   },
   tab: {
     height: 40,
     position: 'relative',
   },
   secondTab: {
-    marginLeft: -20, // overlap for seamless arrow connection
+    marginLeft: -20,
   },
   textWrapper: {
     position: 'absolute',
