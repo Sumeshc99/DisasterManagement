@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
   Image,
   ImageBackground,
@@ -13,28 +12,28 @@ import {
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
+import ApiManager from '../../apis/ApiManager';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [timeLeft, setTimeLeft] = useState(540); // 9 minutes
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [isResending, setIsResending] = useState(false);
 
+  // 🔹 Countdown Timer
   useEffect(() => {
+    if (timeLeft <= 0) return;
+
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [timeLeft]);
 
+  // 🔹 Format timer (MM:SS)
   const formatTime = () => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -44,13 +43,45 @@ export default function OTPVerification() {
     )}`;
   };
 
+  // 🔹 Login / OTP Verify function
+  const handleOtp = async () => {
+    const body = { mobile: '9841525240', tehsil: 1 };
+    try {
+      const resp = await ApiManager.userLogin(body);
+      if (resp?.data?.status) {
+        navigation.replace('mainAppSelector');
+      }
+    } catch (err) {
+      // console.log('error', err.response);
+    }
+    navigation.replace('mainAppSelector');
+  };
+
+  // 🔹 Resend OTP API + restart timer
+  const handleResendOtp = async () => {
+    setIsResending(true);
+    try {
+      const body = { mobile: '9841525240' };
+      const resp = await ApiManager.resendOtp(body);
+      if (resp?.data?.status) {
+        setOtp('');
+        setError('');
+        setTimeLeft(90);
+      }
+    } catch (err) {
+      // console.log('resend error', err.response);
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // 🔹 Validate and move next
   const handleNext = () => {
     if (otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
       return;
     }
-    Alert.alert('Success', `OTP Verified: ${otp}`);
-    navigation.replace('mainAppSelector');
+    handleOtp();
   };
 
   const isOtpComplete = otp.length === 6;
@@ -87,7 +118,7 @@ export default function OTPVerification() {
           </TouchableOpacity>
         </View>
 
-        {/* Reusable OTP Component */}
+        {/* OTP Input */}
         <OTPInput
           onChangeOTP={value => {
             setOtp(value);
@@ -95,18 +126,30 @@ export default function OTPVerification() {
           }}
         />
 
-        {/* Error Message */}
+        {/* Error */}
         {error ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>⚠ {error}</Text>
           </View>
         ) : null}
 
-        {/* Timer */}
-        <Text style={styles.timerText}>
-          OTP will expire in:{' '}
-          <Text style={styles.timerValue}>{formatTime()} minutes</Text>
-        </Text>
+        {/* Timer OR Resend Button */}
+        {timeLeft > 0 ? (
+          <Text style={styles.timerText}>
+            OTP will expire in:{' '}
+            <Text style={styles.timerValue}>{formatTime()}</Text>
+          </Text>
+        ) : (
+          <TouchableOpacity
+            onPress={handleResendOtp}
+            disabled={isResending}
+            style={styles.resendButton}
+          >
+            <Text style={styles.resendText}>
+              {isResending ? 'Resending...' : 'Resend OTP'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Next Button */}
         <TouchableOpacity
@@ -163,6 +206,14 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 13, color: '#ef4444' },
   timerText: { fontSize: 13, color: '#4b5563', marginVertical: 24 },
   timerValue: { fontWeight: '600', color: '#1f2937' },
+  resendButton: {
+    marginVertical: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: COLOR.blue,
+  },
+  resendText: { color: '#fff', fontWeight: '600' },
   nextButton: {
     width: 140,
     paddingVertical: 14,

@@ -1,81 +1,132 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Image,
+  Alert,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
 
-const { width } = Dimensions.get('window');
+interface Props {
+  data: any;
+  handleSubmit: any;
+}
 
-const CompleteProfileSheet = forwardRef((props, ref) => {
-  return (
-    <RBSheet
-      ref={ref}
-      closeOnDragDown={true}
-      closeOnPressMask={true}
-      height={480}
-      customStyles={{
-        container: styles.sheetContainer,
-        draggableIcon: { backgroundColor: 'transparent' },
-      }}
-    >
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Please complete your profile</Text>
-          <TouchableOpacity onPress={() => ref?.current?.close()}>
-            <Image
-              source={require('../assets/cancel.png')}
-              style={{ width: 30, height: 30 }}
-            />
+const CompleteProfileSheet = forwardRef<RBSheet, Props>(
+  ({ data, handleSubmit }, ref) => {
+    const [fullName, setFullName] = useState('');
+    const [emergencyName, setEmergencyName] = useState('');
+    const [emergencyMobile, setEmergencyMobile] = useState('');
+
+    const validateAndSubmit = () => {
+      if (!fullName.trim()) {
+        Alert.alert('Validation Error', 'Please enter your full name.');
+        return;
+      }
+      if (!emergencyName.trim()) {
+        Alert.alert('Validation Error', 'Please enter emergency contact name.');
+        return;
+      }
+      if (!emergencyMobile.trim()) {
+        Alert.alert(
+          'Validation Error',
+          'Please enter emergency mobile number.',
+        );
+        return;
+      }
+      if (!/^\d{10}$/.test(emergencyMobile)) {
+        Alert.alert(
+          'Validation Error',
+          'Please enter a valid 10-digit mobile number.',
+        );
+        return;
+      }
+
+      const formData = {
+        fullName,
+        emergencyName,
+        emergencyMobile,
+      };
+
+      handleSubmit(formData);
+      (ref as any)?.current?.close();
+    };
+
+    return (
+      <RBSheet
+        ref={ref}
+        closeOnPressMask
+        height={480}
+        customStyles={{
+          container: styles.sheetContainer,
+          draggableIcon: { backgroundColor: 'transparent' },
+        }}
+      >
+        <View style={styles.content}>
+          <View style={styles.headerRow}>
+            <Text style={styles.headerTitle}>Please complete your profile</Text>
+            <TouchableOpacity onPress={() => (ref as any)?.current?.close()}>
+              <Image
+                source={require('../assets/cancel.png')}
+                style={{ width: 30, height: 30 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.label}>
+            Full Name <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter full name"
+            placeholderTextColor="#999"
+            style={styles.input}
+            value={fullName}
+            onChangeText={setFullName}
+          />
+
+          <Text style={styles.sectionTitle}>Emergency Contact Details</Text>
+          <Text style={styles.label}>
+            Full Name <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter full name"
+            placeholderTextColor="#999"
+            style={styles.input}
+            value={emergencyName}
+            onChangeText={setEmergencyName}
+          />
+
+          <Text style={styles.label}>
+            Mobile Number <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            placeholder="Enter mobile number"
+            placeholderTextColor="#999"
+            keyboardType="phone-pad"
+            style={styles.input}
+            value={emergencyMobile}
+            onChangeText={setEmergencyMobile}
+            maxLength={10}
+          />
+
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={validateAndSubmit}
+          >
+            <Text style={styles.saveText}>Save</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.divider} />
-
-        {/* Main Full Name */}
-        <Text style={styles.label}>
-          Full Name <Text style={styles.required}>*</Text>
-        </Text>
-        <TextInput
-          placeholder="Enter full name"
-          placeholderTextColor="#999"
-          style={styles.input}
-        />
-
-        {/* Emergency Contact Section */}
-        <Text style={styles.sectionTitle}>Emergency Contact Details</Text>
-
-        <Text style={styles.label}>Full Name</Text>
-        <TextInput
-          placeholder="Enter full name"
-          placeholderTextColor="#999"
-          style={styles.input}
-        />
-
-        <Text style={styles.label}>Mobile Number</Text>
-        <TextInput
-          placeholder="Enter mobile number"
-          placeholderTextColor="#999"
-          keyboardType="phone-pad"
-          style={styles.input}
-        />
-
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </RBSheet>
-  );
-});
+      </RBSheet>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   sheetContainer: {

@@ -15,33 +15,34 @@ const OpenStreetMap = ({
   const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
 
   const responderList = () => {
-    console.log('kk');
     navigation.navigate('respondersList');
   };
 
   return (
     <View style={{ flex: 1 }}>
       <MapView
-        style={[StyleSheet.absoluteFillObject]}
+        style={StyleSheet.absoluteFillObject}
         initialRegion={{
           latitude,
           longitude,
           latitudeDelta,
           longitudeDelta,
         }}
-        //   provider={null} // important: not Google
+        zoomEnabled={true} // ✅ Allow zoom
+        scrollEnabled={true} // ✅ Allow pan
+        pitchEnabled={true}
+        rotateEnabled={true}
+        showsUserLocation={true}
+        showsCompass={true}
+        showsScale={true}
       >
-        {/* <UrlTile
-          urlTemplate="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-          maximumZ={19}
-          flipY={false}
-        /> */}
         <UrlTile
           urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
           flipY={false}
         />
       </MapView>
+
       <View style={{ flex: 1 }}>
         <View
           style={{
@@ -52,6 +53,7 @@ const OpenStreetMap = ({
         >
           <Text>Default view: Incidents within 2 km around you.</Text>
         </View>
+
         <View
           style={{
             backgroundColor: COLOR.blue,
@@ -83,7 +85,7 @@ const OpenStreetMap = ({
             right: 10,
           }}
         >
-          <TouchableOpacity onPress={() => responderList()}>
+          <TouchableOpacity onPress={responderList}>
             <Image
               source={require('../assets/res1.png')}
               resizeMode="contain"
@@ -96,6 +98,7 @@ const OpenStreetMap = ({
             resizeMode="contain"
             style={{ width: 70, height: 70 }}
           />
+
           <Image
             source={require('../assets/res3.png')}
             resizeMode="contain"

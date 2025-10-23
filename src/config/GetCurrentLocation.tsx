@@ -3,8 +3,6 @@ import { Platform, Alert } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-// Removed Geolocation.setRNConfiguration as it does not exist in the current version.
-
 const GetCurrentLocation = () => {
   useEffect(() => {
     const fetchLocation = async () => {

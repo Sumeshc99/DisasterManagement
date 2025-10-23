@@ -13,11 +13,10 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
-import { saveLanguage, getSavedLanguage } from '../../i18n';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const languages: any = [
     {
@@ -45,20 +44,6 @@ const SelectLanguage = () => {
       icon1: require('../assets/m1.png'),
     },
   ];
-
-  useEffect(() => {
-    loadSavedLanguage();
-  }, []);
-
-  const loadSavedLanguage = async () => {
-    const savedLang = await getSavedLanguage();
-    setSelectedLanguage(savedLang);
-  };
-
-  const handleLanguageSelect = async (langCode: string) => {
-    setSelectedLanguage(langCode);
-    await saveLanguage(langCode);
-  };
 
   const handleNext = () => {
     console.log('Selected language:', selectedLanguage);

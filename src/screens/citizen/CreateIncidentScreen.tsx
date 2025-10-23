@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    padding: 10,
+    padding: 14,
     fontSize: 14,
   },
   dropdown: {

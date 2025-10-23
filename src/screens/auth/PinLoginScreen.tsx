@@ -14,6 +14,7 @@ import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
 import { HEIGHT } from '../../themes/AppConst';
+import ApiManager from '../../apis/ApiManager';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -27,6 +28,21 @@ export default function OTPVerification() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handlePin = async () => {
+    const body = {
+      mobile: '9841525240',
+      pin: '123456',
+    };
+    try {
+      const resp = await ApiManager.userLogin(body);
+      if (resp?.data?.status) {
+        navigation.replace('mainAppSelector');
+      }
+    } catch (err) {
+      // console.log('error', err.response);
+    }
+  };
 
   const formatTime = () => {
     const minutes = Math.floor(timeLeft / 60);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -19,13 +19,8 @@ import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import { HEIGHT, WIDTH } from '../../themes/AppConst';
 import { CustomDropdown } from '../../components/inputs/CustomDropdown';
-import { useTranslation } from 'react-i18next';
 import '../../../i18n';
-
-interface TehsilOption {
-  label: string;
-  value: string;
-}
+import ApiManager from '../../apis/ApiManager';
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -44,8 +39,24 @@ const LoginScreen = () => {
     if (!phone || !tehsil) {
       Alert.alert('Validation error', 'Please fill all required fields');
       return;
+    } else {
+      const body = {
+        mobile: '9841525240',
+        tehsil: 1,
+      };
+      console.log('aaaaaazz');
+      ApiManager.userLogin(body)
+        .then(resp => {
+          console.log('aaaaaa', resp.data);
+
+          if (resp?.data?.status) {
+            // navigation.navigate('otpVerification');
+            navigation.navigate('pinLoginScreen');
+          }
+        })
+        .catch(err => console.log('error', err.response));
     }
-    navigation.navigate('pinLoginScreen');
+    navigation.navigate('otpVerification');
   };
 
   return (
