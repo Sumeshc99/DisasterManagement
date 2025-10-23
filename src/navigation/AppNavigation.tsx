@@ -10,7 +10,10 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
 import RespondersList from '../screens/citizen/RespondersList';
-import Profile from '../screens/auth/Profile';
+import Profile from '../screens/citizen/Profile';
+import IncidentRecordsScreen from '../components/IncidentRecordsScreen';
+import IncidentDetails from '../screens/citizen/IncidentDetails';
+import SelfHelpOptions from '../screens/citizen/SelfHelpOptions';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -40,6 +43,9 @@ const AppNavigation = () => {
         <Stack.Screen name="otpVerification" component={OTPVerification} />
         <Stack.Screen name="respondersList" component={RespondersList} />
         <Stack.Screen name="profile" component={Profile} />
+        <Stack.Screen name="incidentRecordsScreen" component={IncidentRecordsScreen} />
+        <Stack.Screen name="incidentDetails" component={IncidentDetails} />
+        <Stack.Screen name="selfHelpOptions" component={SelfHelpOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -57,4 +63,7 @@ type AppStackParamList = {
   mainAppSelector: undefined;
   otpVerification: undefined;
   respondersList: undefined;
+  IncidentRecordsScreen: undefined;
+  incidentDetails: undefined;
+  selfHelpOptions: undefined;
 };
