@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     marginTop: HEIGHT(6),
-    paddingHorizontal: WIDTH(6),
+    paddingHorizontal: WIDTH(4),
   },
   logo: {
     width: 100,
@@ -161,18 +161,17 @@ const styles = StyleSheet.create({
   },
   languageRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: WIDTH(4),
     marginTop: HEIGHT(10),
     flexWrap: 'wrap',
   },
   languageCard: {
     backgroundColor: '#dcdcdc',
     borderRadius: 12,
-    width: WIDTH(42),
+    width: WIDTH(44),
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    position: 'relative',
+    padding: WIDTH(4),
   },
   selectedCard: {
     backgroundColor: COLOR.blue,

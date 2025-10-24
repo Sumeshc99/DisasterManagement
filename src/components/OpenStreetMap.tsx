@@ -5,18 +5,22 @@ import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
+interface Props {
+  list: any;
+}
 
-const OpenStreetMap = ({
-  latitude = 20.5937,
-  longitude = 78.9629,
-  latitudeDelta = 10,
-  longitudeDelta = 10,
-}) => {
+const OpenStreetMap: React.FC<Props> = ({ list }) => {
   const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
+  const latitude = 20.5937;
+  const longitude = 78.9629;
+  const latitudeDelta = 10;
+  const longitudeDelta = 10;
 
   const responderList = () => {
     navigation.navigate('respondersList');
   };
+
+  console.log('responderList', list);
 
   return (
     <View style={{ flex: 1 }}>
@@ -28,8 +32,8 @@ const OpenStreetMap = ({
           latitudeDelta,
           longitudeDelta,
         }}
-        zoomEnabled={true} // ✅ Allow zoom
-        scrollEnabled={true} // ✅ Allow pan
+        zoomEnabled={true}
+        scrollEnabled={true}
         pitchEnabled={true}
         rotateEnabled={true}
         showsUserLocation={true}

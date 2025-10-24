@@ -16,7 +16,7 @@ const MainIndex = () => {
 
   return (
     <PaperProvider theme={theme}>
-      {/* <GetCurrentLocation /> */}
+      <GetCurrentLocation />
       <AppNavigation />
     </PaperProvider>
   );

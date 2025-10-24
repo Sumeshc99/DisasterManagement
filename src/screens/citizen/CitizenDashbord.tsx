@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import OpenStreetMap from '../../components/OpenStreetMap';
@@ -8,7 +8,8 @@ import CompleteProfileSheet from '../../components/CompleteProfileSheet';
 import ApiManager from '../../apis/ApiManager';
 
 const CitizenDashbord = () => {
-  const sheetRef = useRef<RBSheet>(null);
+  const sheetRef = useRef<any>(null);
+  const [responderList, setresponderList] = useState([]);
 
   useEffect(() => {
     sheetRef.current?.open();
@@ -22,11 +23,10 @@ const CitizenDashbord = () => {
   }, []);
 
   const handleResponderList = () => {
-    console.log('aaaaaa');
     ApiManager.responderList()
       .then(resp => {
-        console.log('aaaaaa', resp.data);
-        if (resp?.data?.status) {
+        if (resp?.data?.success) {
+          setresponderList(resp?.data?.data?.results);
         }
       })
       .catch(err => console.log('error', err));
@@ -53,7 +53,7 @@ const CitizenDashbord = () => {
       <DashBoardHeader />
 
       <View style={{ flex: 1, backgroundColor: COLOR.white }}>
-        <OpenStreetMap />
+        <OpenStreetMap list={responderList} />
       </View>
 
       <CompleteProfileSheet
