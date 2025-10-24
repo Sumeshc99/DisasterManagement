@@ -20,8 +20,6 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     navigation.navigate('respondersList');
   };
 
-  console.log('responderList', list);
-
   return (
     <View style={{ flex: 1 }}>
       <MapView

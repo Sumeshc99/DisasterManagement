@@ -3,6 +3,9 @@ import React from 'react';
 import AppNavigation from './navigation/AppNavigation';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
 import GetCurrentLocation from './config/GetCurrentLocation';
+import { GlobalLoaderProvider } from './hooks/GlobalLoaderContext';
+import { SnackbarProvider } from './hooks/SnackbarProvider';
+import GlobalLoader from './components/GlobalLoader';
 
 const MainIndex = () => {
   const theme = {
@@ -16,8 +19,13 @@ const MainIndex = () => {
 
   return (
     <PaperProvider theme={theme}>
-      <GetCurrentLocation />
-      <AppNavigation />
+      <GlobalLoaderProvider>
+        <SnackbarProvider>
+          <GetCurrentLocation />
+          <AppNavigation />
+          <GlobalLoader />
+        </SnackbarProvider>
+      </GlobalLoaderProvider>
     </PaperProvider>
   );
 };

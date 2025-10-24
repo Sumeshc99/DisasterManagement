@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Image,
@@ -18,45 +16,79 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import { HEIGHT, WIDTH } from '../../themes/AppConst';
-import { CustomDropdown } from '../../components/inputs/CustomDropdown';
 import '../../../i18n';
 import ApiManager from '../../apis/ApiManager';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import { useForm } from 'react-hook-form';
+import FormTextInput from '../../components/inputs/FormTextInput';
+import DropDownInput from '../../components/inputs/DropDownInput';
+
+interface LoginFormData {
+  phone: string;
+  tehsil: string;
+}
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  const [phone, setPhone] = useState('');
-  const [tehsil, setTehsil] = useState<string | null>(null);
+  const { showLoader, hideLoader } = useGlobalLoader();
 
-  const [items, setItems] = useState([
-    { label: 'Nagpur', value: 'nagpur' },
-    { label: 'Mumbai', value: 'mumbai' },
-    { label: 'Pune', value: 'pune' },
-    { label: 'Nashik', value: 'nashik' },
-    { label: 'Thane', value: 'thane' },
-  ]);
+  const [tahsilList, settahsilList] = useState([]);
 
-  const handleLogin = () => {
-    if (!phone || !tehsil) {
-      Alert.alert('Validation error', 'Please fill all required fields');
-      return;
-    } else {
-      const body = {
-        mobile: '9841525240',
-        tehsil: 1,
-      };
-      console.log('aaaaaazz');
-      ApiManager.userLogin(body)
-        .then(resp => {
-          console.log('aaaaaa', resp.data);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    defaultValues: {
+      phone: '',
+      tehsil: '',
+    },
+  });
 
-          if (resp?.data?.status) {
-            // navigation.navigate('otpVerification');
-            navigation.navigate('pinLoginScreen');
+  useEffect(() => {
+    getTahsil();
+  }, []);
+
+  const getTahsil = () => {
+    showLoader();
+    ApiManager.tahsilList()
+      .then(resp => {
+        if (resp?.data?.success) {
+          settahsilList(
+            (resp?.data?.data?.tehsils || []).map((item: any) => ({
+              label: item.Tehsil,
+              value: item.id,
+            })),
+          );
+        }
+      })
+      .catch(err => console.log('error', err.response))
+      .finally(() => hideLoader());
+  };
+
+  const handleLogin = async (data: LoginFormData) => {
+    const { phone, tehsil } = data;
+
+    const body = {
+      mobile: phone,
+      tehsil: tehsil,
+    };
+
+    showLoader();
+    ApiManager.userLogin(body)
+      .then(resp => {
+        if (resp?.data?.status) {
+          if (resp?.data?.data?.is_registered) {
+            navigation.navigate('pinLoginScreen', { data: resp?.data });
+          } else {
+            navigation.navigate('otpVerification', { data: resp?.data });
           }
-        })
-        .catch(err => console.log('error', err.response));
-    }
-    navigation.navigate('otpVerification');
+        } else {
+          Alert.alert('Login Failed', resp?.data?.message || 'Unknown error');
+        }
+      })
+      .catch(err => console.log('error', err.response))
+      .finally(() => hideLoader());
   };
 
   return (
@@ -92,27 +124,35 @@ const LoginScreen = () => {
               Please enter your Mobile Number and Tehsil
             </Text>
 
-            <Text style={styles.label}>Phone Number *</Text>
-            <TextInput
-              style={styles.input}
+            <FormTextInput
+              label="Your Phone Number"
+              name="phone"
+              control={control}
               placeholder="Enter your phone number"
-              placeholderTextColor="#999"
               keyboardType="number-pad"
-              maxLength={10}
-              value={phone}
-              onChangeText={setPhone}
+              rules={{
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: 'Enter a valid 10-digit number',
+                },
+              }}
+              error={errors.phone?.message as string}
             />
 
-            <CustomDropdown
+            <DropDownInput
+              name="tehsil"
               label="Select Tehsil"
-              data={items}
-              value={tehsil}
-              setValue={setTehsil}
+              control={control}
+              rules={{ required: 'Tehsil is required' }}
+              items={tahsilList}
+              errors={errors}
             />
 
+            {/* LOGIN BUTTON */}
             <TouchableOpacity
               style={styles.button}
-              onPress={handleLogin}
+              onPress={handleSubmit(handleLogin)}
               activeOpacity={0.8}
             >
               <Image
@@ -139,16 +179,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     width: WIDTH(80),
     alignSelf: 'center',
-  },
-  label: { fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 6 },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 20,
-    fontSize: 16,
   },
   button: {
     marginTop: 30,

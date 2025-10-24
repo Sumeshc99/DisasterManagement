@@ -9,12 +9,16 @@ import {
   Animated,
 } from 'react-native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/RootReducer';
 
 const { width, height } = Dimensions.get('window');
 
 const SplashScreen = () => {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
+  const { user } = useSelector((state: RootState) => state.auth as any);
 
   useEffect(() => {
     Animated.spring(scaleAnim, {
@@ -26,7 +30,11 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      navigation.navigate('selectLanguage');
+      if (user?.id) {
+        navigation.replace('mainAppSelector');
+      } else {
+        navigation.navigate('selectLanguage');
+      }
     }, 2000);
 
     return () => clearTimeout(timer);

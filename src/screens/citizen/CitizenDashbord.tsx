@@ -6,17 +6,26 @@ import OpenStreetMap from '../../components/OpenStreetMap';
 import { COLOR } from '../../themes/Colors';
 import CompleteProfileSheet from '../../components/CompleteProfileSheet';
 import ApiManager from '../../apis/ApiManager';
+import { useBackExit } from '../../hooks/useBackExit';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 const CitizenDashbord = () => {
   const sheetRef = useRef<any>(null);
+
+  const { user, userToken } = useSelector(
+    (state: RootState) => state.auth as any,
+  );
+
   const [responderList, setresponderList] = useState([]);
 
   useEffect(() => {
-    sheetRef.current?.open();
-  }, []);
+    const timer = setTimeout(() => {
+      sheetRef.current?.open();
+    }, 1500);
 
-  const token =
-    'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJyZXN1bHQiOnsiaWQiOjIwLCJlbWFpbCI6bnVsbCwicm9sZV9pZCI6OSwicm9sZSI6ImNpdGl6ZW4iLCJtb2JpbGUiOiI5ODQxNTI1MjQwIn0sImlhdCI6MTc2MTIxMjk0OCwiZXhwIjoxNzYxMjE2NTQ4fQ.LjIwyyNJXSvfA4R-6gFiV-vhP5K12dgVu2eI5RzGBXXwZ95QmIgtcoO0LBov9WQq2MnXTkiYbnLuCSKsCFRVUcB7qimH-G4MbLKqxI5KRs-6FqsfWRVyAowldTRJBtsf8Yr0kIGv99WkKZdiXditH1az3_-Ge3w7EVGYmEJK5p-notk8UyiFeR-lUEq6PcxqMFnrrD3Y7kcJhYWRr_RZAqmmbS0GQSnL2HYDYcqr82vV7oZ_U8X_3pwcOLQCvjZG2wVA4virz6-EXM1ZjJ7C4DdFfGuYmrapG3lc3Awtw4qONdgXx16WGk4b8PDeA9YZqoqNzyBk8kurJrGykal3Hdai7XPdCAlYVa4X5vAuJ_k7UGCwQUvD7skbPozYR0Dhg7QLeXvn0syp9AMuehy-CmyELT4vhahhvAlMyE1holXE1es2XSL0uV8PSs1XDYMcEtkGQ8EzUgWYR50flrKzzESc8QkZUBeZstQfiZ-rDHp38kEIf0I-lQiMquyyL-Exh03LKYMa5oOfsmxL7ZSbPWl_zfFXAy2iMJQOdkidKGzQcKQYRihiqdgzaGtsYcdGCyTyQMUTyrY_NStobQsGz7gfk1DyXLYoU9GHDu_hwze30VWFWcBSUlJjQ2vrammn1HZsmq11Ea82OWednnhmkbuWZ3kb_0UaZBy5wbiuxgc';
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     handleResponderList();
@@ -40,13 +49,15 @@ const CitizenDashbord = () => {
       mobile_no_contact: data.emergencyMobile,
     };
 
-    ApiManager.shortProfile(body, token)
+    ApiManager.shortProfile(body, userToken)
       .then(resp => {
         if (resp?.data?.status) {
         }
       })
       .catch(err => console.log('error', err));
   };
+
+  useBackExit();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.blue }}>

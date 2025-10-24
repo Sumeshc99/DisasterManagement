@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {
   View,
   Text,
@@ -8,20 +8,18 @@ import {
   ScrollView,
   Image,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
 import ApiManager from '../../apis/ApiManager';
-import { useDispatch } from 'react-redux';
-import { setUser, userToken } from '../../store/slices/authSlice';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { HEIGHT } from '../../themes/AppConst';
 
-export default function OTPVerification() {
+export default function OTPVerifyForPin() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
-  const dispatch = useDispatch();
   const route = useRoute();
 
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -44,6 +42,10 @@ export default function OTPVerification() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    sendOtp();
+  }, []);
+
   const formatTime = () => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -53,23 +55,20 @@ export default function OTPVerification() {
     )}`;
   };
 
-  const handleOtp = async () => {
+  const sendOtp = async () => {
     const body = {
-      mobile: userData.data.mobile_no,
-      otp: otp,
+      username: userData.data.mobile_no,
     };
     showLoader();
-    ApiManager.verifyOtp(body)
+    ApiManager.forgetPin(body, userData.token)
       .then(resp => {
         if (resp?.data?.status) {
-          dispatch(setUser(resp?.data?.data));
-          dispatch(userToken(resp?.data?.token));
-          navigation.replace('mainAppSelector');
+          showSnackbar('OTP sent to your mobile number', 'success');
         } else {
           showSnackbar('Invalid OTP', 'error');
         }
       })
-      .catch(err => showSnackbar('Invalid OTP', 'error'))
+      .catch(err => showSnackbar('Something went wrong', 'error'))
       .finally(() => hideLoader());
   };
 
@@ -92,14 +91,31 @@ export default function OTPVerification() {
       });
   };
 
-  // 🔹 Validate and move next
-  const handleNext = () => {
+  const handleOtp = async () => {
     if (otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
       return;
+    } else {
+      const body = {
+        mobile: userData.data.mobile_no,
+        otp: otp,
+      };
+      showLoader();
+      ApiManager.verifyOtp(body)
+        .then(resp => {
+          if (resp?.data?.status) {
+            navigation.replace('pinResetScreen', { data: userData });
+          } else {
+            showSnackbar('Invalid OTP', 'error');
+          }
+        })
+        .catch(err => showSnackbar('Invalid OTP', 'error'))
+        .finally(() => hideLoader());
     }
-    handleOtp();
   };
+
+  // 🔹 Validate and move next
+  const handleNext = () => {};
 
   const isOtpComplete = otp.length === 6;
 
@@ -171,7 +187,7 @@ export default function OTPVerification() {
         {/* Next Button */}
         <TouchableOpacity
           style={[styles.nextButton, isOtpComplete && styles.nextButtonActive]}
-          onPress={handleNext}
+          onPress={handleOtp}
           disabled={!isOtpComplete}
         >
           <Text

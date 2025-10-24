@@ -62,21 +62,26 @@ const requestPath = {
   responderList: 'responder/public/list',
   incidentList: 'incidents/public/list',
   shortProfile: 'mobileapis/shortProfile',
+  tahsilList: 'location/public/cascading-locations',
 };
 
 const ApiManager = {
   // Public API
+  tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
 
   // Auth APIs
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
   resendOtp: (params: any) => requests.post(requestPath.resendOtp, params),
-  verifyPin: (params: any) => requests.post(requestPath.verifyPin, params),
-  forgetPin: (params: any) => requests.post(requestPath.forgetPin, params),
-  resetPin: (params: any) => requests.post(requestPath.resetPin, params),
 
   // Authenticated (requires Bearer token)
+  verifyPin: (params: any, token: string) =>
+    requests.post(requestPath.verifyPin, params, token),
+  resetPin: (params: any, token: string) =>
+    requests.post(requestPath.resetPin, params, token),
+  forgetPin: (params: any, token: string) =>
+    requests.post(requestPath.forgetPin, params, token),
   shortProfile: (params: any, token: string) =>
     requests.post(requestPath.shortProfile, params, token),
 };

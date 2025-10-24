@@ -6,19 +6,26 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  Alert,
   ImageBackground,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
 import { HEIGHT } from '../../themes/AppConst';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
+import ApiManager from '../../apis/ApiManager';
 
 export default function PinResetScreen() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const route = useRoute();
 
-  const [newPin, setNewPin] = useState(''); // treat as string
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const showSnackbar = useSnackbar();
+
+  const userData = (route?.params as { data?: any })?.data;
+  const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [error, setError] = useState('');
 
@@ -32,8 +39,23 @@ export default function PinResetScreen() {
       return;
     }
 
-    Alert.alert('Success', 'PIN successfully reset!');
-    navigation.replace('mainAppSelector');
+    const body = {
+      username: userData?.data?.mobile_no,
+      newPin: newPin,
+      confirmPin: confirmPin,
+    };
+    showLoader();
+    ApiManager.resetPin(body, userData.token)
+      .then(resp => {
+        if (resp?.data?.status) {
+          showSnackbar('PIN Changed successfully', 'success');
+          navigation.replace('pinLoginScreen', { data: userData });
+        } else {
+          showSnackbar('Invalid PIN', 'error');
+        }
+      })
+      .catch(err => console.log('aaa', err.response))
+      .finally(() => hideLoader());
   };
 
   const isComplete = newPin.length === 6 && confirmPin.length === 6;

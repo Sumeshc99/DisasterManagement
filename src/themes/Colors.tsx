@@ -4,4 +4,12 @@ export const COLOR = {
   blue: '#105AAA',
   gray: '#D9D9D9',
   darkGray: '#7E7A7A',
+  red: '#FF4930',
+  green: '#2E7D32',
+  lightGreen: '#C8E6C9',
+  extralightRed: '#FFCDD2',
+  lightYellow: '#FFE082',
+  yellow: '#ffbf00',
+  lightBlue: '#1465D0',
+  orange: '#FB7805',
 };

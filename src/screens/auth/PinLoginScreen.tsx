@@ -9,15 +9,26 @@ import {
   Image,
   ImageBackground,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
 import { HEIGHT } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
+import { useDispatch } from 'react-redux';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
+import { setUser, userToken } from '../../store/slices/authSlice';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const dispatch = useDispatch();
+  const route = useRoute();
+
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const showSnackbar = useSnackbar();
+
+  const userData = (route?.params as { data?: any })?.data;
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(540);
@@ -29,41 +40,35 @@ export default function OTPVerification() {
     return () => clearInterval(timer);
   }, []);
 
-  const handlePin = async () => {
-    const body = {
-      mobile: '9841525240',
-      pin: '123456',
-    };
-    try {
-      const resp = await ApiManager.userLogin(body);
-      if (resp?.data?.status) {
-        navigation.replace('mainAppSelector');
-      }
-    } catch (err) {
-      // console.log('error', err.response);
-    }
-  };
-
-  const formatTime = () => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
-      2,
-      '0',
-    )}`;
-  };
-
-  const handleNext = () => {
+  const handleNext = async () => {
     if (otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
-      return;
+    } else {
+      const body = {
+        mobile: userData.data.mobile_no,
+        pin: otp,
+      };
+      showLoader();
+      ApiManager.verifyPin(body, userData.token)
+        .then(resp => {
+          console.log('PIN verification response:', resp.data);
+
+          if (resp?.data?.status) {
+            showSnackbar('PIN Verified', 'success');
+            dispatch(setUser(resp?.data?.data));
+            dispatch(userToken(resp?.data?.token));
+            navigation.replace('mainAppSelector');
+          } else {
+            showSnackbar('Invalid PIN', 'error');
+          }
+        })
+        .catch(err => showSnackbar('Invalid PIN', 'error'))
+        .finally(() => hideLoader());
     }
-    // Alert.alert('Success', `OTP Verified: ${otp}`);
-    navigation.replace('mainAppSelector');
   };
 
   const handleForgotPin = () => {
-    navigation.navigate('pinResetScreen');
+    navigation.navigate('otpVerifyForPin', { data: userData });
   };
 
   return (
@@ -112,11 +117,6 @@ export default function OTPVerification() {
         >
           <Text style={styles.forgotText}>Forgot PIN...?</Text>
         </TouchableOpacity>
-
-        {/* <Text style={styles.timerText}>
-        OTP will expire in:{' '}
-        <Text style={styles.timerValue}>{formatTime()} minutes</Text>
-      </Text> */}
 
         <TouchableOpacity
           style={[

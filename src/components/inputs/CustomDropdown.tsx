@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 interface Props {
   label: string;
-  data: any;
+  data: Array<any>;
   value: string | null;
-  setValue: any;
+  setValue: (value: string | null) => void;
 }
 
 export const CustomDropdown: React.FC<Props> = ({
@@ -16,7 +16,17 @@ export const CustomDropdown: React.FC<Props> = ({
   setValue,
 }) => {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState(data);
+  const [items, setItems] = useState<{ label: string; value: string }[]>([]);
+
+  useEffect(() => {
+    if (Array.isArray(data)) {
+      const formattedData = data.map(item => ({
+        label: item.Tehsil,
+        value: item.id,
+      }));
+      setItems(formattedData);
+    }
+  }, [data]);
 
   return (
     <View style={styles.container}>

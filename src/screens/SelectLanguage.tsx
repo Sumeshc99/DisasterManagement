@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
+import { useGlobalLoader } from '../hooks/GlobalLoaderContext';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -46,7 +47,6 @@ const SelectLanguage = () => {
   ];
 
   const handleNext = () => {
-    console.log('Selected language:', selectedLanguage);
     navigation.navigate('loginScreen');
   };
 
