@@ -43,18 +43,19 @@ const CitizenDashbord = () => {
 
   const handleShortProfile = (data: any) => {
     const body = {
-      mobile: '9841525240',
-      full_name: data.fullName,
-      full_name_contact: data.emergencyName,
-      mobile_no_contact: data.emergencyMobile,
+      mobile: user?.mobile_no,
+      full_name: data.name,
+      full_name_contact: data.emgName,
+      mobile_no_contact: data.emgPhone,
     };
 
     ApiManager.shortProfile(body, userToken)
       .then(resp => {
         if (resp?.data?.status) {
+          sheetRef.current?.close();
         }
       })
-      .catch(err => console.log('error', err));
+      .catch(err => console.log('error', err.response));
   };
 
   useBackExit();
@@ -70,7 +71,7 @@ const CitizenDashbord = () => {
       <CompleteProfileSheet
         ref={sheetRef}
         data={''}
-        handleSubmit={handleShortProfile}
+        submitData={handleShortProfile}
       />
     </SafeAreaView>
   );
