@@ -1,4 +1,4 @@
-import { StyleSheet, useColorScheme } from 'react-native';
+import { LogBox, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainIndex from './src/MainIndex';
 
@@ -8,7 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-
+  LogBox.ignoreAllLogs();
   return (
     <Provider store={Store}>
       <PersistGate

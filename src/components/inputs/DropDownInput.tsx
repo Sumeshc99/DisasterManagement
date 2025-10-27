@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Controller, Control } from 'react-hook-form';
-import { COLOR } from '../../themes/Colors';
 
 interface DropDownInputProps {
   name: string;
@@ -111,7 +110,7 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
-    color: COLOR.gray,
+    color: '#999',
   },
   error: {
     color: 'red',
