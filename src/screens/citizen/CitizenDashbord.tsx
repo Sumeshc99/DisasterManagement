@@ -20,13 +20,10 @@ const CitizenDashboard = () => {
   const remindRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
-  console.log('aaa', user);
-
   const [responderList, setResponderList] = useState<any[]>([]);
 
   useBackExit();
 
-  /** Fetch responder list only once */
   useEffect(() => {
     const fetchResponderList = async () => {
       try {
@@ -42,7 +39,6 @@ const CitizenDashboard = () => {
     fetchResponderList();
   }, []);
 
-  /** Show profile completion or reminder sheet */
   useEffect(() => {
     const timer = setTimeout(() => {
       if (user?.full_name === '') {
@@ -55,7 +51,6 @@ const CitizenDashboard = () => {
     return () => clearTimeout(timer);
   }, [user]);
 
-  /** Handle short profile update */
   const handleShortProfile = useCallback(
     async (data: any) => {
       const body = {
@@ -72,6 +67,7 @@ const CitizenDashboard = () => {
         }
       } catch (err: any) {
         console.error('Short profile update failed:', err?.response || err);
+      } finally {
       }
     },
     [user, userToken],

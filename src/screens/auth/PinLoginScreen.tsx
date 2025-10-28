@@ -64,7 +64,7 @@ export default function OTPVerification() {
                 is_registered: resp?.data?.data?.is_registered,
               }),
             );
-            dispatch(userToken(resp?.data?.token));
+            dispatch(userToken(userData?.token));
             navigation.replace('mainAppSelector');
           } else {
             showSnackbar('Invalid PIN', 'error');

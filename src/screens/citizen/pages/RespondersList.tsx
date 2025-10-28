@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import { WIDTH } from '../../../themes/AppConst';
+import ApiManager from '../../../apis/ApiManager';
 
 interface ResponderItem {
   id: string;
@@ -20,47 +21,47 @@ interface ResponderItem {
 }
 
 const HomeScreen: React.FC = () => {
-  const ambulanceServices: ResponderItem[] = [
-    {
-      id: '1',
-      name: 'Saptashrungi Ambulance Service',
-      location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../../src/assets/citizen/ambulance.png'),
-    },
-  ];
+  const [hospitalList, sethospitalList] = useState<any[]>([]);
+  const [ambulance, setambulance] = useState<any[]>([]);
+  const [policeStation, setpoliceStation] = useState<any[]>([]);
+  const [sdrfCenter, setsdrfCenter] = useState<any[]>([]);
 
-  const hospitals: ResponderItem[] = [
-    {
-      id: '1',
-      name: 'Hospital',
-      location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../../src/assets/citizen/hospital.png'),
-    },
-  ];
+  useEffect(() => {
+    const fetchResponderList = async () => {
+      try {
+        const resp = await ApiManager.responderList();
 
-  const policeStations: ResponderItem[] = [
-    {
-      id: '1',
-      name: 'Mohan Nagar Police Station',
-      location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../../src/assets/citizen/police1.png'),
-    },
-    {
-      id: '2',
-      name: 'Manish Nagar Police Station',
-      location: 'Manish Nagar',
-      image: require('../../../../src/assets/citizen/police2.png'),
-    },
-  ];
+        if (resp?.data?.success) {
+          const data = resp?.data?.data?.results || [];
+          if (data.length > 0) {
+            const hospitals = data.filter(
+              (item: any) => item.resource_type === 'Hospital',
+            );
+            sethospitalList(hospitals);
 
-  const sdrfCenters: ResponderItem[] = [
-    {
-      id: '1',
-      name: 'SDRF Center',
-      location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../../src/assets/citizen/sdrf.png'),
-    },
-  ];
+            const ambulance = data.filter(
+              (item: any) => item.resource_type === 'Ambulance',
+            );
+            setambulance(ambulance);
+
+            const policeStation = data.filter(
+              (item: any) => item.resource_type === 'Police Station',
+            );
+            setpoliceStation(policeStation);
+
+            const sdrfCenter = data.filter(
+              (item: any) => item.resource_type === 'SDRF Center',
+            );
+            setsdrfCenter(sdrfCenter);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching responder list:', err);
+      }
+    };
+
+    fetchResponderList();
+  }, []);
 
   const renderSection = (title: string, items: ResponderItem[]) => {
     return (
@@ -68,11 +69,11 @@ const HomeScreen: React.FC = () => {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{title}</Text>
         </View>
-        {items.map(item => (
+        {items.map((item: any) => (
           <TouchableOpacity key={item.id} style={styles.listItem}>
             <Image source={item.image} style={styles.itemImage} />
             <View style={styles.itemContent}>
-              <Text style={styles.itemTitle}>{item.name}</Text>
+              <Text style={styles.itemTitle}>{item.owner_full_name}</Text>
               <Text style={styles.itemLocation}>{item.location}</Text>
             </View>
           </TouchableOpacity>
@@ -92,10 +93,11 @@ const HomeScreen: React.FC = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.pageTitle}>On-Duty Responders</Text>
 
-        {renderSection('Ambulance service', ambulanceServices)}
-        {renderSection('Hospital', hospitals)}
-        {renderSection('Police Stations', policeStations)}
-        {renderSection('SDRF Center', sdrfCenters)}
+        {ambulance.length > 0 && renderSection('Ambulance service', ambulance)}
+        {hospitalList.length > 0 && renderSection('Hospital', hospitalList)}
+        {policeStation.length > 0 &&
+          renderSection('Police Stations', policeStation)}
+        {sdrfCenter.length > 0 && renderSection('SDRF Center', sdrfCenter)}
       </ScrollView>
 
       {/* Floating Action Buttons */}
@@ -118,19 +120,6 @@ const HomeScreen: React.FC = () => {
           style={{ width: 70, height: 70 }}
         />
       </View>
-
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navItem}>
-                    <Text style={styles.navIcon}>🏠</Text>
-                    <Text style={styles.navText}>Home</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.sosButton}>
-                    <Text style={styles.sosIcon}>+</Text>
-                    <Text style={styles.sosText}>SOS</Text>
-                </TouchableOpacity>
-            </View> */}
     </SafeAreaView>
   );
 };
