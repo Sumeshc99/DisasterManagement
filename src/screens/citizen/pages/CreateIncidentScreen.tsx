@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
-import DashBoardHeader from '../../components/header/DashBoardHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLOR } from '../../themes/Colors';
-import { WIDTH } from '../../themes/AppConst';
+import DashBoardHeader from '../../../components/header/DashBoardHeader';
+import { COLOR } from '../../../themes/Colors';
+import { WIDTH } from '../../../themes/AppConst';
 
 interface MediaAsset {
   uri?: string;

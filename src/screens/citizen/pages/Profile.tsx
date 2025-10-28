@@ -14,10 +14,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
-import DashBoardHeader from '../../components/header/DashBoardHeader';
-import { COLOR } from '../../themes/Colors';
 import { useNavigation } from '@react-navigation/native';
-import { AppStackNavigationProp } from '../../navigation/AppNavigation';
+import DashBoardHeader from '../../../components/header/DashBoardHeader';
+import { COLOR } from '../../../themes/Colors';
+import { AppStackNavigationProp } from '../../../navigation/AppNavigation';
 
 interface FormData {
   fullName: string;
@@ -227,7 +227,7 @@ const Profile: React.FC = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Image source={require('../../assets/backArrow.png')} />
+          <Image source={require('../../../assets/backArrow.png')} />
         </TouchableOpacity>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.backButton} />
@@ -244,8 +244,8 @@ const Profile: React.FC = () => {
           <Image
             source={
               activeTab === 'basic'
-                ? require('../../assets/a2.png') // active
-                : require('../../assets/a1.png') // inactive
+                ? require('../../../assets/a2.png') // active
+                : require('../../../assets/a1.png') // inactive
             }
             style={{ width: 150, height: 40 }}
             resizeMode="contain"
@@ -275,8 +275,8 @@ const Profile: React.FC = () => {
           <Image
             source={
               activeTab === 'emergency'
-                ? require('../../assets/b2.png') // active
-                : require('../../assets/b1.png') // inactive
+                ? require('../../../assets/b2.png') // active
+                : require('../../../assets/b1.png') // inactive
             }
             style={{ width: 230, height: 40 }}
             resizeMode="contain"

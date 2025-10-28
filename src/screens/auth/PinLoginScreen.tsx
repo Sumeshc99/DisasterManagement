@@ -54,7 +54,16 @@ export default function OTPVerification() {
 
           if (resp?.data?.status) {
             showSnackbar('PIN Verified', 'success');
-            dispatch(setUser(resp?.data?.data));
+            dispatch(
+              setUser({
+                id: resp?.data?.data?.id,
+                full_name: userData?.data?.full_name,
+                mobile_no: resp?.data?.data?.mobile_no,
+                email: resp?.data?.data?.email,
+                role: resp?.data?.data?.role,
+                is_registered: resp?.data?.data?.is_registered,
+              }),
+            );
             dispatch(userToken(resp?.data?.token));
             navigation.replace('mainAppSelector');
           } else {

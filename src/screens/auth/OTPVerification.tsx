@@ -33,7 +33,9 @@ export default function OTPVerification() {
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(10);
   const [isResending, setIsResending] = useState(false);
+  const [timerKey, setTimerKey] = useState(0);
 
+  // Timer countdown
   useEffect(() => {
     if (timeLeft <= 0) return;
 
@@ -42,7 +44,7 @@ export default function OTPVerification() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timerKey, timeLeft]);
 
   const formatTime = () => {
     const minutes = Math.floor(timeLeft / 60);
@@ -62,37 +64,53 @@ export default function OTPVerification() {
     ApiManager.verifyOtp(body)
       .then(resp => {
         if (resp?.data?.status) {
-          dispatch(setUser(resp?.data?.data));
+          dispatch(
+            setUser({
+              id: resp?.data?.data?.id,
+              full_name: userData?.data?.full_name,
+              mobile_no: resp?.data?.data?.mobile_no,
+              email: resp?.data?.data?.email,
+              role: resp?.data?.data?.role,
+              is_registered: resp?.data?.data?.is_registered,
+            }),
+          );
           dispatch(userToken(resp?.data?.token));
           navigation.replace('mainAppSelector');
         } else {
           showSnackbar('Invalid OTP', 'error');
         }
       })
-      .catch(err => showSnackbar('Invalid OTP', 'error'))
+      .catch(() => showSnackbar('Invalid OTP', 'error'))
       .finally(() => hideLoader());
   };
 
   const handleResendOtp = async () => {
     setIsResending(true);
     const body = { mobile: userData.data.mobile_no };
+
+    showLoader();
     ApiManager.resendOtp(body)
       .then(resp => {
         if (resp?.data?.status) {
           setOtp('');
           setError('');
           setTimeLeft(10);
+          setTimerKey(prev => prev + 1);
+          showSnackbar('OTP resent successfully!', 'success');
         } else {
           showSnackbar(resp?.data?.message || 'Failed to resend OTP', 'error');
         }
       })
-      .catch(err => console.log('error', err.response))
+      .catch(err => {
+        console.log('error', err.response);
+        showSnackbar('Something went wrong', 'error');
+      })
       .finally(() => {
-        setIsResending(false), hideLoader();
+        setIsResending(false);
+        hideLoader();
       });
   };
 
-  // 🔹 Validate and move next
   const handleNext = () => {
     if (otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
@@ -194,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 40,
-    paddingTop: HEIGHT(16),
+    paddingTop: HEIGHT(14),
   },
   logoContainer: {
     width: 100,
@@ -203,8 +221,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
-  description: { fontSize: 14, color: '#9ca3af', marginBottom: 6 },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginVertical: 30,
+  },
+  description: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#8C8C8C',
+    marginBottom: 6,
+  },
   phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -213,7 +241,6 @@ const styles = StyleSheet.create({
   },
   phoneNumber: { fontSize: 18, fontWeight: '600', color: '#1f2937' },
   editIcon: { padding: 4 },
-  editIconText: { fontSize: 16, color: '#9ca3af' },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -221,10 +248,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   errorText: { fontSize: 13, color: '#ef4444' },
-  timerText: { fontSize: 13, color: '#4b5563', marginVertical: 24 },
+  timerText: { color: '#4b5563', marginVertical: 24 },
   timerValue: { fontWeight: '600', color: '#1f2937' },
   resendButton: {
-    paddingVertical: 10,
+    marginVertical: 24,
     paddingHorizontal: 20,
     borderRadius: 20,
   },

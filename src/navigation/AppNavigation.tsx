@@ -11,10 +11,11 @@ import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
 import PinLoginScreen from '../screens/auth/PinLoginScreen';
 import PinResetScreen from '../screens/auth/PinResetScreen';
-import CreateIncidentScreen from '../screens/citizen/CreateIncidentScreen';
-import RespondersList from '../screens/citizen/RespondersList';
-import Profile from '../screens/auth/Profile';
 import OTPVerifyForPin from '../screens/auth/OTPVerifyForPin';
+import Profile from '../screens/citizen/pages/Profile';
+import CreateIncidentScreen from '../screens/citizen/pages/CreateIncidentScreen';
+import RespondersList from '../screens/citizen/pages/RespondersList';
+
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 const AppNavigation = () => {

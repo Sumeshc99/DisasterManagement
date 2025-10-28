@@ -9,8 +9,8 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DashBoardHeader from '../../components/header/DashBoardHeader';
-import { WIDTH } from '../../themes/AppConst';
+import DashBoardHeader from '../../../components/header/DashBoardHeader';
+import { WIDTH } from '../../../themes/AppConst';
 
 interface ResponderItem {
   id: string;
@@ -25,7 +25,7 @@ const HomeScreen: React.FC = () => {
       id: '1',
       name: 'Saptashrungi Ambulance Service',
       location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../src/assets/citizen/ambulance.png'),
+      image: require('../../../../src/assets/citizen/ambulance.png'),
     },
   ];
 
@@ -34,7 +34,7 @@ const HomeScreen: React.FC = () => {
       id: '1',
       name: 'Hospital',
       location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../src/assets/citizen/hospital.png'),
+      image: require('../../../../src/assets/citizen/hospital.png'),
     },
   ];
 
@@ -43,13 +43,13 @@ const HomeScreen: React.FC = () => {
       id: '1',
       name: 'Mohan Nagar Police Station',
       location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../src/assets/citizen/police1.png'),
+      image: require('../../../../src/assets/citizen/police1.png'),
     },
     {
       id: '2',
       name: 'Manish Nagar Police Station',
       location: 'Manish Nagar',
-      image: require('../../../src/assets/citizen/police2.png'),
+      image: require('../../../../src/assets/citizen/police2.png'),
     },
   ];
 
@@ -58,7 +58,7 @@ const HomeScreen: React.FC = () => {
       id: '1',
       name: 'SDRF Center',
       location: 'Liberty Chowk, Mohan Nagar',
-      image: require('../../../src/assets/citizen/sdrf.png'),
+      image: require('../../../../src/assets/citizen/sdrf.png'),
     },
   ];
 
@@ -108,12 +108,12 @@ const HomeScreen: React.FC = () => {
         }}
       >
         <Image
-          source={require('../../../src/assets/res2.png')}
+          source={require('../../../../src/assets/res2.png')}
           resizeMode="contain"
           style={{ width: 70, height: 70 }}
         />
         <Image
-          source={require('../../../src/assets/res3.png')}
+          source={require('../../../../src/assets/res3.png')}
           resizeMode="contain"
           style={{ width: 70, height: 70 }}
         />
