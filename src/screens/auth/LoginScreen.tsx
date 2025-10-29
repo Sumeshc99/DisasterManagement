@@ -143,6 +143,7 @@ const LoginScreen = () => {
             <DropDownInput
               name="tehsil"
               label="Select Tehsil"
+              placeholder="Select tehsil"
               control={control}
               rules={{ required: 'Tehsil is required' }}
               items={tahsilList}
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    width: 180,
+    width: 160,
     alignSelf: 'center',
   },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: '700' },

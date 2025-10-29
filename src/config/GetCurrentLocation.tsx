@@ -62,7 +62,6 @@ const GetCurrentLocation = () => {
     const getLocation = () => {
       Geolocation.getCurrentPosition(
         (pos: any) => {
-          // console.log('Current Location:', pos.coords);
           dispatch(setLocation({ latitude: 37.7749, longitude: -122.4194 }));
           setLoading(false);
         },

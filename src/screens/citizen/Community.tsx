@@ -25,9 +25,15 @@ const Community = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.blue }}>
       <DashBoardHeader />
 
-      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
-        <Text>Community</Text>
-        <Button title="Click Me" onPress={() => logOut()} />
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: COLOR.white,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Button title="Log out" onPress={() => logOut()} />
       </View>
     </SafeAreaView>
   );

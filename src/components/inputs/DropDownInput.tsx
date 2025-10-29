@@ -19,7 +19,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   control,
   rules,
   items,
-  placeholder = 'Select tahsil',
+  placeholder,
   errors,
 }) => {
   const [open, setOpen] = useState(false);

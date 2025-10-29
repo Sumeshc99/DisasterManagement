@@ -68,7 +68,7 @@ const CompleteProfileSheet = forwardRef<
           control={control}
           placeholder="Enter your full name"
           rules={{
-            required: 'Emergency contact name is required',
+            required: 'Full name is required',
           }}
           error={errors.name?.message as string}
         />

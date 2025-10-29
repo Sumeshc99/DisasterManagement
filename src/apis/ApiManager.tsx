@@ -66,14 +66,17 @@ const requestPath = {
 };
 
 const ApiManager = {
-  // Public API
+  // Public API (get, no token required)
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
 
-  // Auth APIs
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
   resendOtp: (params: any) => requests.post(requestPath.resendOtp, params),
+
+  // Authenticated get apis (requires Bearer token)
+  incidentList: (token: string) =>
+    requests.get(requestPath.incidentList, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
