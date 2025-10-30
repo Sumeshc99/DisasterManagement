@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { COLOR } from '../themes/Colors';
+import { COLOR } from '../../themes/Colors';
 
 interface Props {
   onUpdatePress: () => void;

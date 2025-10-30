@@ -54,10 +54,6 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     longitudeDelta: 0.1,
   };
 
-  const responderList = () => {
-    navigation.navigate('respondersList');
-  };
-
   const getMarkerIcon = useCallback((type: string) => {
     switch (type) {
       case 'Ambulance':
@@ -211,28 +207,6 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           Nearby Live Incident
         </Text>
       </View>
-
-      <View style={styles.sideBtns}>
-        <TouchableOpacity onPress={responderList}>
-          <Image
-            source={require('../assets/res1.png')}
-            resizeMode="contain"
-            style={{ width: 70, height: 70 }}
-          />
-        </TouchableOpacity>
-
-        <Image
-          source={require('../assets/res2.png')}
-          resizeMode="contain"
-          style={{ width: 70, height: 70 }}
-        />
-
-        <Image
-          source={require('../assets/res3.png')}
-          resizeMode="contain"
-          style={{ width: 70, height: 70 }}
-        />
-      </View>
     </View>
   );
 };
@@ -251,12 +225,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 26,
   },
-  sideBtns: {
-    position: 'absolute',
-    bottom: 50,
-    right: 10,
-    gap: 14,
-  },
+
   markers: {
     backgroundColor: 'white',
     borderRadius: 8,

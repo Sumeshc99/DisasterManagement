@@ -1,10 +1,11 @@
 import React, { forwardRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { COLOR } from '../themes/Colors';
-import { WIDTH } from '../themes/AppConst';
-import FormTextInput from './inputs/FormTextInput';
+
 import { useForm } from 'react-hook-form';
+import FormTextInput from '../inputs/FormTextInput';
+import { COLOR } from '../../themes/Colors';
+import { WIDTH } from '../../themes/AppConst';
 
 interface Props {
   data?: any;

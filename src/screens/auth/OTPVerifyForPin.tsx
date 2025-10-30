@@ -29,7 +29,7 @@ export default function OTPVerifyForPin() {
 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(900);
   const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function OTPVerifyForPin() {
         if (resp?.data?.status) {
           setOtp('');
           setError('');
-          setTimeLeft(10);
+          setTimeLeft(900);
         } else {
           showSnackbar(resp?.data?.message || 'Failed to resend OTP', 'error');
         }

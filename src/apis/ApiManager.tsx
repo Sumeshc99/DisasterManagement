@@ -63,6 +63,8 @@ const requestPath = {
   incidentList: 'incidents/public/list',
   shortProfile: 'mobileapis/shortProfile',
   tahsilList: 'location/public/cascading-locations',
+  getUser: 'mobileapis/getUser',
+  updateUser: 'mobileapis/updateProfile',
 };
 
 const ApiManager = {
@@ -77,6 +79,8 @@ const ApiManager = {
   // Authenticated get apis (requires Bearer token)
   incidentList: (token: string) =>
     requests.get(requestPath.incidentList, token),
+  getUser: (id: any, token: string) =>
+    requests.get(`${requestPath.getUser}/${id}`, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
@@ -87,6 +91,8 @@ const ApiManager = {
     requests.post(requestPath.forgetPin, params, token),
   shortProfile: (params: any, token: string) =>
     requests.post(requestPath.shortProfile, params, token),
+  updateUser: (params: any, token: string) =>
+    requests.post(requestPath.updateUser, params, token),
 };
 
 export default ApiManager;

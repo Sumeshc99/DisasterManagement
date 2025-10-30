@@ -30,6 +30,7 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
   multiline = false,
   numberOfLines = 1,
   onRightIconPress,
+  editable = true,
   ...textInputProps
 }) => {
   const isRequired = !!rules?.required;
@@ -46,10 +47,20 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
         name={name}
         rules={rules}
         render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputWrapper, error && styles.inputError]}>
+          <View
+            style={[
+              styles.inputWrapper,
+              error && styles.inputError,
+              !editable && styles.disabledWrapper,
+            ]}
+          >
             <TextInput
               autoCapitalize="none"
-              style={[styles.input, multiline && styles.multilineInput]}
+              style={[
+                styles.input,
+                multiline && styles.multilineInput,
+                !editable && styles.disabledInput,
+              ]}
               placeholder={`Enter ${label.toLowerCase()}`}
               placeholderTextColor="#999"
               onChangeText={onChange}
@@ -60,6 +71,7 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
               numberOfLines={numberOfLines}
               textAlignVertical={multiline ? 'top' : 'center'}
               textAlign={I18nManager.isRTL ? 'right' : 'left'}
+              editable={editable}
               {...textInputProps}
             />
           </View>
@@ -98,12 +110,19 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 6,
     paddingHorizontal: 12,
+    backgroundColor: '#fff',
+  },
+  disabledWrapper: {
+    backgroundColor: '#D9D9D9',
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: '#000',
     paddingVertical: 12,
+  },
+  disabledInput: {
+    color: '#525151',
   },
   multilineInput: {
     height: 120,

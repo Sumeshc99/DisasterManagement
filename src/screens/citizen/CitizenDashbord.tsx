@@ -1,24 +1,28 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import OpenStreetMap from '../../components/OpenStreetMap';
-import CompleteProfileSheet from '../../components/CompleteProfileSheet';
-import ProfileReminder from '../../components/ProfileReminder';
 import ApiManager from '../../apis/ApiManager';
 import { COLOR } from '../../themes/Colors';
 import { useBackExit } from '../../hooks/useBackExit';
 import { RootState } from '../../store/RootReducer';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import GetCurrentLocation from '../../config/GetCurrentLocation';
+import { setUser } from '../../store/slices/authSlice';
+import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
+import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
+import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const dispatch = useDispatch();
+
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
+  const showHelfRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const [hospitalList, sethospitalList] = useState<any[]>([]);
@@ -105,6 +109,16 @@ const CitizenDashboard = () => {
       try {
         const resp = await ApiManager.shortProfile(body, userToken);
         if (resp?.data?.status) {
+          dispatch(
+            setUser({
+              id: user?.id || '',
+              full_name: data.name || '',
+              mobile_no: user?.mobile_no || '',
+              email: user?.email || '',
+              role: user?.role || '',
+              is_registered: (user as { is_registered: boolean }).is_registered,
+            }),
+          );
           sheetRef.current?.close();
         }
       } catch (err: any) {
@@ -120,6 +134,10 @@ const CitizenDashboard = () => {
     remindRef.current?.close();
     navigation.navigate('profile');
   }, [navigation]);
+
+  const responderList = () => {
+    navigation.navigate('respondersList');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,7 +155,32 @@ const CitizenDashboard = () => {
         submitData={handleShortProfile}
       />
 
+      <View style={styles.sideBtns}>
+        <TouchableOpacity onPress={responderList}>
+          <Image
+            source={require('../../assets/res1.png')}
+            resizeMode="contain"
+            style={{ width: 70, height: 70 }}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => showHelfRef.current?.open()}>
+          <Image
+            source={require('../../assets/res2.png')}
+            resizeMode="contain"
+            style={{ width: 70, height: 70 }}
+          />
+        </TouchableOpacity>
+
+        <Image
+          source={require('../../assets/res3.png')}
+          resizeMode="contain"
+          style={{ width: 70, height: 70 }}
+        />
+      </View>
+
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
+      <HelplineDetails ref={showHelfRef} onClose={() => ''} />
     </SafeAreaView>
   );
 };
@@ -152,5 +195,11 @@ const styles = StyleSheet.create({
   mapContainer: {
     flex: 1,
     backgroundColor: COLOR.white,
+  },
+  sideBtns: {
+    position: 'absolute',
+    bottom: 80,
+    right: 10,
+    gap: 14,
   },
 });

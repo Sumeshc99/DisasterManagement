@@ -37,10 +37,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: COLOR.white,
   },
   noDataText: {
     fontSize: 18,
-    color: COLOR.gray,
+    color: COLOR.darkGray,
+    fontWeight: 500,
     textAlign: 'center',
   },
 });

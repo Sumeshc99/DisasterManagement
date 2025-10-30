@@ -67,10 +67,10 @@ export default function OTPVerification() {
             dispatch(userToken(userData?.token));
             navigation.replace('mainAppSelector');
           } else {
-            showSnackbar('Invalid PIN', 'error');
+            showSnackbar('Please enter correct pin', 'error');
           }
         })
-        .catch(err => showSnackbar('Invalid PIN', 'error'))
+        .catch(err => showSnackbar('Please enter correct pin', 'error'))
         .finally(() => hideLoader());
     }
   };

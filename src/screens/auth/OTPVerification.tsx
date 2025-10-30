@@ -31,7 +31,7 @@ export default function OTPVerification() {
 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(600);
   const [isResending, setIsResending] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
 
@@ -94,7 +94,7 @@ export default function OTPVerification() {
         if (resp?.data?.status) {
           setOtp('');
           setError('');
-          setTimeLeft(10);
+          setTimeLeft(600);
           setTimerKey(prev => prev + 1);
           showSnackbar('OTP resent successfully!', 'success');
         } else {
