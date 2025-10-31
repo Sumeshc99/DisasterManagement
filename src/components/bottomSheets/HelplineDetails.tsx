@@ -36,7 +36,7 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             }}
           >
             <Image
-              source={require('../assets/cancel.png')}
+              source={require('../../assets/cancel.png')}
               style={styles.closeIcon}
             />
           </TouchableOpacity>
@@ -50,7 +50,10 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             <View style={styles.divider} />
 
             {/* Logo */}
-            <Image source={require('../assets/logo.png')} style={styles.logo} />
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.logo}
+            />
 
             {/* Details */}
             <Text style={styles.text}>

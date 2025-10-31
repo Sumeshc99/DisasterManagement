@@ -15,7 +15,7 @@ const UpdateConfirmation = forwardRef<
     <RBSheet
       ref={ref}
       closeOnPressMask
-      height={300}
+      height={220}
       customStyles={{
         container: styles.sheetContainer,
         draggableIcon: { backgroundColor: 'transparent' },
@@ -29,29 +29,25 @@ const UpdateConfirmation = forwardRef<
           onPress={() => (ref as any)?.current?.close()}
         >
           <Image
-            source={require('../assets/cancel.png')}
+            source={require('../../assets/cancel.png')}
             style={styles.closeIcon}
           />
         </TouchableOpacity>
 
         <Image
-          source={require('../assets/userImg.png')}
+          source={require('../../assets/userImg.png')}
           style={styles.avatar}
         />
 
-        {/* Text */}
-        <Text style={styles.reminderText}>
-          Reminder to complete your profile.
-        </Text>
+        <Text style={styles.reminderText}>Profile saved successfully</Text>
 
-        {/* Update Profile Button */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.updateButton}
           onPress={onUpdatePress}
           activeOpacity={0.8}
         >
           <Text style={styles.updateButtonText}>Update Profile</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </RBSheet>
   );
@@ -99,6 +95,7 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     marginBottom: 22,
+    fontWeight: 500,
   },
   updateButton: {
     backgroundColor: COLOR.blue,

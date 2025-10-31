@@ -15,6 +15,7 @@ import { setUser } from '../../store/slices/authSlice';
 import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
 import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
 import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
+import ChangePin from '../../components/bottomSheets/ChangePin';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -23,6 +24,7 @@ const CitizenDashboard = () => {
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
   const showHelfRef = useRef<any>(null);
+  const changePassRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const [hospitalList, sethospitalList] = useState<any[]>([]);
@@ -172,15 +174,18 @@ const CitizenDashboard = () => {
           />
         </TouchableOpacity>
 
-        <Image
-          source={require('../../assets/res3.png')}
-          resizeMode="contain"
-          style={{ width: 70, height: 70 }}
-        />
+        <TouchableOpacity onPress={() => changePassRef.current?.open()}>
+          <Image
+            source={require('../../assets/res3.png')}
+            resizeMode="contain"
+            style={{ width: 70, height: 70 }}
+          />
+        </TouchableOpacity>
       </View>
 
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
       <HelplineDetails ref={showHelfRef} onClose={() => ''} />
+      <ChangePin ref={changePassRef} onUpdatePress={() => ''} />
     </SafeAreaView>
   );
 };

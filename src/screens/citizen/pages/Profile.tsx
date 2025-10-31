@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -21,9 +21,12 @@ import { RootState } from '../../../store/RootReducer';
 import { useForm } from 'react-hook-form';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import { WIDTH } from '../../../themes/AppConst';
+import UpdateConfirmation from '../../../components/bottomSheets/UpdateConfirmation';
 
 const Profile: React.FC = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const statusRef = useRef<any>(null);
+
   const { user, userToken } = useSelector((state: RootState) => state.auth);
 
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
@@ -120,7 +123,7 @@ const Profile: React.FC = () => {
     formData.append('district', '1');
     formData.append('city', data.city || '');
     formData.append('tehsil', data.tehsil || '');
-    formData.append('block', '1');
+    formData.append('block', data.block);
     formData.append('pin_code', data.pincode || '');
     formData.append('address', data.address || '');
     formData.append('blood_grp', data.bloodGroup || '');
@@ -155,6 +158,8 @@ const Profile: React.FC = () => {
 
       if (resp.data.status) {
         console.log('✅ User updated successfully');
+        statusRef.current?.open();
+        setActiveTab('basic');
       } else {
         console.warn('⚠️ Update failed:', resp.data.message);
       }
@@ -270,6 +275,11 @@ const Profile: React.FC = () => {
           </ScrollView>
         </ScreenStateHandler>
       </View>
+
+      <UpdateConfirmation
+        ref={statusRef}
+        onUpdatePress={() => statusRef.current?.close()}
+      />
     </SafeAreaView>
   );
 };

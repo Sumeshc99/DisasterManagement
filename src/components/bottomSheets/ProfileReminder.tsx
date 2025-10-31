@@ -27,13 +27,13 @@ const ProfileReminder = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             onPress={() => (ref as any)?.current?.close()}
           >
             <Image
-              source={require('../assets/cancel.png')}
+              source={require('../../assets/cancel.png')}
               style={styles.closeIcon}
             />
           </TouchableOpacity>
 
           <Image
-            source={require('../assets/userImg.png')}
+            source={require('../../assets/userImg.png')}
             style={styles.avatar}
           />
 

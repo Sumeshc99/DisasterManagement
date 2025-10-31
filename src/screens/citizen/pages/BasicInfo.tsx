@@ -195,11 +195,11 @@ const styles = StyleSheet.create({
 });
 
 const blocks = [
-  { label: 'Block 1', value: 'block_1' },
-  { label: 'Block 2', value: 'block_2' },
-  { label: 'Block 3', value: 'block_3' },
-  { label: 'Block 4', value: 'block_4' },
-  { label: 'Block 5', value: 'block_5' },
+  { label: 'Block 1', value: '1' },
+  { label: 'Block 2', value: '2' },
+  { label: 'Block 3', value: '3' },
+  { label: 'Block 4', value: '4' },
+  { label: 'Block 5', value: '5' },
 ];
 
 const bloodGroups = [

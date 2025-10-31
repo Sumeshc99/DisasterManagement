@@ -70,7 +70,6 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       Alert.alert('Please upload one valid ID proof');
       return;
     }
-    console.log('✅ Emergency Contact Submitted:', data);
     onSubmit(data);
   };
 
@@ -90,7 +89,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
             {document ? (
               <View style={styles.documentCard}>
                 <Image
-                  source={{ uri: document.uri }}
+                  source={{ uri: document?.uri || document }}
                   style={styles.documentImage}
                   resizeMode="cover"
                 />

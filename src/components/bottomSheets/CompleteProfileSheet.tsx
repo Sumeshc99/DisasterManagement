@@ -54,7 +54,7 @@ const CompleteProfileSheet = forwardRef<
           <Text style={styles.headerTitle}>Please complete your profile</Text>
           <TouchableOpacity onPress={() => (ref as any)?.current?.close()}>
             <Image
-              source={require('../assets/cancel.png')}
+              source={require('../../assets/cancel.png')}
               style={{ width: 30, height: 30 }}
             />
           </TouchableOpacity>
