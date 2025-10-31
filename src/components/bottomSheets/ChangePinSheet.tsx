@@ -6,7 +6,6 @@ import OTPInput from '../OTPInput';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
-import OtpVerificationSheet from './OtpVerificationSheet';
 
 interface Props {
   onUpdatePress: () => void;
@@ -20,9 +19,6 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
     const [newPin, setNewPin] = useState('');
     const [confirmPin, setConfirmPin] = useState('');
     const [error, setError] = useState('');
-    const [showOtp, setShowOtp] = useState(false);
-
-    const otpRef = React.useRef<any>(null);
 
     const ChangeCurrentPin = async () => {
       const body = {
