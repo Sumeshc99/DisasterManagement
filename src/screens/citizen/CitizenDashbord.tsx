@@ -15,7 +15,8 @@ import { setUser } from '../../store/slices/authSlice';
 import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
 import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
 import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
-import ChangePin from '../../components/bottomSheets/ChangePin';
+import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
+import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -25,6 +26,7 @@ const CitizenDashboard = () => {
   const remindRef = useRef<any>(null);
   const showHelfRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
+  const successRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const [hospitalList, sethospitalList] = useState<any[]>([]);
@@ -185,7 +187,15 @@ const CitizenDashboard = () => {
 
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
       <HelplineDetails ref={showHelfRef} onClose={() => ''} />
-      <ChangePin ref={changePassRef} onUpdatePress={() => ''} />
+      <ChangePinSheet
+        ref={changePassRef}
+        onUpdatePress={() => {
+          changePassRef.current?.close();
+          successRef.current?.open();
+        }}
+      />
+      {/* <PasswordChanged ref={showHelfRef} onUpdatePress={() => ''} /> */}
+      <SuccessScreen ref={successRef} />
     </SafeAreaView>
   );
 };

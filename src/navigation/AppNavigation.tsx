@@ -42,9 +42,9 @@ const AppNavigation = () => {
         <Stack.Screen name="loginScreen" component={LoginScreen} />
         <Stack.Screen name="pinLoginScreen" component={PinLoginScreen} />
         <Stack.Screen name="pinResetScreen" component={PinResetScreen} />
-        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
         <Stack.Screen name="otpVerification" component={OTPVerification} />
         <Stack.Screen name="otpVerifyForPin" component={OTPVerifyForPin} />
+        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
         <Stack.Screen
           name="createIncidentScreen"
           component={CreateIncidentScreen}

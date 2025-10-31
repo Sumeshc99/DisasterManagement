@@ -65,6 +65,7 @@ const requestPath = {
   tahsilList: 'location/public/cascading-locations',
   getUser: 'mobileapis/getUser',
   updateUser: 'mobileapis/updateProfile',
+  changePin: 'mobileapis/changePin',
 };
 
 const ApiManager = {
@@ -93,6 +94,8 @@ const ApiManager = {
     requests.post(requestPath.shortProfile, params, token),
   updateUser: (params: any, token: string) =>
     requests.post(requestPath.updateUser, params, token),
+  changePin: (params: any, token: string) =>
+    requests.post(requestPath.changePin, params, token),
 };
 
 export default ApiManager;
