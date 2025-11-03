@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   onUpdatePress: () => void;
@@ -39,7 +40,7 @@ const ProfileReminder = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
           {/* Text */}
           <Text style={styles.reminderText}>
-            Reminder to complete your profile.
+            {TEXT.reminder_to_complete_profile()}
           </Text>
 
           {/* Update Profile Button */}
@@ -48,7 +49,7 @@ const ProfileReminder = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             onPress={onUpdatePress}
             activeOpacity={0.8}
           >
-            <Text style={styles.updateButtonText}>Update Profile</Text>
+            <Text style={styles.updateButtonText}>{TEXT.update_profile()}</Text>
           </TouchableOpacity>
         </View>
       </RBSheet>

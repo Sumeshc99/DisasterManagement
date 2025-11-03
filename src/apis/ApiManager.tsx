@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-export const BASE_URL = 'http://192.168.29.49:8085/api/';
-export const IMG_URL = 'http://192.168.29.49:8085/';
+// export const BASE_URL = 'http://192.168.29.49:8085/api/';
+// export const IMG_URL = 'http://192.168.29.49:8085/';
 
-// export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
-// export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
+export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
+export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',

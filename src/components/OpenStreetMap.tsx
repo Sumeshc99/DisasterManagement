@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
+import MapView, { Callout, Circle, Marker, UrlTile } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/RootReducer';
+import IncidentModal from './IncidentModal';
 
 interface Props {
   list: any;
@@ -40,6 +41,8 @@ interface IncidentItem {
 
 const OpenStreetMap: React.FC<Props> = ({ list }) => {
   const location = useSelector((state: RootState) => state.location);
+  const [openModal, setopenModal] = useState(false);
+  const [selectedIncident, setselectedIncident] = useState('');
 
   const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
   const defaultImage =
@@ -69,6 +72,11 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     }
   }, []);
 
+  const handleClick = (item: any) => {
+    setselectedIncident(item);
+    setopenModal(true);
+  };
+
   const renderMarker = useCallback(
     (item: ResourceItem) => (
       <Marker
@@ -90,7 +98,46 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     [getMarkerIcon],
   );
 
-  const renderIncedent = useCallback(
+  // const renderIncedent = useCallback(
+  //   (item: IncidentItem) => (
+  //     <Marker
+  //       key={item.id}
+  //       coordinate={{
+  //         latitude: parseFloat(item.latitude),
+  //         longitude: parseFloat(item.longitude),
+  //       }}
+  //     >
+  //       <View style={{ alignItems: 'center' }}>
+  //         <TouchableOpacity
+  //           onPress={() => handleClick(item)}
+  //           style={styles.infoBox}
+  //         >
+  //           <Image
+  //             source={{ uri: item.img || defaultImage }}
+  //             style={styles.incidentImage}
+  //             resizeMode="cover"
+  //           />
+  //           <View style={{ flex: 1 }}>
+  //             <Text style={styles.incidentTitle} numberOfLines={1}>
+  //               {item.title}
+  //             </Text>
+  //             <Text style={styles.incidentSeverity} numberOfLines={1}>
+  //               Severity: {item.severity}
+  //             </Text>
+  //           </View>
+  //         </TouchableOpacity>
+  //         <Image
+  //           source={require('../assets/markers/incident.png')}
+  //           style={styles.incidentIcon}
+  //           resizeMode="contain"
+  //         />
+  //       </View>
+  //     </Marker>
+  //   ),
+  //   [],
+  // );
+
+  const renderIncident = useCallback(
     (item: IncidentItem) => (
       <Marker
         key={item.id}
@@ -99,28 +146,25 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           longitude: parseFloat(item.longitude),
         }}
       >
-        <View style={{ alignItems: 'center' }}>
+        <Image
+          source={require('../assets/markers/incident.png')}
+          style={styles.incidentIcon}
+          resizeMode="contain"
+        />
+        <Callout onPress={() => handleClick(item)}>
           <View style={styles.infoBox}>
             <Image
               source={{ uri: item.img || defaultImage }}
               style={styles.incidentImage}
-              resizeMode="cover"
             />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.incidentTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={styles.incidentSeverity} numberOfLines={1}>
+            <View>
+              <Text style={styles.incidentTitle}>{item.title}</Text>
+              <Text style={styles.incidentSeverity}>
                 Severity: {item.severity}
               </Text>
             </View>
           </View>
-          <Image
-            source={require('../assets/markers/incident.png')}
-            style={styles.incidentIcon}
-            resizeMode="contain"
-          />
-        </View>
+        </Callout>
       </Marker>
     ),
     [],
@@ -192,7 +236,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
         {hospitalList.map((item: any) => renderMarker(item))}
         {policeStation.map((item: any) => renderMarker(item))}
         {sdrfCenter.map((item: any) => renderMarker(item))}
-        {incidents.map((item: any) => renderIncedent(item))}
+        {incidents.map((item: any) => renderIncident(item))}
       </MapView>
 
       <View style={styles.incidentBox}>
@@ -207,6 +251,12 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           Nearby Live Incident
         </Text>
       </View>
+
+      {/* <IncidentModal
+        data={selectedIncident}
+        openModal={openModal}
+        setOpenModal={() => setopenModal(false)}
+      /> */}
     </View>
   );
 };

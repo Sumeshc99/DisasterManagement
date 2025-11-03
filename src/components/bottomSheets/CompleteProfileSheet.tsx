@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import FormTextInput from '../inputs/FormTextInput';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   data?: any;
@@ -51,7 +52,9 @@ const CompleteProfileSheet = forwardRef<
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Please complete your profile</Text>
+          <Text style={styles.headerTitle}>
+            {TEXT.please_complete_profile()}
+          </Text>
           <TouchableOpacity onPress={() => (ref as any)?.current?.close()}>
             <Image
               source={require('../../assets/cancel.png')}
@@ -64,20 +67,22 @@ const CompleteProfileSheet = forwardRef<
 
         {/* Main User Phone */}
         <FormTextInput
-          label="Full Name"
+          label={TEXT.full_name()}
           name="name"
           control={control}
-          placeholder="Enter your full name"
+          placeholder={TEXT.enter_full_name()}
           rules={{
             required: 'Full name is required',
           }}
           error={errors.name?.message as string}
         />
 
-        <Text style={styles.sectionTitle}>Emergency Contact Details</Text>
+        <Text style={styles.sectionTitle}>
+          {TEXT.emergency_contact_details()}
+        </Text>
         {/* Emergency Contact Name */}
         <FormTextInput
-          label="Full Name"
+          label={TEXT.full_name()}
           name="emgName"
           control={control}
           placeholder="Enter emergency contact name"
@@ -89,7 +94,7 @@ const CompleteProfileSheet = forwardRef<
 
         {/* Emergency Contact Mobile */}
         <FormTextInput
-          label="Mobile Number"
+          label={TEXT.mobile_number()}
           name="emgPhone"
           control={control}
           placeholder="Enter emergency contact number"
@@ -109,7 +114,7 @@ const CompleteProfileSheet = forwardRef<
           style={styles.saveButton}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.saveText}>Save</Text>
+          <Text style={styles.saveText}>{TEXT.save()}</Text>
         </TouchableOpacity>
       </View>
     </RBSheet>

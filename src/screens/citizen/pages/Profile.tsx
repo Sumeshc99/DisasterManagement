@@ -22,6 +22,7 @@ import { useForm } from 'react-hook-form';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import { WIDTH } from '../../../themes/AppConst';
 import UpdateConfirmation from '../../../components/bottomSheets/UpdateConfirmation';
+import { TEXT } from '../../../i18n/locales/Text';
 
 const Profile: React.FC = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -183,7 +184,7 @@ const Profile: React.FC = () => {
           >
             <Image source={require('../../../assets/backArrow.png')} />
           </TouchableOpacity>
-          <Text style={styles.title}>Profile</Text>
+          <Text style={styles.title}>{TEXT.profile()}</Text>
           <View style={styles.backButton} />
         </View>
 
@@ -243,7 +244,7 @@ const Profile: React.FC = () => {
                     activeTab === 'emergency' && styles.activeTabText,
                   ]}
                 >
-                  Emergency Contact Information
+                  {TEXT.emergency_contact_info()}
                 </Text>
               </View>
             </TouchableOpacity>

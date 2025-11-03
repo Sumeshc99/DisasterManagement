@@ -131,7 +131,7 @@ const LoginScreen = () => {
               label="Your Phone Number"
               name="phone"
               control={control}
-              placeholder="Enter your phone number"
+              placeholder={TEXT.enter_phone_number()}
               keyboardType="number-pad"
               rules={{
                 required: 'Phone number is required',
@@ -145,8 +145,8 @@ const LoginScreen = () => {
 
             <DropDownInput
               name="tehsil"
-              label="Select Tehsil"
-              placeholder="Select tehsil"
+              label={TEXT.select_taluka()}
+              placeholder={TEXT.select_taluka()}
               control={control}
               rules={{ required: 'Tehsil is required' }}
               items={tahsilList}
@@ -163,7 +163,7 @@ const LoginScreen = () => {
                 source={require('../../assets/user.png')}
                 style={{ width: 24, height: 24, marginRight: 8 }}
               />
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>{TEXT.login()}</Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>

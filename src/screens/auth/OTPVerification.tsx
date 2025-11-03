@@ -18,6 +18,7 @@ import { setUser, userToken } from '../../store/slices/authSlice';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { HEIGHT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -63,6 +64,8 @@ export default function OTPVerification() {
     showLoader();
     ApiManager.verifyOtp(body)
       .then(resp => {
+        console.log('aaaa', resp?.data?.data);
+
         if (resp?.data?.status) {
           dispatch(
             setUser({
@@ -171,7 +174,7 @@ export default function OTPVerification() {
         {/* Timer OR Resend Button */}
         {timeLeft > 0 ? (
           <Text style={styles.timerText}>
-            OTP will expire in:{' '}
+            {TEXT.otp_expire_in()}:{' '}
             <Text style={styles.timerValue}>{formatTime()}</Text>
           </Text>
         ) : (
@@ -181,7 +184,7 @@ export default function OTPVerification() {
             style={styles.resendButton}
           >
             <Text style={styles.resendText}>
-              {isResending ? 'Resending...' : 'Resend OTP'}
+              {isResending ? 'Resending...' : TEXT.resend_otp()}
             </Text>
           </TouchableOpacity>
         )}
@@ -198,7 +201,7 @@ export default function OTPVerification() {
               isOtpComplete && styles.nextButtonTextActive,
             ]}
           >
-            Next
+            {TEXT.next()}
           </Text>
         </TouchableOpacity>
       </ScrollView>

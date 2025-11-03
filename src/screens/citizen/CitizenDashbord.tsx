@@ -163,12 +163,6 @@ const CitizenDashboard = () => {
         />
       </View>
 
-      <CompleteProfileSheet
-        ref={sheetRef}
-        data=""
-        submitData={handleShortProfile}
-      />
-
       <View style={styles.sideBtns}>
         <TouchableOpacity onPress={responderList}>
           <Image
@@ -194,6 +188,12 @@ const CitizenDashboard = () => {
           />
         </TouchableOpacity>
       </View>
+
+      <CompleteProfileSheet
+        ref={sheetRef}
+        data=""
+        submitData={handleShortProfile}
+      />
 
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
       <HelplineDetails ref={showHelfRef} onClose={() => ''} />

@@ -19,6 +19,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import DropDownInput from '../../../components/inputs/DropDownInput';
 import { COLOR } from '../../../themes/Colors';
+import { TEXT } from '../../../i18n/locales/Text';
 
 const relations = [
   { label: 'Father', value: 'father' },
@@ -77,7 +78,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
     <View style={styles.form}>
       {/* Upload Document */}
       <Text style={styles.label}>
-        Upload Document <Text style={styles.required}>*</Text>
+        {TEXT.upload_document()} <Text style={styles.required}>*</Text>
       </Text>
 
       <Controller
@@ -116,13 +117,15 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       )}
 
       {/* Primary Contact */}
-      <Text style={styles.sectionTitle}>Emergency Contact Information</Text>
+      <Text style={styles.sectionTitle}>
+        {TEXT.emergency_contact_details()}
+      </Text>
 
       <FormTextInput
-        label="Primary Contact Name"
+        label={TEXT.primary_contact_name()}
         name="primaryName"
         control={control}
-        placeholder="Enter full name"
+        placeholder={TEXT.enter_full_name()}
         rules={{
           required: 'Full name is required',
           minLength: { value: 3, message: 'Enter at least 3 characters' },
@@ -131,20 +134,20 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       />
 
       <DropDownInput
-        label="Relation"
+        label={TEXT.relation()}
         name="primaryRelation"
         control={control}
-        placeholder="Select relation"
+        placeholder={TEXT.Select_relation()}
         items={relations}
         rules={{ required: 'Relation is required' }}
         errors={errors}
       />
 
       <FormTextInput
-        label="Primary Mobile Number"
+        label={TEXT.primary_mobile_number()}
         name="primaryMobile"
         control={control}
-        placeholder="Enter mobile number"
+        placeholder={TEXT.enter_primary_mobile_number()}
         keyboardType="phone-pad"
         maxLength={10}
         rules={{
@@ -158,7 +161,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       />
 
       <FormTextInput
-        label="Alternate Mobile Number"
+        label={TEXT.alternate_mobile_number()}
         name="primaryAltMobile"
         control={control}
         placeholder="Enter alternate number"
@@ -178,14 +181,14 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         label="Secondary Contact Name"
         name="secondaryName"
         control={control}
-        placeholder="Enter full name"
+        placeholder={TEXT.enter_full_name()}
       />
 
       <DropDownInput
-        label="Relation"
+        label={TEXT.relation()}
         name="secondaryRelation"
         control={control}
-        placeholder="Select relation"
+        placeholder={TEXT.Select_relation()}
         items={relations}
       />
 
@@ -212,7 +215,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         style={styles.submitButton}
         onPress={handleSubmit(handleFormSubmit)}
       >
-        <Text style={styles.submitButtonText}>Submit</Text>
+        <Text style={styles.submitButtonText}>{TEXT.submit()}</Text>
       </TouchableOpacity>
     </View>
   );

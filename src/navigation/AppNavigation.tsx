@@ -31,7 +31,7 @@ const AppNavigation = () => {
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
-        initialRouteName="mainAppSelector"
+        initialRouteName="splashScreen"
         screenOptions={{
           headerShown: false,
           animation: 'fade_from_bottom',

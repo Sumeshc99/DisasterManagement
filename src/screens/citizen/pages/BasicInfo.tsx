@@ -5,6 +5,7 @@ import { COLOR } from '../../../themes/Colors';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import DropDownInput from '../../../components/inputs/DropDownInput';
 import DateInput from '../../../components/inputs/DateInput';
+import { TEXT } from '../../../i18n/locales/Text';
 
 interface BasicInfoProps {
   control: Control<any>;
@@ -22,11 +23,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
   return (
     <View style={styles.form}>
       <FormTextInput
-        label="Full Name"
+        label={TEXT.full_name()}
         name="fullName"
         control={control}
         editable={false}
-        placeholder="Enter full name"
+        placeholder={TEXT.enter_full_name()}
         rules={{
           required: 'Full name is required',
           minLength: { value: 3, message: 'Enter at least 3 characters' },
@@ -35,11 +36,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Mobile Number"
+        label={TEXT.mobile_number()}
         name="mobileNumber"
         control={control}
         editable={false}
-        placeholder="Enter mobile number"
+        placeholder={TEXT.enter_phone_number()}
         keyboardType="phone-pad"
         rules={{
           required: 'Mobile number is required',
@@ -52,10 +53,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Email Id"
+        label={TEXT.email_id()}
         name="email"
         control={control}
-        placeholder="Enter email id"
+        placeholder={TEXT.enter_email_id()}
         keyboardType="email-address"
         rules={{
           required: 'Email is required',
@@ -68,7 +69,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="District"
+        label={TEXT.district()}
         name="district"
         control={control}
         editable={false}
@@ -78,7 +79,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="City"
+        label={TEXT.city()}
         name="city"
         control={control}
         placeholder="Enter city"
@@ -87,7 +88,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Tehsil"
+        label={TEXT.tehsil()}
         name="tehsil"
         control={control}
         editable={false}
@@ -157,7 +158,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
           onPress={handleSubmit(onSubmit)}
         >
           <Text style={[styles.submitButtonText, { color: COLOR.white }]}>
-            Next
+            {TEXT.next()}
           </Text>
         </TouchableOpacity>
       </View>

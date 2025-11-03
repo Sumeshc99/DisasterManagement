@@ -16,6 +16,7 @@ import { HEIGHT } from '../../themes/AppConst';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import ApiManager from '../../apis/ApiManager';
+import { TEXT } from '../../i18n/locales/Text';
 
 export default function PinResetScreen() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -118,7 +119,7 @@ export default function PinResetScreen() {
           <Text
             style={[styles.submitText, isComplete && styles.submitTextActive]}
           >
-            Submit
+            {TEXT.submit()}
           </Text>
         </TouchableOpacity>
       </ScrollView>

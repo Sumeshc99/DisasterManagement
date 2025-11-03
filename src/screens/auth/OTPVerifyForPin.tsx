@@ -17,6 +17,7 @@ import ApiManager from '../../apis/ApiManager';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { HEIGHT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 export default function OTPVerifyForPin() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -169,7 +170,7 @@ export default function OTPVerifyForPin() {
         {/* Timer OR Resend Button */}
         {timeLeft > 0 ? (
           <Text style={styles.timerText}>
-            OTP will expire in:{' '}
+            {TEXT.otp_expire_in()}:{' '}
             <Text style={styles.timerValue}>{formatTime()}</Text>
           </Text>
         ) : (
@@ -179,7 +180,7 @@ export default function OTPVerifyForPin() {
             style={styles.resendButton}
           >
             <Text style={styles.resendText}>
-              {isResending ? 'Resending...' : 'Resend OTP'}
+              {isResending ? 'Resending...' : TEXT.resend_otp()}
             </Text>
           </TouchableOpacity>
         )}
@@ -196,7 +197,7 @@ export default function OTPVerifyForPin() {
               isOtpComplete && styles.nextButtonTextActive,
             ]}
           >
-            Next
+            {TEXT.next()}
           </Text>
         </TouchableOpacity>
       </ScrollView>

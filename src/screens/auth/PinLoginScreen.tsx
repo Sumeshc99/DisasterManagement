@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { setUser, userToken } from '../../store/slices/authSlice';
+import { TEXT } from '../../i18n/locales/Text';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -100,11 +101,9 @@ export default function OTPVerification() {
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>{TEXT.login()}</Text>
 
-        <Text style={styles.description}>
-          Please enter your PIN code to log in
-        </Text>
+        <Text style={styles.description}>{TEXT.please_enter_pin_code()}</Text>
 
         {/* Reusable OTP Component */}
         <OTPInput
@@ -123,7 +122,7 @@ export default function OTPVerification() {
           }}
           onPress={handleForgotPin}
         >
-          <Text style={styles.forgotText}>Forgot PIN...?</Text>
+          <Text style={styles.forgotText}>{TEXT.forgot_pin()}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -131,6 +130,7 @@ export default function OTPVerification() {
             styles.nextButton,
             otp.length === 6 && styles.nextButtonActive,
           ]}
+          disabled={otp.length < 6 && true}
           onPress={handleNext}
         >
           <Text
@@ -139,7 +139,7 @@ export default function OTPVerification() {
               otp.length === 6 && styles.nextButtonTextActive,
             ]}
           >
-            Next
+            {TEXT.next()}
           </Text>
         </TouchableOpacity>
       </ScrollView>
