@@ -13,10 +13,13 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
-import { useGlobalLoader } from '../hooks/GlobalLoaderContext';
+import i18n from '../i18n/i18n';
+import { useDispatch } from 'react-redux';
+import { setLanguage } from '../store/slices/LanguageSlice';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const dispatch = useDispatch();
   const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const languages: any = [
@@ -50,6 +53,12 @@ const SelectLanguage = () => {
     navigation.navigate('loginScreen');
   };
 
+  const SelectLanguage = (item: any) => {
+    setSelectedLanguage(item.name);
+    i18n.changeLanguage(item.code);
+    dispatch(setLanguage(item.code));
+  };
+
   return (
     <ImageBackground
       source={require('../assets/bg1.png')}
@@ -77,7 +86,7 @@ const SelectLanguage = () => {
                   styles.languageCard,
                   selectedLanguage === lang.name && styles.selectedCard,
                 ]}
-                onPress={() => setSelectedLanguage(lang.name)}
+                onPress={() => SelectLanguage(lang)}
               >
                 <View>
                   <Text

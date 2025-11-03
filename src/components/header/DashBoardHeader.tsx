@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLOR } from '../../themes/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
+import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
 
 const DashBoardHeader = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const sheetRef = useRef<any>(null);
 
   return (
     <View style={styles.container}>
@@ -24,14 +26,16 @@ const DashBoardHeader = () => {
       />
 
       <View style={styles.rightContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => sheetRef.current?.open()}>
           <Image
             source={require('../../assets/alert.png')}
             style={styles.iconSmall}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('incidentRecordsScreen')}
+        >
           <Image
             source={require('../../assets/bell.png')}
             style={styles.iconSmall}
@@ -45,6 +49,8 @@ const DashBoardHeader = () => {
           <Text style={styles.userText}>UN</Text>
         </TouchableOpacity>
       </View>
+
+      <IncidentRecordsSheet ref={sheetRef} />
     </View>
   );
 };

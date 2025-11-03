@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Button,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +23,8 @@ import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileS
 import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
 import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
 import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
+import AlertModal from '../../components/AlertModal';
+import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -27,12 +35,14 @@ const CitizenDashboard = () => {
   const showHelfRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
+  const rejectRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const [hospitalList, sethospitalList] = useState<any[]>([]);
   const [ambulance, setambulance] = useState<any[]>([]);
   const [policeStation, setpoliceStation] = useState<any[]>([]);
   const [sdrfCenter, setsdrfCenter] = useState<any[]>([]);
+  const [visible, setVisible] = useState(false);
 
   useBackExit();
 
@@ -196,6 +206,23 @@ const CitizenDashboard = () => {
       />
       {/* <PasswordChanged ref={showHelfRef} onUpdatePress={() => ''} /> */}
       <SuccessScreen ref={successRef} />
+
+      <View style={{ position: 'absolute', marginTop: 100 }}>
+        <Button title="Show Alert" onPress={() => setVisible(true)} />
+      </View>
+      <AlertModal
+        visible={visible}
+        onAcknowledge={() => {
+          setVisible(false);
+          rejectRef.current.open();
+        }}
+        onViewDetails={() => {
+          setVisible(false), navigation.navigate('incidentDetails');
+        }}
+        onClose={() => setVisible(false)}
+      />
+
+      <RejectReasonSheet ref={rejectRef} />
     </SafeAreaView>
   );
 };

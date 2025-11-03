@@ -6,6 +6,7 @@ import GetCurrentLocation from './config/GetCurrentLocation';
 import { GlobalLoaderProvider } from './hooks/GlobalLoaderContext';
 import { SnackbarProvider } from './hooks/SnackbarProvider';
 import GlobalLoader from './components/GlobalLoader';
+import { I18nProvider } from './i18n/i18n';
 
 const MainIndex = () => {
   const theme = {
@@ -19,13 +20,15 @@ const MainIndex = () => {
 
   return (
     <PaperProvider theme={theme}>
-      <GlobalLoaderProvider>
-        <SnackbarProvider>
-          <GetCurrentLocation />
-          <AppNavigation />
-          <GlobalLoader />
-        </SnackbarProvider>
-      </GlobalLoaderProvider>
+      <I18nProvider>
+        <GlobalLoaderProvider>
+          <SnackbarProvider>
+            <GetCurrentLocation />
+            <AppNavigation />
+            <GlobalLoader />
+          </SnackbarProvider>
+        </GlobalLoaderProvider>
+      </I18nProvider>
     </PaperProvider>
   );
 };

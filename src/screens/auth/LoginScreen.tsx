@@ -22,6 +22,8 @@ import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '../../components/inputs/FormTextInput';
 import DropDownInput from '../../components/inputs/DropDownInput';
+import { useTranslation } from 'react-i18next';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface LoginFormData {
   phone: string;
@@ -31,6 +33,7 @@ interface LoginFormData {
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const { showLoader, hideLoader } = useGlobalLoader();
+  const { t } = useTranslation();
 
   const [tahsilList, settahsilList] = useState([]);
 
@@ -121,7 +124,7 @@ const LoginScreen = () => {
             />
 
             <Text style={styles.title}>
-              Please enter your Mobile Number and Tehsil
+              {TEXT.please_enter_your_mobile_telsil_name()}
             </Text>
 
             <FormTextInput

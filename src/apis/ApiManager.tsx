@@ -3,6 +3,9 @@ import axios from 'axios';
 export const BASE_URL = 'http://192.168.29.49:8085/api/';
 export const IMG_URL = 'http://192.168.29.49:8085/';
 
+// export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
+// export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
+
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -53,6 +56,7 @@ const requests = {
 };
 
 const requestPath = {
+  language: 'mobileapis/getLanguage',
   login: 'mobileapis/mobilelogin',
   verifyOtp: 'mobileapis/verifyOtp',
   resendOtp: 'mobileapis/resendOtp',
@@ -70,6 +74,7 @@ const requestPath = {
 
 const ApiManager = {
   // Public API (get, no token required)
+  language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
 
