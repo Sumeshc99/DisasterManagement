@@ -25,6 +25,7 @@ import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
 import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import AlertModal from '../../components/AlertModal';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
+import HomeScreen from './pages/RespondersList';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -43,6 +44,7 @@ const CitizenDashboard = () => {
   const [policeStation, setpoliceStation] = useState<any[]>([]);
   const [sdrfCenter, setsdrfCenter] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
+  const [tabs, settabs] = useState(false);
 
   useBackExit();
 
@@ -130,6 +132,7 @@ const CitizenDashboard = () => {
               mobile_no: user?.mobile_no || '',
               email: user?.email || '',
               role: user?.role || '',
+              tehsil: user?.tehsil || '',
               is_registered: (user as { is_registered: boolean }).is_registered,
             }),
           );
@@ -143,14 +146,13 @@ const CitizenDashboard = () => {
     [user, userToken],
   );
 
-  /** Navigate to profile screen */
   const handleProfileReminder = useCallback(() => {
     remindRef.current?.close();
     navigation.navigate('profile');
   }, [navigation]);
 
   const responderList = () => {
-    navigation.navigate('respondersList');
+    // navigation.navigate('respondersList');
   };
 
   return (
@@ -158,15 +160,26 @@ const CitizenDashboard = () => {
       <DashBoardHeader />
 
       <View style={styles.mapContainer}>
-        <OpenStreetMap
-          list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
-        />
+        {tabs ? (
+          // <OpenStreetMap
+          //   list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
+          // />
+          <HomeScreen />
+        ) : (
+          <OpenStreetMap
+            list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
+          />
+        )}
       </View>
 
       <View style={styles.sideBtns}>
-        <TouchableOpacity onPress={responderList}>
+        <TouchableOpacity onPress={() => settabs(!tabs)}>
           <Image
-            source={require('../../assets/res1.png')}
+            source={
+              tabs
+                ? require('../../assets/maps.png')
+                : require('../../assets/res1.png')
+            }
             resizeMode="contain"
             style={{ width: 70, height: 70 }}
           />
@@ -207,9 +220,9 @@ const CitizenDashboard = () => {
       {/* <PasswordChanged ref={showHelfRef} onUpdatePress={() => ''} /> */}
       <SuccessScreen ref={successRef} />
 
-      <View style={{ position: 'absolute', marginTop: 100 }}>
+      {/* <View style={{ position: 'absolute', marginTop: 100 }}>
         <Button title="Show Alert" onPress={() => setVisible(true)} />
-      </View>
+      </View> */}
       <AlertModal
         visible={visible}
         onAcknowledge={() => {
