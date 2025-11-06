@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/RootReducer';
 import ApiManager from '../apis/ApiManager';
 import GetLocation from 'react-native-get-location';
+import { TEXT } from '../i18n/locales/Text';
 
 const defaultImage =
   'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s';
@@ -192,7 +193,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           paddingBottom: 2,
         }}
       >
-        <Text>Default view: Incidents within 2 km around you.</Text>
+        <Text>{TEXT.default_view_incidents()}</Text>
       </View>
       {CurrentLocation && (
         <MapView

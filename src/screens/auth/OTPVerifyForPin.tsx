@@ -140,8 +140,10 @@ export default function OTPVerifyForPin() {
           />
         </View>
 
-        <Text style={styles.title}>OTP Verification</Text>
-        <Text style={styles.description}>Please enter the OTP sent to</Text>
+        <Text style={styles.title}>{TEXT.otp_verification()}</Text>
+        <Text style={styles.description}>
+          {TEXT.please_enter_otp_sent_to()}
+        </Text>
         <View style={styles.phoneContainer}>
           <Text style={styles.phoneNumber}>{userData.data.mobile_no}</Text>
           <TouchableOpacity

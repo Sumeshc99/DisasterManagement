@@ -10,17 +10,31 @@ export const TEXT = {
     ),
   enter_phone_number: () => t('enter_phone_number', 'Enter your phone number'),
   your_phone_number: () => t('your_phone_number', 'Your Phone Number'),
+  phone_number_is_required: () =>
+    t('phone_number_is_required', 'Phone number is required'),
   select_taluka: () => t('select_taluka', 'Select Tehsil'),
   select_tehsil: () => t('select_tehsil', 'Select Tehsil'),
+  tehsil_is_required: () => t('tehsil_is_required', 'Tehsil is required'),
   login: () => t('login', 'Login'),
   please_enter_pin_code: () =>
     t('please_enter_pin_code', 'Please use your PIN code to log in'),
+  enter_valid_10_digit_number: () =>
+    t('enter_valid_10_digit_number', 'Enter a valid 10-digit number'),
+  otp_verification: () => t('otp_verification', 'OTP Verification'),
+  please_enter_otp_sent_to: () =>
+    t('please_enter_otp_sent_to', 'Please enter the OTP sent to'),
   forgot_pin: () => t('forgot_pin', 'Forgot PIN...'),
   resend_otp: () => t('resend_otp', 'Resend OTP'),
   next: () => t('next', 'Next'),
   otp_expire_in: () => t('otp_expire_in', 'OTP will expired in '),
   submit: () => t('submit', 'Submit'),
-
+  default_view_incidents: () =>
+    t(
+      'default_view_incidents',
+      'Default view: Incidents within 2 km around you.',
+    ),
+  securely_reset_your_pin: () =>
+    t('securely_reset_your_pin', 'Securely reset your PIN in minutes'),
   please_complete_profile: () =>
     t('please_complete_profile', 'Please complete your profile'),
   full_name: () => t('full_name', 'Full Name'),

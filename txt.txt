@@ -40,3 +40,8 @@ Secondary Contact Name
 weather
 help
 responders
+
+\\\\\\\\\\\\\\\\
+PIN Reset
+New PIN
+Confirm PIN

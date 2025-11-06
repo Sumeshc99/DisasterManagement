@@ -36,7 +36,7 @@ export default function PinResetScreen() {
       return;
     }
     if (newPin !== confirmPin) {
-      setError('PINs do not match. Please re-enter.');
+      setError('PIN do not match. Please re-enter.');
       return;
     }
 
@@ -81,9 +81,7 @@ export default function PinResetScreen() {
 
         {/* Title */}
         <Text style={styles.title}>PIN Reset</Text>
-        <Text style={styles.description}>
-          Securely reset your PIN in minutes.
-        </Text>
+        <Text style={styles.description}>{TEXT.securely_reset_your_pin()}</Text>
 
         {/* New PIN */}
         <View style={styles.pinSection}>
@@ -108,7 +106,7 @@ export default function PinResetScreen() {
         </View>
 
         {/* Error Message */}
-        {error ? <Text style={styles.errorText}>⚠ {error}</Text> : null}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* Submit Button */}
         <TouchableOpacity

@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
     borderColor: 'red',
   },
   errorText: {
-    marginTop: 4,
     color: 'red',
     fontSize: 12,
   },

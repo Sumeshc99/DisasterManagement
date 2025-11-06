@@ -49,25 +49,25 @@ const LoginScreen = () => {
   });
 
   useEffect(() => {
+    const getTahsil = () => {
+      showLoader();
+      ApiManager.tahsilList()
+        .then(resp => {
+          if (resp?.data?.success) {
+            settahsilList(
+              (resp?.data?.data?.tehsils || []).map((item: any) => ({
+                label: item.Tehsil,
+                value: item.id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('error', err.response))
+        .finally(() => hideLoader());
+    };
+
     getTahsil();
   }, []);
-
-  const getTahsil = () => {
-    showLoader();
-    ApiManager.tahsilList()
-      .then(resp => {
-        if (resp?.data?.success) {
-          settahsilList(
-            (resp?.data?.data?.tehsils || []).map((item: any) => ({
-              label: item.Tehsil,
-              value: item.id,
-            })),
-          );
-        }
-      })
-      .catch(err => console.log('error', err.response))
-      .finally(() => hideLoader());
-  };
 
   const handleLogin = async (data: LoginFormData) => {
     const { phone, tehsil } = data;
@@ -134,10 +134,10 @@ const LoginScreen = () => {
               placeholder={TEXT.enter_phone_number()}
               keyboardType="number-pad"
               rules={{
-                required: 'Phone number is required',
+                required: TEXT.phone_number_is_required(),
                 pattern: {
                   value: /^[0-9]{10}$/,
-                  message: 'Enter a valid 10-digit number',
+                  message: TEXT.enter_valid_10_digit_number(),
                 },
               }}
               error={errors.phone?.message as string}
@@ -148,7 +148,7 @@ const LoginScreen = () => {
               label={TEXT.select_tehsil()}
               placeholder={TEXT.select_tehsil()}
               control={control}
-              rules={{ required: 'Tehsil is required' }}
+              rules={{ required: TEXT.tehsil_is_required() }}
               items={tahsilList}
               errors={errors}
             />
