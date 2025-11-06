@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  Button,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +21,10 @@ import AlertModal from '../../components/AlertModal';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import RespondersList from './pages/RespondersList';
 import RightDrawer from '../../components/RightDrawer';
+import Maps from '../../assets/svg/maps.svg';
+import Weather from '../../assets/svg/wea.svg';
+import Help from '../../assets/svg/help.svg';
+import Dis from '../../assets/svg/dis.svg';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -153,32 +151,35 @@ const CitizenDashboard = () => {
       </View>
 
       <View style={styles.sideBtns}>
-        <TouchableOpacity onPress={() => settabs(!tabs)}>
-          <Image
-            source={
-              tabs
-                ? require('../../assets/maps.png')
-                : require('../../assets/res1.png')
-            }
-            resizeMode="contain"
-            style={{ width: 60, height: 60 }}
-          />
+        <TouchableOpacity
+          style={{ alignItems: 'center' }}
+          onPress={() => settabs(!tabs)}
+        >
+          <View style={styles.flotingBtn}>
+            {tabs ? (
+              <Maps width={26} height={26} />
+            ) : (
+              <Dis width={26} height={26} />
+            )}
+          </View>
+          <Text style={styles.text}>{tabs ? 'Maps' : 'Responders'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => showHelfRef.current?.open()}>
-          <Image
-            source={require('../../assets/res2.png')}
-            resizeMode="contain"
-            style={{ width: 60, height: 60 }}
-          />
+        <TouchableOpacity
+          style={{ alignItems: 'center' }}
+          onPress={() => showHelfRef.current?.open()}
+        >
+          <View style={styles.flotingBtn}>
+            <Help width={26} height={26} />
+          </View>
+          <Text style={styles.text}>Help</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Image
-            source={require('../../assets/res3.png')}
-            resizeMode="contain"
-            style={{ width: 60, height: 60 }}
-          />
+        <TouchableOpacity style={{ alignItems: 'center' }}>
+          <View style={styles.flotingBtn}>
+            <Weather width={26} height={26} />
+          </View>
+          <Text style={styles.text}>Weather</Text>
         </TouchableOpacity>
       </View>
 
@@ -249,5 +250,26 @@ const styles = StyleSheet.create({
     bottom: 80,
     right: 10,
     gap: 14,
+    width: 70,
+  },
+  flotingBtn: {
+    borderWidth: 2,
+    borderColor: COLOR.white,
+    backgroundColor: COLOR.blue,
+    padding: 6,
+    borderRadius: 50,
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 10,
+    backgroundColor: COLOR.darkGray,
+    color: COLOR.white,
+    fontWeight: 500,
+    paddingHorizontal: 4,
+    marginTop: 2,
+    borderRadius: 4,
   },
 });
