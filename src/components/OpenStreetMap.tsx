@@ -260,7 +260,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           </Text>
         </View>
         <Text style={{ fontSize: 16, marginTop: 10, color: COLOR.white }}>
-          Nearby Live Incident
+          {TEXT.nearby_live_incident()}
         </Text>
       </View>
     </View>

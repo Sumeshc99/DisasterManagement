@@ -14,6 +14,7 @@ import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from './AppNavigation';
+import { TEXT } from '../i18n/locales/Text';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              Home
+              {TEXT.home()}
             </Text>
           ),
           tabBarIcon: ({ focused }) => (
@@ -94,7 +95,7 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              Community
+              {TEXT.community()}
             </Text>
           ),
           tabBarIcon: ({ focused }) => (

@@ -64,4 +64,7 @@ export const TEXT = {
     t('enter_primary_mobile_number', 'Enter primary mobile number'),
   alternate_mobile_number: () =>
     t('alternate_mobile_number', 'Alternate Mobile Number'),
+  home: () => t('home', 'Home'),
+  community: () => t('community', 'Community'),
+  nearby_live_incident: () => t('nearby_live_incident', 'Nearby Live Incident'),
 };

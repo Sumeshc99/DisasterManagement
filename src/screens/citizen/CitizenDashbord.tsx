@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Button,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -176,6 +182,7 @@ const CitizenDashboard = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Bottem sheets  */}
       <CompleteProfileSheet
         ref={sheetRef}
         data=""
@@ -183,7 +190,9 @@ const CitizenDashboard = () => {
       />
 
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
+
       <HelplineDetails ref={showHelfRef} onClose={() => ''} />
+
       <ChangePinSheet
         ref={changePassRef}
         onUpdatePress={() => {
@@ -191,12 +200,12 @@ const CitizenDashboard = () => {
           successRef.current?.open();
         }}
       />
-      {/* <PasswordChanged ref={showHelfRef} onUpdatePress={() => ''} /> */}
+
       <SuccessScreen ref={successRef} />
 
-      {/* <View style={{ position: 'absolute', marginTop: 100 }}>
+      <View style={{ position: 'absolute', marginTop: 100 }}>
         <Button title="Show Alert" onPress={() => setVisible(true)} />
-      </View> */}
+      </View>
 
       <AlertModal
         visible={visible}
