@@ -55,7 +55,10 @@ const CompleteProfileSheet = forwardRef<
           <Text style={styles.headerTitle}>
             {TEXT.please_complete_profile()}
           </Text>
-          <TouchableOpacity onPress={() => (ref as any)?.current?.close()}>
+          <TouchableOpacity
+            style={{ position: 'absolute', right: 1 }}
+            onPress={() => (ref as any)?.current?.close()}
+          >
             <Image
               source={require('../../assets/cancel.png')}
               style={{ width: 30, height: 30 }}
@@ -132,12 +135,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
   },
   headerTitle: {
+    marginTop: 10,
     fontSize: 18,
     fontWeight: '600',
     color: COLOR.blue,

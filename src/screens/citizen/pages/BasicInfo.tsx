@@ -1,6 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Control, FieldErrors, UseFormHandleSubmit } from 'react-hook-form';
+import {
+  Control,
+  FieldErrors,
+  UseFormHandleSubmit,
+  useWatch,
+} from 'react-hook-form';
 import { COLOR } from '../../../themes/Colors';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import DropDownInput from '../../../components/inputs/DropDownInput';
@@ -10,6 +15,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 interface BasicInfoProps {
   control: Control<any>;
   errors: FieldErrors;
+  saveInDraft: Function;
   handleSubmit: UseFormHandleSubmit<any>;
   onSubmit: (data: any) => void;
 }
@@ -17,9 +23,12 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({
   control,
   errors,
+  saveInDraft,
   handleSubmit,
   onSubmit,
 }) => {
+  const formValues = useWatch({ control });
+
   return (
     <View style={styles.form}>
       <FormTextInput
@@ -150,7 +159,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
 
       {/* Submit Button */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.submitButton} onPress={() => ''}>
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={() => saveInDraft(formValues)}
+        >
           <Text style={styles.submitButtonText}>Save as draft</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -196,11 +208,11 @@ const styles = StyleSheet.create({
 });
 
 const blocks = [
-  { label: 'Block 1', value: '1' },
-  { label: 'Block 2', value: '2' },
-  { label: 'Block 3', value: '3' },
-  { label: 'Block 4', value: '4' },
-  { label: 'Block 5', value: '5' },
+  { label: 'Block 1', value: 1 },
+  { label: 'Block 2', value: 2 },
+  { label: 'Block 3', value: 3 },
+  { label: 'Block 4', value: 4 },
+  { label: 'Block 5', value: 5 },
 ];
 
 const bloodGroups = [

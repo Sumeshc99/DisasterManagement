@@ -9,7 +9,9 @@ export const TEXT = {
       'Please enter your Mobile Number and Tehsil',
     ),
   enter_phone_number: () => t('enter_phone_number', 'Enter your phone number'),
+  your_phone_number: () => t('your_phone_number', 'Your Phone Number'),
   select_taluka: () => t('select_taluka', 'Select Tehsil'),
+  select_tehsil: () => t('select_tehsil', 'Select Tehsil'),
   login: () => t('login', 'Login'),
   please_enter_pin_code: () =>
     t('please_enter_pin_code', 'Please use your PIN code to log in'),

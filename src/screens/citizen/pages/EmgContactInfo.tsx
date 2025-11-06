@@ -10,7 +10,6 @@ import {
 import {
   Control,
   Controller,
-  FieldErrors,
   UseFormHandleSubmit,
   UseFormSetValue,
   UseFormWatch,
@@ -20,6 +19,7 @@ import FormTextInput from '../../../components/inputs/FormTextInput';
 import DropDownInput from '../../../components/inputs/DropDownInput';
 import { COLOR } from '../../../themes/Colors';
 import { TEXT } from '../../../i18n/locales/Text';
+import { WIDTH } from '../../../themes/AppConst';
 
 const relations = [
   { label: 'Father', value: 'father' },
@@ -89,17 +89,19 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
           <View style={styles.documentsContainer}>
             {document ? (
               <View style={styles.documentCard}>
-                <Image
-                  source={{ uri: document?.uri || document }}
-                  style={styles.documentImage}
-                  resizeMode="cover"
-                />
-                <TouchableOpacity
-                  style={styles.removeDocButton}
-                  onPress={removeDocument}
-                >
-                  <Text style={styles.removeDocIcon}>✕</Text>
-                </TouchableOpacity>
+                <View style={{ width: WIDTH(20) }}>
+                  <Image
+                    source={{ uri: document?.uri || document }}
+                    style={styles.documentImage}
+                    resizeMode="contain"
+                  />
+                  <TouchableOpacity
+                    style={styles.removeDocButton}
+                    onPress={removeDocument}
+                  >
+                    <Text style={styles.removeDocIcon}>✕</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             ) : (
               <TouchableOpacity
@@ -246,8 +248,9 @@ const styles = StyleSheet.create({
     borderColor: COLOR.blue,
     position: 'relative',
     overflow: 'hidden',
+    padding: 10,
   },
-  documentImage: { width: '100%', height: '100%' },
+  documentImage: { height: '100%', borderRadius: 4 },
   removeDocButton: {
     position: 'absolute',
     top: -5,

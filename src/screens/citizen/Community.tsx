@@ -33,7 +33,7 @@ const Community = () => {
           justifyContent: 'center',
         }}
       >
-        <Button title="Log out" onPress={() => logOut()} />
+        {/* <Button title="Log out" onPress={() => logOut()} /> */}
       </View>
     </SafeAreaView>
   );

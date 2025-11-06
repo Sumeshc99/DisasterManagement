@@ -6,6 +6,7 @@ import OTPInput from '../OTPInput';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
 
 interface Props {
   onUpdatePress: () => void;
@@ -13,6 +14,7 @@ interface Props {
 
 const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
   ({ onUpdatePress }, ref) => {
+    const showSnackbar = useSnackbar();
     const { user, userToken } = useSelector((state: RootState) => state.auth);
 
     const [currentPin, setCurrentPin] = useState('');
@@ -33,9 +35,15 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
         if (resp?.data?.status) {
           setError('');
           onUpdatePress();
+        } else {
+          setError(resp?.data?.error || 'Unable to change PIN');
         }
-      } catch (error) {
-        console.log('Error changing pin:', error);
+      } catch (error: any) {
+        const apiError = error?.response?.data?.error || 'Something went wrong';
+        console.log('Error changing pin:', apiError);
+
+        setError(apiError);
+        showSnackbar(apiError, 'error');
       }
     };
 
@@ -51,7 +59,6 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
       setError('');
       ChangeCurrentPin();
-      // otpRef.current?.open();
     };
 
     return (
@@ -80,7 +87,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
             <Text style={styles.title}>Change PIN</Text>
 
-            <View style={{ gap: 10, marginTop: 30, marginBottom: 40 }}>
+            <View style={{ gap: 10, marginTop: 30, marginBottom: 10 }}>
               <View>
                 <Text style={styles.txt}>Current PIN</Text>
                 <OTPInput
@@ -112,9 +119,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               </View>
             </View>
 
-            {error ? (
-              <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
-            ) : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity
               style={styles.updateButton}
@@ -125,17 +130,6 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             </TouchableOpacity>
           </View>
         </RBSheet>
-
-        {/* {showOtp && (
-          <OtpVerificationSheet
-            ref={otpRef}
-            onOtpVerified={() => {
-              otpRef.current?.close();
-              (ref as any)?.current?.close();
-              ChangeCurrentPin();
-            }}
-          />
-        )} */}
       </>
     );
   },
@@ -177,8 +171,13 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  txt: {
+    fontWeight: '500',
+    marginBottom: 4,
+  },
   updateButton: {
     backgroundColor: COLOR.blue,
+    marginTop: 20,
     borderRadius: 25,
     paddingVertical: 12,
     paddingHorizontal: 40,
@@ -191,9 +190,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  txt: {
-    fontWeight: '500',
-    marginBottom: 4,
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
+    paddingHorizontal: 10,
   },
 });
 

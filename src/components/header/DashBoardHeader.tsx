@@ -4,10 +4,19 @@ import { COLOR } from '../../themes/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
-const DashBoardHeader = () => {
+interface props {
+  drawer?: boolean;
+  setDrawer?: any;
+}
+
+const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const sheetRef = useRef<any>(null);
+
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
 
   return (
     <View style={styles.container}>
@@ -16,7 +25,7 @@ const DashBoardHeader = () => {
           source={require('../../assets/location.png')}
           style={styles.iconSmall}
         />
-        <Text style={styles.locationText}>Nagpur City</Text>
+        <Text style={styles.locationText}>{user?.tehsil}</Text>
       </View>
 
       <Image
@@ -43,10 +52,13 @@ const DashBoardHeader = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('profile')}
+          // onPress={() => navigation.navigate('profile')}
+          onPress={() => setDrawer(true)}
           style={styles.userCircle}
         >
-          <Text style={styles.userText}>UN</Text>
+          <Text style={styles.userText}>
+            {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'UN'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -77,8 +89,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   logo: {
+    position: 'absolute',
     width: 120,
     height: 60,
+    left: '50%',
+    transform: [{ translateX: -45 }],
   },
   rightContainer: {
     flexDirection: 'row',

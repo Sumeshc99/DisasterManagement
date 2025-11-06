@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Keyboard } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Controller, Control } from 'react-hook-form';
+import { COLOR } from '../../themes/Colors';
 
 interface DropDownInputProps {
   name: string;
@@ -31,6 +32,11 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
 
   const isRequired = !!rules?.required;
 
+  const handleOpen = () => {
+    Keyboard.dismiss(); // 👈 Hide keyboard when dropdown opens
+    setOpen(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
@@ -48,6 +54,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             value={value}
             items={localItems}
             setOpen={setOpen}
+            onOpen={handleOpen} // 👈 added
             setValue={callback => {
               const newValue = callback(value);
               onChange(newValue);
@@ -62,6 +69,8 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             ]}
             dropDownContainerStyle={styles.dropdownContainer}
             textStyle={styles.textStyle}
+            selectedItemContainerStyle={styles.selectedItemContainerStyle}
+            selectedItemLabelStyle={styles.selectedItemLabelStyle}
           />
         )}
       />
@@ -76,20 +85,13 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
 export default DropDownInput;
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
+  container: { marginBottom: 16 },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 6,
   },
-  label: {
-    fontSize: 16,
-    color: '#333',
-    alignSelf: 'flex-start',
-    fontWeight: '500',
-  },
+  label: { fontSize: 16, color: '#000', fontWeight: '500' },
   requiredMark: {
     color: 'red',
     marginLeft: 4,
@@ -97,24 +99,26 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   dropdown: {
-    borderRadius: 6,
-    height: 50,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    height: 46,
+    paddingHorizontal: 10,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
     zIndex: 100,
   },
   dropdownContainer: {
-    borderColor: '#ccc',
+    padding: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
   },
-  textStyle: {
-    fontSize: 16,
-    color: '#000',
-  },
-  placeholderStyle: {
-    fontSize: 16,
-    color: '#999',
-  },
-  error: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 4,
-  },
+  textStyle: { fontSize: 16, color: '#333', marginHorizontal: 6 },
+  placeholderStyle: { fontSize: 16, color: '#888' },
+  selectedItemContainerStyle: { backgroundColor: COLOR.blue, borderRadius: 4 },
+  selectedItemLabelStyle: { color: '#fff', fontWeight: '500' },
+  error: { color: 'red', fontSize: 12, marginTop: 4 },
 });

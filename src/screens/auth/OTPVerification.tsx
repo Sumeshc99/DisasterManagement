@@ -64,8 +64,6 @@ export default function OTPVerification() {
     showLoader();
     ApiManager.verifyOtp(body)
       .then(resp => {
-        console.log('aaaa', resp?.data?.data);
-
         if (resp?.data?.status) {
           dispatch(
             setUser({
@@ -74,6 +72,7 @@ export default function OTPVerification() {
               mobile_no: resp?.data?.data?.mobile_no,
               email: resp?.data?.data?.email,
               role: resp?.data?.data?.role,
+              tehsil: userData?.data?.tehsil,
               is_registered: resp?.data?.data?.is_registered,
             }),
           );
@@ -175,7 +174,7 @@ export default function OTPVerification() {
         {timeLeft > 0 ? (
           <Text style={styles.timerText}>
             {TEXT.otp_expire_in()}:{' '}
-            <Text style={styles.timerValue}>{formatTime()}</Text>
+            <Text style={styles.timerValue}>{formatTime()} minutes</Text>
           </Text>
         ) : (
           <TouchableOpacity

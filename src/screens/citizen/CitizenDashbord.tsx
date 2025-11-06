@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  Button,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +19,8 @@ import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
 import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import AlertModal from '../../components/AlertModal';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
+import RespondersList from './pages/RespondersList';
+import RightDrawer from '../../components/RightDrawer';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -43,7 +39,10 @@ const CitizenDashboard = () => {
   const [policeStation, setpoliceStation] = useState<any[]>([]);
   const [sdrfCenter, setsdrfCenter] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
+  const [tabs, settabs] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  GetCurrentLocation();
   useBackExit();
 
   useEffect(() => {
@@ -84,20 +83,6 @@ const CitizenDashboard = () => {
   }, []);
 
   useEffect(() => {
-    const fetchIncidentList = async () => {
-      try {
-        const resp = await ApiManager.incidentList(userToken);
-        if (resp?.data?.success) {
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
-
-    fetchIncidentList();
-  }, []);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
       if (user?.full_name === '') {
         sheetRef.current?.open();
@@ -108,8 +93,6 @@ const CitizenDashboard = () => {
 
     return () => clearTimeout(timer);
   }, [user]);
-
-  GetCurrentLocation();
 
   const handleShortProfile = useCallback(
     async (data: any) => {
@@ -130,6 +113,7 @@ const CitizenDashboard = () => {
               mobile_no: user?.mobile_no || '',
               email: user?.email || '',
               role: user?.role || '',
+              tehsil: user?.tehsil || '',
               is_registered: (user as { is_registered: boolean }).is_registered,
             }),
           );
@@ -143,32 +127,35 @@ const CitizenDashboard = () => {
     [user, userToken],
   );
 
-  /** Navigate to profile screen */
   const handleProfileReminder = useCallback(() => {
     remindRef.current?.close();
     navigation.navigate('profile');
   }, [navigation]);
 
-  const responderList = () => {
-    navigation.navigate('respondersList');
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <DashBoardHeader />
+      <DashBoardHeader drawer={drawerOpen} setDrawer={setDrawerOpen} />
 
       <View style={styles.mapContainer}>
-        <OpenStreetMap
-          list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
-        />
+        {tabs ? (
+          <RespondersList />
+        ) : (
+          <OpenStreetMap
+            list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
+          />
+        )}
       </View>
 
       <View style={styles.sideBtns}>
-        <TouchableOpacity onPress={responderList}>
+        <TouchableOpacity onPress={() => settabs(!tabs)}>
           <Image
-            source={require('../../assets/res1.png')}
+            source={
+              tabs
+                ? require('../../assets/maps.png')
+                : require('../../assets/res1.png')
+            }
             resizeMode="contain"
-            style={{ width: 70, height: 70 }}
+            style={{ width: 60, height: 60 }}
           />
         </TouchableOpacity>
 
@@ -176,15 +163,15 @@ const CitizenDashboard = () => {
           <Image
             source={require('../../assets/res2.png')}
             resizeMode="contain"
-            style={{ width: 70, height: 70 }}
+            style={{ width: 60, height: 60 }}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => changePassRef.current?.open()}>
+        <TouchableOpacity>
           <Image
             source={require('../../assets/res3.png')}
             resizeMode="contain"
-            style={{ width: 70, height: 70 }}
+            style={{ width: 60, height: 60 }}
           />
         </TouchableOpacity>
       </View>
@@ -207,9 +194,10 @@ const CitizenDashboard = () => {
       {/* <PasswordChanged ref={showHelfRef} onUpdatePress={() => ''} /> */}
       <SuccessScreen ref={successRef} />
 
-      <View style={{ position: 'absolute', marginTop: 100 }}>
+      {/* <View style={{ position: 'absolute', marginTop: 100 }}>
         <Button title="Show Alert" onPress={() => setVisible(true)} />
-      </View>
+      </View> */}
+
       <AlertModal
         visible={visible}
         onAcknowledge={() => {
@@ -223,6 +211,15 @@ const CitizenDashboard = () => {
       />
 
       <RejectReasonSheet ref={rejectRef} />
+
+      <RightDrawer
+        open={drawerOpen}
+        changePass={() => {
+          setDrawerOpen(false);
+          changePassRef.current?.open();
+        }}
+        onClose={() => setDrawerOpen(false)}
+      />
     </SafeAreaView>
   );
 };

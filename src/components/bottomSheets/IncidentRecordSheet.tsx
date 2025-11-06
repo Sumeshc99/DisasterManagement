@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
+import ApiManager from '../../apis/ApiManager';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 interface Incident {
   id: string;
@@ -20,7 +23,7 @@ interface Incident {
 
 interface Props {}
 
-const incidents: Incident[] = [
+const dummyIncidents: Incident[] = [
   {
     id: 'NAG-060825-CT-780',
     title: 'Fire',
@@ -55,11 +58,48 @@ const incidents: Incident[] = [
   },
 ];
 
+const formatDateTime = (isoString: string) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+
+  const formattedDate = date.toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  });
+
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `Date: ${formattedDate}   Time: ${formattedTime}`;
+};
+
 const IncidentRecordsSheet = forwardRef<
   React.ComponentRef<typeof RBSheet>,
   Props
 >(({}, ref) => {
-  const [tab, setTab] = useState<'my' | 'assigned'>('my');
+  const { userToken } = useSelector((state: RootState) => state.auth);
+
+  const [incidentList, setIncidentList] = useState<Incident[]>([]);
+  const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchIncidentList = async () => {
+      try {
+        const resp = await ApiManager.incidentList(userToken);
+        if (resp?.data?.success) {
+          setIncidentList(resp?.data?.data?.results);
+        }
+      } catch (err) {
+        console.error('Error fetching incident list:', err);
+      }
+    };
+
+    fetchIncidentList();
+  }, [userToken]);
 
   const renderStatus = (status: Incident['status']) => {
     const bgColor =
@@ -80,19 +120,15 @@ const IncidentRecordsSheet = forwardRef<
     );
   };
 
-  const renderItem = ({ item }: { item: Incident }) => (
+  const renderItem = ({ item }: any) => (
     <View style={styles.card}>
       <View style={styles.headerRow}>
-        <Text style={styles.incidentId}>Incident ID - {item.id}</Text>
+        <Text style={styles.incidentId}>Incident ID - {item.incident_id}</Text>
         {renderStatus(item.status)}
       </View>
-      <TouchableOpacity>
-        <Text style={styles.title}>{item.title}</Text>
-      </TouchableOpacity>
-      <Text style={styles.location}>{item.location}</Text>
-      <Text style={styles.date}>
-        Date: {item.date} Time: {item.time}
-      </Text>
+      <Text style={styles.title}>{item.incident_type_name}</Text>
+      <Text style={styles.location}>{item.address}</Text>
+      <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
       <View style={styles.divider} />
     </View>
   );
@@ -115,24 +151,22 @@ const IncidentRecordsSheet = forwardRef<
         {/* Tabs */}
         <View style={styles.tabContainer}>
           <TouchableOpacity
-            style={[styles.tabButton, tab === 'my' && styles.tabActive]}
-            onPress={() => setTab('my')}
+            style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
+            onPress={() => setIsAssignedTab(false)}
           >
             <Text
-              style={[styles.tabText, tab === 'my' && styles.tabTextActive]}
+              style={[styles.tabText, !isAssignedTab && styles.tabTextActive]}
             >
               My Incident Records
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={[styles.tabButton, tab === 'assigned' && styles.tabActive]}
-            onPress={() => setTab('assigned')}
+            style={[styles.tabButton, isAssignedTab && styles.tabActive]}
+            onPress={() => setIsAssignedTab(true)}
           >
             <Text
-              style={[
-                styles.tabText,
-                tab === 'assigned' && styles.tabTextActive,
-              ]}
+              style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
             >
               Assigned Incident Records
             </Text>
@@ -140,12 +174,21 @@ const IncidentRecordsSheet = forwardRef<
         </View>
 
         {/* Incident List */}
-        <FlatList
-          data={incidents}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-        />
+        {isAssignedTab ? (
+          <FlatList
+            data={incidentList}
+            renderItem={renderItem}
+            contentContainerStyle={{ marginTop: 10 }}
+            keyExtractor={(item, index) =>
+              item.id?.toString() || index.toString()
+            }
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No incident records found</Text>
+          </View>
+        )}
       </View>
     </RBSheet>
   );
@@ -181,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#F2F5FA',
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   tabButton: {
     flex: 1,
@@ -215,6 +258,7 @@ const styles = StyleSheet.create({
     color: COLOR.blue,
     fontSize: 16,
     fontWeight: '700',
+    marginBottom: 5,
   },
   location: {
     color: '#666',
@@ -239,6 +283,16 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 11,
     fontWeight: '600',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  emptyText: {
+    color: '#999',
+    fontSize: 14,
+    fontStyle: 'italic',
   },
 });
 

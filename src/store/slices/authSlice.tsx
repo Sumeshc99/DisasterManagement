@@ -6,6 +6,7 @@ interface User {
   mobile_no: string;
   email: string;
   role: string;
+  tehsil: string;
   is_registered: boolean;
 }
 

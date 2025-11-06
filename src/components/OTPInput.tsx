@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import OtpInputs from 'react-native-otp-inputs';
+import { WIDTH } from '../themes/AppConst';
 
 interface OTPInputProps {
   length?: number;
@@ -38,8 +39,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   otpInput: {
-    width: 46,
-    height: 46,
+    width: WIDTH(11),
+    height: WIDTH(12),
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,

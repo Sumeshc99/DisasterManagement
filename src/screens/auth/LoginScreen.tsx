@@ -128,8 +128,8 @@ const LoginScreen = () => {
             </Text>
 
             <FormTextInput
-              label="Your Phone Number"
               name="phone"
+              label={TEXT.your_phone_number()}
               control={control}
               placeholder={TEXT.enter_phone_number()}
               keyboardType="number-pad"
@@ -145,8 +145,8 @@ const LoginScreen = () => {
 
             <DropDownInput
               name="tehsil"
-              label={TEXT.select_taluka()}
-              placeholder={TEXT.select_taluka()}
+              label={TEXT.select_tehsil()}
+              placeholder={TEXT.select_tehsil()}
               control={control}
               rules={{ required: 'Tehsil is required' }}
               items={tahsilList}

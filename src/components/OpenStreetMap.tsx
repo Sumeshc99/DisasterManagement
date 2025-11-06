@@ -1,21 +1,27 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import MapView, { Callout, Circle, Marker, UrlTile } from 'react-native-maps';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/RootReducer';
-import IncidentModal from './IncidentModal';
+import ApiManager from '../apis/ApiManager';
+import GetLocation from 'react-native-get-location';
+
+const defaultImage =
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s';
 
 interface Props {
   list: any;
-}
-
-interface Location {
-  latitude: number;
-  longitude: number;
 }
 
 interface ResourceItem {
@@ -27,35 +33,70 @@ interface ResourceItem {
   resource_type: string;
 }
 
-interface IncidentItem {
-  id: number;
-  title: string;
-  latitude: string;
-  longitude: string;
-  type: string;
-  severity: string;
-  time: string;
-  img?: string;
-  description: string;
-}
-
 const OpenStreetMap: React.FC<Props> = ({ list }) => {
-  const location = useSelector((state: RootState) => state.location);
-  const [openModal, setopenModal] = useState(false);
-  const [selectedIncident, setselectedIncident] = useState('');
-
   const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
-  const defaultImage =
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s';
+
+  const location = useSelector(
+    (state: RootState) => state?.location?.currentLocation,
+  );
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
+
+  const [incidentList, setincidentList] = useState([]);
+  const [responders, setresponders] = useState([]);
 
   const CurrentLocation = {
-    // latitude: location.currentLocation.latitude || 21.1458,
-    // longitude: location.currentLocation.longitude || 79.0882,
-    latitude: 21.1458,
-    longitude: 79.0882,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
+    latitude: Number(location.latitude),
+    longitude: Number(location.longitude),
+    latitudeDelta: 0.03,
+    longitudeDelta: 0.03,
   };
+
+  useEffect(() => {
+    fetchCurrentLocation();
+  }, []);
+
+  const fetchCurrentLocation = async () => {
+    try {
+      const location = await GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 5000,
+      });
+
+      console.log('asaas', location);
+    } catch (error) {
+      console.warn('Error getting location:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchIncidentList = async () => {
+      try {
+        const resp = await ApiManager.incidentList(userToken);
+        if (resp?.data?.success) {
+          setincidentList(resp?.data?.data?.results);
+        }
+      } catch (err) {
+        console.error('Error fetching responder list:', err);
+      }
+    };
+
+    fetchIncidentList();
+  }, []);
+
+  useEffect(() => {
+    const fetchResponderList = async () => {
+      try {
+        const resp = await ApiManager.responderList();
+        if (resp?.data?.success) {
+          setresponders(resp?.data?.data?.results);
+        }
+      } catch (err) {
+        console.error('Error fetching responder list:', err);
+      }
+    };
+
+    fetchResponderList();
+  }, []);
 
   const getMarkerIcon = useCallback((type: string) => {
     switch (type) {
@@ -72,10 +113,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     }
   }, []);
 
-  const handleClick = (item: any) => {
-    setselectedIncident(item);
-    setopenModal(true);
-  };
+  const handleClick = (item: any) => {};
 
   const renderMarker = useCallback(
     (item: ResourceItem) => (
@@ -98,83 +136,52 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     [getMarkerIcon],
   );
 
-  // const renderIncedent = useCallback(
-  //   (item: IncidentItem) => (
-  //     <Marker
-  //       key={item.id}
-  //       coordinate={{
-  //         latitude: parseFloat(item.latitude),
-  //         longitude: parseFloat(item.longitude),
-  //       }}
-  //     >
-  //       <View style={{ alignItems: 'center' }}>
-  //         <TouchableOpacity
-  //           onPress={() => handleClick(item)}
-  //           style={styles.infoBox}
-  //         >
-  //           <Image
-  //             source={{ uri: item.img || defaultImage }}
-  //             style={styles.incidentImage}
-  //             resizeMode="cover"
-  //           />
-  //           <View style={{ flex: 1 }}>
-  //             <Text style={styles.incidentTitle} numberOfLines={1}>
-  //               {item.title}
-  //             </Text>
-  //             <Text style={styles.incidentSeverity} numberOfLines={1}>
-  //               Severity: {item.severity}
-  //             </Text>
-  //           </View>
-  //         </TouchableOpacity>
-  //         <Image
-  //           source={require('../assets/markers/incident.png')}
-  //           style={styles.incidentIcon}
-  //           resizeMode="contain"
-  //         />
-  //       </View>
-  //     </Marker>
-  //   ),
-  //   [],
-  // );
-
   const renderIncident = useCallback(
-    (item: IncidentItem) => (
-      <Marker
-        key={item.id}
-        coordinate={{
-          latitude: parseFloat(item.latitude),
-          longitude: parseFloat(item.longitude),
-        }}
-      >
-        <Image
-          source={require('../assets/markers/incident.png')}
-          style={styles.incidentIcon}
-          resizeMode="contain"
-        />
-        <Callout onPress={() => handleClick(item)}>
-          <View style={styles.infoBox}>
+    (item: any) => {
+      return (
+        <Marker
+          key={item.id}
+          coordinate={{
+            latitude: parseFloat(item.latitude),
+            longitude: parseFloat(item.longitude),
+          }}
+        >
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => handleClick(item)}
+              style={styles.infoBox}
+            >
+              <Image
+                source={{ uri: item.img || defaultImage }}
+                style={styles.incidentImage}
+                resizeMode="cover"
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.incidentTitle} numberOfLines={1}>
+                  {item?.incident_type_name}
+                </Text>
+                <Text style={styles.incidentSeverity} numberOfLines={1}>
+                  Severity: {item.severity || 'Medium'}
+                </Text>
+              </View>
+            </TouchableOpacity>
             <Image
-              source={{ uri: item.img || defaultImage }}
-              style={styles.incidentImage}
+              source={require('../assets/markers/incident.png')}
+              style={styles.incidentIcon}
+              resizeMode="contain"
             />
-            <View>
-              <Text style={styles.incidentTitle}>{item.title}</Text>
-              <Text style={styles.incidentSeverity}>
-                Severity: {item.severity}
-              </Text>
-            </View>
           </View>
-        </Callout>
-      </Marker>
-    ),
-    [],
+        </Marker>
+      );
+    },
+    [incidentList],
   );
 
+  const incidents = useMemo(() => incidentList, [incidentList]);
   const { ambulance, hospitalList, policeStation, sdrfCenter } = useMemo(
     () => dummyList,
     [],
   );
-  const incidents = useMemo(() => incidentList, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -187,57 +194,59 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
       >
         <Text>Default view: Incidents within 2 km around you.</Text>
       </View>
-      <MapView
-        style={{ flex: 1 }}
-        initialRegion={CurrentLocation}
-        zoomEnabled={true}
-        scrollEnabled={true}
-        pitchEnabled={true}
-        rotateEnabled={true}
-        showsUserLocation={true}
-        showsCompass={true}
-        showsScale={true}
-      >
-        <UrlTile
-          urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maximumZ={19}
-          flipY={false}
-        />
-
-        {/* ✅ 2 KM Radius Circle */}
-        <Circle
-          center={{
-            latitude: CurrentLocation.latitude,
-            longitude: CurrentLocation.longitude,
-          }}
-          radius={2000} // 2 km
-          strokeWidth={2}
-          strokeColor="rgba(0, 122, 255, 0.8)"
-          fillColor="rgba(0, 122, 255, 0.1)"
-        />
-
-        {/* ✅ User Marker */}
-        <Marker
-          coordinate={{
-            latitude: CurrentLocation.latitude,
-            longitude: CurrentLocation.longitude,
-          }}
-          title="Your Location"
-          description="This is your current position"
+      {CurrentLocation && (
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={CurrentLocation}
+          zoomEnabled={true}
+          scrollEnabled={true}
+          pitchEnabled={true}
+          rotateEnabled={true}
+          showsUserLocation={true}
+          showsCompass={true}
+          showsScale={true}
         >
-          <Image
-            source={require('../assets/markers/marker.png')}
-            style={{ width: 30, height: 30 }}
-            resizeMode="contain"
+          <UrlTile
+            urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maximumZ={19}
+            flipY={false}
           />
-        </Marker>
 
-        {ambulance.map((item: any) => renderMarker(item))}
-        {hospitalList.map((item: any) => renderMarker(item))}
-        {policeStation.map((item: any) => renderMarker(item))}
-        {sdrfCenter.map((item: any) => renderMarker(item))}
-        {incidents.map((item: any) => renderIncident(item))}
-      </MapView>
+          {/* ✅ 2 KM Radius Circle */}
+          <Circle
+            center={{
+              latitude: CurrentLocation.latitude,
+              longitude: CurrentLocation.longitude,
+            }}
+            radius={2000} // 2 km
+            strokeWidth={2}
+            strokeColor="rgba(0, 122, 255, 0.8)"
+            fillColor="rgba(0, 122, 255, 0.1)"
+          />
+
+          {/* ✅ User Marker */}
+          <Marker
+            coordinate={{
+              latitude: CurrentLocation.latitude,
+              longitude: CurrentLocation.longitude,
+            }}
+            title="Your Location"
+            description="This is your current position"
+          >
+            <Image
+              source={require('../assets/markers/marker.png')}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
+          </Marker>
+
+          {ambulance.map((item: any) => renderMarker(item))}
+          {hospitalList.map((item: any) => renderMarker(item))}
+          {policeStation.map((item: any) => renderMarker(item))}
+          {sdrfCenter.map((item: any) => renderMarker(item))}
+          {incidents.map((item: any) => renderIncident(item))}
+        </MapView>
+      )}
 
       <View style={styles.incidentBox}>
         <View style={{ flexDirection: 'row', gap: 20 }}>
@@ -245,18 +254,14 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
             source={require('../assets/incedent.png')}
             style={{ width: WIDTH(10), height: WIDTH(10) }}
           />
-          <Text style={{ fontSize: 30, color: COLOR.white }}>002</Text>
+          <Text style={{ fontSize: 30, color: COLOR.white }}>
+            <Text>{incidentList.length.toString().padStart(3, '0')}</Text>
+          </Text>
         </View>
         <Text style={{ fontSize: 16, marginTop: 10, color: COLOR.white }}>
           Nearby Live Incident
         </Text>
       </View>
-
-      {/* <IncidentModal
-        data={selectedIncident}
-        openModal={openModal}
-        setOpenModal={() => setopenModal(false)}
-      /> */}
     </View>
   );
 };
@@ -271,7 +276,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     width: WIDTH(50),
     borderRadius: 12,
-    padding: 14,
+    padding: 10,
     position: 'absolute',
     top: 26,
   },
@@ -402,7 +407,7 @@ const dummyList = {
 const incidentList = [
   {
     id: 101,
-    title: 'Road Accident - Sadar',
+    incident_type_name: 'Road Accident - Sadar',
     latitude: '21.1605',
     longitude: '79.0723',
     type: 'Accident',
@@ -413,7 +418,7 @@ const incidentList = [
   },
   {
     id: 102,
-    title: 'Fire Breakout - Dharampeth',
+    incident_type_name: 'Fire Breakout - Dharampeth',
     latitude: '21.1472',
     longitude: '79.0679',
     type: 'Fire',
@@ -425,7 +430,7 @@ const incidentList = [
   },
   {
     id: 103,
-    title: 'Medical Emergency - Ramdaspeth',
+    incident_type_name: 'Medical Emergency - Ramdaspeth',
     latitude: '21.1420',
     longitude: '79.0785',
     type: 'Medical',
@@ -438,7 +443,7 @@ const incidentList = [
   },
   {
     id: 104,
-    title: 'Flooded Road - Sitabuldi',
+    incident_type_name: 'Flooded Road - Sitabuldi',
     latitude: '21.1468',
     longitude: '79.0843',
     type: 'Flood',
@@ -450,7 +455,7 @@ const incidentList = [
   },
   {
     id: 105,
-    title: 'Power Outage - Civil Lines',
+    incident_type_name: 'Power Outage - Civil Lines',
     latitude: '21.1575',
     longitude: '79.0711',
     type: 'Infrastructure',
@@ -463,7 +468,7 @@ const incidentList = [
   },
   {
     id: 106,
-    title: 'Fire - Cotton Market',
+    incident_type_name: 'Fire - Cotton Market',
     latitude: '21.1478',
     longitude: '79.0902',
     type: 'Fire',

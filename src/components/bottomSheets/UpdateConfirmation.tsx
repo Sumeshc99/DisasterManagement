@@ -4,13 +4,14 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 
 interface Props {
+  message: string;
   onUpdatePress: () => void;
 }
 
 const UpdateConfirmation = forwardRef<
   React.ComponentRef<typeof RBSheet>,
   Props
->(({ onUpdatePress }, ref) => {
+>(({ message, onUpdatePress }, ref) => {
   return (
     <RBSheet
       ref={ref}
@@ -39,7 +40,7 @@ const UpdateConfirmation = forwardRef<
           style={styles.avatar}
         />
 
-        <Text style={styles.reminderText}>Profile saved successfully</Text>
+        <Text style={styles.reminderText}>{message}</Text>
 
         {/* <TouchableOpacity
           style={styles.updateButton}

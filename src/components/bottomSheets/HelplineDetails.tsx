@@ -105,13 +105,13 @@ const styles = StyleSheet.create({
   content: {
     width: '100%',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 30,
     position: 'relative',
   },
   closeIconContainer: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 20,
+    right: 5,
     zIndex: 1,
   },
   closeIcon: {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     color: COLOR.blue,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 14,
   },
   divider: {
     width: '100%',

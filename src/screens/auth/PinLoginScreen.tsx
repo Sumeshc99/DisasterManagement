@@ -51,8 +51,6 @@ export default function OTPVerification() {
       showLoader();
       ApiManager.verifyPin(body, userData.token)
         .then(resp => {
-          console.log('PIN verification response:', resp.data);
-
           if (resp?.data?.status) {
             showSnackbar('PIN Verified', 'success');
             dispatch(
@@ -62,6 +60,7 @@ export default function OTPVerification() {
                 mobile_no: resp?.data?.data?.mobile_no,
                 email: resp?.data?.data?.email,
                 role: resp?.data?.data?.role,
+                tehsil: userData?.data?.tehsil,
                 is_registered: resp?.data?.data?.is_registered,
               }),
             );
@@ -77,7 +76,7 @@ export default function OTPVerification() {
   };
 
   const handleForgotPin = () => {
-    navigation.navigate('otpVerifyForPin', { data: userData });
+    navigation.replace('otpVerifyForPin', { data: userData });
   };
 
   return (

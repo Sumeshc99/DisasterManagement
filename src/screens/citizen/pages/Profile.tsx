@@ -16,19 +16,38 @@ import { AppStackNavigationProp } from '../../../navigation/AppNavigation';
 import BasicInfo from './BasicInfo';
 import EmgContactInfo from './EmgContactInfo';
 import ApiManager from '../../../apis/ApiManager';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import { WIDTH } from '../../../themes/AppConst';
 import UpdateConfirmation from '../../../components/bottomSheets/UpdateConfirmation';
 import { TEXT } from '../../../i18n/locales/Text';
+import { clearUserDraft, setUserDraft } from '../../../store/slices/draftSlice';
+import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
+import { setUser } from '../../../store/slices/authSlice';
+
+const formatDate = (inputDate: string | Date): string => {
+  const date = new Date(inputDate);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
 
 const Profile: React.FC = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const dispatch = useDispatch();
+
   const statusRef = useRef<any>(null);
+  const draftRef = useRef<any>(null);
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
+  const draft = useSelector((state: RootState) => state?.draft?.user);
+  console.log('user', user);
 
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
   const [userData, setUserData] = useState<any>({});
@@ -78,19 +97,20 @@ const Profile: React.FC = () => {
       if (resp.data.status) {
         const data = resp?.data?.data || {};
         setUserData(data);
+        // console.log('aaaaa', data);
 
         reset({
-          fullName: data?.full_name || '',
-          mobileNumber: data?.mobile || '',
-          email: data?.email || '',
-          district: data?.district_name || '',
-          city: data?.city || '',
-          tehsil: data?.tehsil_name || '',
-          block: data?.block_name || '',
-          pincode: data?.pin_code || '',
-          address: data?.address || '',
-          bloodGroup: data?.blood_group || '',
-          dateOfBirth: data?.dob || '',
+          fullName: draft?.fullName || data?.full_name || '',
+          mobileNumber: draft?.mobileNumber || data?.mobile || '',
+          email: draft?.email || data?.email || '',
+          district: draft?.district || data?.district_name || '',
+          city: draft?.city || data?.city || '',
+          tehsil: draft?.tehsil || data?.tehsil_name || '',
+          block: draft?.block || data?.block_id || '',
+          pincode: draft?.pincode || data?.pin_code || '',
+          address: draft?.address || data?.address || '',
+          bloodGroup: draft?.bloodGroup || data?.blood_group || '',
+          dateOfBirth: draft?.dateOfBirth || formatDate(data?.dob) || '',
           document: data.document_url || null,
           primaryName: data?.primary_contact_name || '',
           primaryRelation: data?.relation || '',
@@ -152,13 +172,25 @@ const Profile: React.FC = () => {
     }
 
     formData.append('save_or_draft', '1');
-
+    showLoader();
     try {
       const resp = await ApiManager.updateUser(formData, userToken);
       console.log('Update response:', resp.data);
 
       if (resp.data.status) {
         console.log('✅ User updated successfully');
+        dispatch(
+          setUser({
+            id: user?.id || '',
+            full_name: user?.full_name || '',
+            mobile_no: user?.mobile_no || '',
+            email: user?.email || '',
+            role: user?.role || '',
+            tehsil: user?.tehsil || '',
+            is_registered: 1,
+          }),
+        );
+        dispatch(clearUserDraft());
         statusRef.current?.open();
         setActiveTab('basic');
       } else {
@@ -167,13 +199,20 @@ const Profile: React.FC = () => {
     } catch (error) {
       // console.error('❌ Error updating user:', error.response);
     } finally {
+      hideLoader();
     }
+  };
+
+  const saveInDraft = (formValues: any) => {
+    dispatch(setUserDraft(formValues));
+    console.log('Draft Saved:', formValues);
+    draftRef.current?.open();
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
-      <DashBoardHeader />
+      <DashBoardHeader setDrawer={() => ''} />
 
       {/* Title Bar */}
       <View style={{ flex: 1, backgroundColor: COLOR.white }}>
@@ -259,6 +298,7 @@ const Profile: React.FC = () => {
               <BasicInfo
                 control={control}
                 errors={errors}
+                saveInDraft={saveInDraft}
                 handleSubmit={handleSubmit}
                 onSubmit={changeTab}
               />
@@ -279,7 +319,14 @@ const Profile: React.FC = () => {
 
       <UpdateConfirmation
         ref={statusRef}
+        message={'Profile saved successfully'}
         onUpdatePress={() => statusRef.current?.close()}
+      />
+
+      <UpdateConfirmation
+        ref={draftRef}
+        message={'Profile saved a draft successfully'}
+        onUpdatePress={() => draftRef.current?.close()}
       />
     </SafeAreaView>
   );
