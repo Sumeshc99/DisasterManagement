@@ -203,9 +203,9 @@ const CitizenDashboard = () => {
 
       <SuccessScreen ref={successRef} />
 
-      <View style={{ position: 'absolute', marginTop: 100 }}>
+      {/* <View style={{ position: 'absolute', marginTop: 100 }}>
         <Button title="Show Alert" onPress={() => setVisible(true)} />
-      </View>
+      </View> */}
 
       <AlertModal
         visible={visible}

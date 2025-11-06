@@ -152,19 +152,17 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
               onPress={() => handleClick(item)}
               style={styles.infoBox}
             >
-              <Image
+              {/* <Image
                 source={{ uri: item.img || defaultImage }}
                 style={styles.incidentImage}
                 resizeMode="cover"
-              />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.incidentTitle} numberOfLines={1}>
-                  {item?.incident_type_name}
-                </Text>
-                <Text style={styles.incidentSeverity} numberOfLines={1}>
-                  Severity: {item.severity || 'Medium'}
-                </Text>
-              </View>
+              /> */}
+              <Text style={styles.incidentTitle} numberOfLines={1}>
+                {item?.incident_type_name}
+              </Text>
+              <Text style={styles.incidentSeverity} numberOfLines={1}>
+                Severity: {item.severity || 'Medium'}
+              </Text>
             </TouchableOpacity>
             <Image
               source={require('../assets/markers/incident.png')}
@@ -297,16 +295,17 @@ const styles = StyleSheet.create({
   },
   markerIcon: { width: 30, height: 30 },
   infoBox: {
+    flex: 1,
+    maxWidth: 150,
+    minWidth: 120,
     backgroundColor: COLOR.white,
     borderRadius: 8,
-    minWidth: 160,
-    flexDirection: 'row',
     alignItems: 'center',
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    marginBottom: 5,
+    paddingVertical: 4,
   },
   incidentImage: {
     width: 45,
