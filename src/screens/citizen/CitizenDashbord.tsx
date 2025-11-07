@@ -3,15 +3,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import OpenStreetMap from '../../components/OpenStreetMap';
-import ApiManager from '../../apis/ApiManager';
-import { COLOR } from '../../themes/Colors';
-import { useBackExit } from '../../hooks/useBackExit';
-import { RootState } from '../../store/RootReducer';
-import { AppStackNavigationProp } from '../../navigation/AppNavigation';
-import GetCurrentLocation from '../../config/GetCurrentLocation';
-import { setUser } from '../../store/slices/authSlice';
+import RespondersList from './pages/RespondersList';
+import RightDrawer from '../../components/RightDrawer';
+
 import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
 import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
 import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
@@ -19,8 +16,15 @@ import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
 import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import AlertModal from '../../components/AlertModal';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
-import RespondersList from './pages/RespondersList';
-import RightDrawer from '../../components/RightDrawer';
+
+import { COLOR } from '../../themes/Colors';
+import { RootState } from '../../store/RootReducer';
+import { AppStackNavigationProp } from '../../navigation/AppNavigation';
+import { setUser } from '../../store/slices/authSlice';
+import ApiManager from '../../apis/ApiManager';
+import GetCurrentLocation from '../../config/GetCurrentLocation';
+import { useBackExit } from '../../hooks/useBackExit';
+
 import Maps from '../../assets/svg/maps.svg';
 import Weather from '../../assets/svg/wea.svg';
 import Help from '../../assets/svg/help.svg';
@@ -29,66 +33,56 @@ import Dis from '../../assets/svg/dis.svg';
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const dispatch = useDispatch();
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
+
+  const [incidentList, setIncidentList] = useState<any[]>([]);
+  const [responders, setResponders] = useState<any[]>([]);
+  const [visible, setVisible] = useState(false);
+  const [showResponders, setShowResponders] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
-  const showHelfRef = useRef<any>(null);
+  const showHelpRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
   const rejectRef = useRef<any>(null);
-
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
-
-  const [incidentList, setincidentList] = useState([]);
-  const [responders, setresponders] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [tabs, settabs] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   GetCurrentLocation();
   useBackExit();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (user?.full_name === '') {
+      if (!user?.full_name) {
         sheetRef.current?.open();
       } else if (!user?.is_registered) {
         remindRef.current?.open();
       }
-    }, 1500);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, [user]);
 
-  useEffect(() => {
-    const fetchIncidentList = async () => {
-      try {
-        const resp = await ApiManager.incidentList(userToken);
-        if (resp?.data?.success) {
-          setincidentList(resp?.data?.data?.results);
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
+  const fetchIncidentsAndResponders = useCallback(async () => {
+    try {
+      const [incidentsResp, respondersResp] = await Promise.all([
+        ApiManager.incidentList(userToken),
+        ApiManager.responderList(),
+      ]);
 
-    fetchIncidentList();
+      if (incidentsResp?.data?.success)
+        setIncidentList(incidentsResp.data.data?.results ?? []);
+
+      if (respondersResp?.data?.success)
+        setResponders(respondersResp.data.data?.results ?? []);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
   }, []);
 
   useEffect(() => {
-    const fetchResponderList = async () => {
-      try {
-        const resp = await ApiManager.responderList();
-        if (resp?.data?.success) {
-          setresponders(resp?.data?.data?.results);
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
-
-    fetchResponderList();
-  }, []);
+    fetchIncidentsAndResponders();
+  }, [fetchIncidentsAndResponders]);
 
   const handleShortProfile = useCallback(
     async (data: any) => {
@@ -110,17 +104,16 @@ const CitizenDashboard = () => {
               email: user?.email || '',
               role: user?.role || '',
               tehsil: user?.tehsil || '',
-              is_registered: (user as { is_registered: 0 | 1 }).is_registered,
+              is_registered: user?.is_registered ?? 0,
             }),
           );
           sheetRef.current?.close();
         }
       } catch (err: any) {
         console.error('Short profile update failed:', err?.response || err);
-      } finally {
       }
     },
-    [user, userToken],
+    [user, userToken, dispatch],
   );
 
   const handleProfileReminder = useCallback(() => {
@@ -133,57 +126,57 @@ const CitizenDashboard = () => {
       <DashBoardHeader drawer={drawerOpen} setDrawer={setDrawerOpen} />
 
       <View style={styles.mapContainer}>
-        {tabs ? (
+        {showResponders ? (
           <RespondersList responders={responders} />
         ) : (
           <OpenStreetMap responders={responders} incidents={incidentList} />
         )}
       </View>
 
+      {/* Floating buttons */}
       <View style={styles.sideBtns}>
         <TouchableOpacity
-          style={{ alignItems: 'center' }}
-          onPress={() => settabs(!tabs)}
+          style={styles.btnWrapper}
+          onPress={() => setShowResponders(prev => !prev)}
         >
-          <View style={styles.flotingBtn}>
-            {tabs ? (
+          <View style={styles.floatingBtn}>
+            {showResponders ? (
               <Maps width={26} height={26} />
             ) : (
               <Dis width={26} height={26} />
             )}
           </View>
-          <Text style={styles.text}>{tabs ? 'Maps' : 'Responders'}</Text>
+          <Text style={styles.text}>
+            {showResponders ? 'Maps' : 'Responders'}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={{ alignItems: 'center' }}
-          onPress={() => showHelfRef.current?.open()}
+          style={styles.btnWrapper}
+          onPress={() => showHelpRef.current?.open()}
         >
-          <View style={styles.flotingBtn}>
+          <View style={styles.floatingBtn}>
             <Help width={26} height={26} />
           </View>
           <Text style={styles.text}>Help</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={{ alignItems: 'center' }}>
-          <View style={styles.flotingBtn}>
+        <TouchableOpacity style={styles.btnWrapper}>
+          <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
           <Text style={styles.text}>Weather</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Bottem sheets  */}
+      {/* Bottom sheets */}
       <CompleteProfileSheet
         ref={sheetRef}
         data=""
         submitData={handleShortProfile}
       />
-
       <ProfileReminder ref={remindRef} onUpdatePress={handleProfileReminder} />
-
-      <HelplineDetails ref={showHelfRef} onClose={() => ''} />
-
+      <HelplineDetails ref={showHelpRef} onClose={() => {}} />
       <ChangePinSheet
         ref={changePassRef}
         onUpdatePress={() => {
@@ -191,13 +184,7 @@ const CitizenDashboard = () => {
           successRef.current?.open();
         }}
       />
-
       <SuccessScreen ref={successRef} />
-
-      {/* <View style={{ position: 'absolute', marginTop: 100 }}>
-        <Button title="Show Alert" onPress={() => setVisible(true)} />
-      </View> */}
-
       <AlertModal
         visible={visible}
         onAcknowledge={() => {
@@ -205,13 +192,12 @@ const CitizenDashboard = () => {
           rejectRef.current.open();
         }}
         onViewDetails={() => {
-          setVisible(false), navigation.navigate('incidentDetails');
+          setVisible(false);
+          navigation.navigate('incidentDetails');
         }}
         onClose={() => setVisible(false)}
       />
-
       <RejectReasonSheet ref={rejectRef} />
-
       <RightDrawer
         open={drawerOpen}
         changePass={() => {
@@ -227,14 +213,8 @@ const CitizenDashboard = () => {
 export default CitizenDashboard;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLOR.blue,
-  },
-  mapContainer: {
-    flex: 1,
-    backgroundColor: COLOR.white,
-  },
+  container: { flex: 1, backgroundColor: COLOR.blue },
+  mapContainer: { flex: 1, backgroundColor: COLOR.white },
   sideBtns: {
     position: 'absolute',
     bottom: 80,
@@ -242,7 +222,8 @@ const styles = StyleSheet.create({
     gap: 14,
     width: 70,
   },
-  flotingBtn: {
+  btnWrapper: { alignItems: 'center' },
+  floatingBtn: {
     borderWidth: 2,
     borderColor: COLOR.white,
     backgroundColor: COLOR.blue,
@@ -257,7 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     backgroundColor: COLOR.darkGray,
     color: COLOR.white,
-    fontWeight: 500,
+    fontWeight: '500',
     paddingHorizontal: 4,
     marginTop: 2,
     borderRadius: 4,
