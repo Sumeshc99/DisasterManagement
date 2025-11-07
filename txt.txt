@@ -37,11 +37,47 @@ Save as draft
 Document is required
 Enter alternate number
 Secondary Contact Name
-weather
-help
-responders
 
 \\\\\\\\\\\\\\\\
 PIN Reset
 New PIN
 Confirm PIN
+Help
+Maps
+Responders
+Weather
+Your profile is incomplete. Please click the 'Edit Profile' button to complete it.
+Change PIN
+Log Out
+Edit Profile
+Version
+Email is required
+Enter valid email address
+Enter district
+District is required
+Enter city
+City is required
+Enter tehsil
+Tehsil is required
+Select block
+Block is required
+Pin code
+Enter pin code
+Pin code is required
+Enter valid 6-digit pin code
+Address
+Enter address
+Address is required
+Blood group
+Select blood group
+Date of Birth
+Date of birth is required
+Save as draft
+Document is required
+Upload valid ID proof
+Relation is required
+Primary number is required
+Secondary Contact Name
+Secondary Mobile Number
+Enter mobile number
+On-Duty Responders

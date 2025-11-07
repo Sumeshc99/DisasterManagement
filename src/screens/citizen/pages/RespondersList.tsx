@@ -6,41 +6,27 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import ApiManager from '../../../apis/ApiManager';
+
+interface props {
+  responders: any[];
+}
 
 interface ResponderItem {
   id: string;
   owner_full_name: string;
-  location: string;
+  tehsil_name: string;
   resource_type: string;
   image?: any;
 }
 
-const RespondersList: React.FC = () => {
-  const [responders, setResponders] = useState<ResponderItem[]>([]);
-
-  useEffect(() => {
-    const fetchResponderList = async () => {
-      try {
-        const resp = await ApiManager.responderList();
-        if (resp?.data?.success) {
-          const data = resp.data?.data?.results ?? [];
-          setResponders(data);
-        }
-      } catch (error) {
-        console.error('Error fetching responder list:', error);
-      }
-    };
-
-    fetchResponderList();
-  }, []);
-
+const RespondersList: React.FC<props> = ({ responders }) => {
   const categorized = useMemo(() => {
     const categories = {
       Hospital: [] as ResponderItem[],
       Ambulance: [] as ResponderItem[],
       'Police Station': [] as ResponderItem[],
       'SDRF Center': [] as ResponderItem[],
+      Boat: [] as ResponderItem[],
     };
 
     responders.forEach(item => {
@@ -53,7 +39,7 @@ const RespondersList: React.FC = () => {
     return categories;
   }, [responders]);
 
-  const renderSection = (title: string, items: ResponderItem[]) => {
+  const renderSection = (title: any, items: ResponderItem[]) => {
     if (items.length === 0) return null;
 
     return (
@@ -66,7 +52,7 @@ const RespondersList: React.FC = () => {
             {/* <Image source={{ uri: item.image }} style={styles.itemImage} /> */}
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>{item.owner_full_name}</Text>
-              <Text style={styles.itemLocation}>{item.location}</Text>
+              <Text style={styles.itemLocation}>{item.tehsil_name}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -87,6 +73,7 @@ const RespondersList: React.FC = () => {
         {renderSection('Hospital', categorized.Hospital)}
         {renderSection('Police Stations', categorized['Police Station'])}
         {renderSection('SDRF Center', categorized['SDRF Center'])}
+        {renderSection('Boat', categorized['Boat'])}
       </ScrollView>
     </View>
   );

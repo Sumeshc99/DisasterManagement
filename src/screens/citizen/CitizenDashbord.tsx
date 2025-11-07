@@ -38,53 +38,15 @@ const CitizenDashboard = () => {
   const rejectRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
-  const [hospitalList, sethospitalList] = useState<any[]>([]);
-  const [ambulance, setambulance] = useState<any[]>([]);
-  const [policeStation, setpoliceStation] = useState<any[]>([]);
-  const [sdrfCenter, setsdrfCenter] = useState<any[]>([]);
+
+  const [incidentList, setincidentList] = useState([]);
+  const [responders, setresponders] = useState([]);
   const [visible, setVisible] = useState(false);
   const [tabs, settabs] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   GetCurrentLocation();
   useBackExit();
-
-  useEffect(() => {
-    const fetchResponderList = async () => {
-      try {
-        const resp = await ApiManager.responderList();
-
-        if (resp?.data?.success) {
-          const data = resp?.data?.data?.results || [];
-          if (data.length > 0) {
-            const hospitals = data.filter(
-              (item: any) => item.resource_type === 'Hospital',
-            );
-            sethospitalList(hospitals);
-
-            const ambulance = data.filter(
-              (item: any) => item.resource_type === 'Ambulance',
-            );
-            setambulance(ambulance);
-
-            const policeStation = data.filter(
-              (item: any) => item.resource_type === 'Police Station',
-            );
-            setpoliceStation(policeStation);
-
-            const sdrfCenter = data.filter(
-              (item: any) => item.resource_type === 'SDRF Center',
-            );
-            setsdrfCenter(sdrfCenter);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
-
-    fetchResponderList();
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,6 +59,36 @@ const CitizenDashboard = () => {
 
     return () => clearTimeout(timer);
   }, [user]);
+
+  useEffect(() => {
+    const fetchIncidentList = async () => {
+      try {
+        const resp = await ApiManager.incidentList(userToken);
+        if (resp?.data?.success) {
+          setincidentList(resp?.data?.data?.results);
+        }
+      } catch (err) {
+        console.error('Error fetching responder list:', err);
+      }
+    };
+
+    fetchIncidentList();
+  }, []);
+
+  useEffect(() => {
+    const fetchResponderList = async () => {
+      try {
+        const resp = await ApiManager.responderList();
+        if (resp?.data?.success) {
+          setresponders(resp?.data?.data?.results);
+        }
+      } catch (err) {
+        console.error('Error fetching responder list:', err);
+      }
+    };
+
+    fetchResponderList();
+  }, []);
 
   const handleShortProfile = useCallback(
     async (data: any) => {
@@ -118,7 +110,7 @@ const CitizenDashboard = () => {
               email: user?.email || '',
               role: user?.role || '',
               tehsil: user?.tehsil || '',
-              is_registered: (user as { is_registered: boolean }).is_registered,
+              is_registered: (user as { is_registered: 0 | 1 }).is_registered,
             }),
           );
           sheetRef.current?.close();
@@ -142,11 +134,9 @@ const CitizenDashboard = () => {
 
       <View style={styles.mapContainer}>
         {tabs ? (
-          <RespondersList />
+          <RespondersList responders={responders} />
         ) : (
-          <OpenStreetMap
-            list={{ hospitalList, ambulance, policeStation, sdrfCenter }}
-          />
+          <OpenStreetMap responders={responders} incidents={incidentList} />
         )}
       </View>
 

@@ -7,7 +7,7 @@ interface User {
   email: string;
   role: string;
   tehsil: string;
-  is_registered: boolean;
+  is_registered: 0 | 1;
 }
 
 interface AuthState {

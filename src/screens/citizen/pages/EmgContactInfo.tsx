@@ -128,10 +128,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         name="primaryName"
         control={control}
         placeholder={TEXT.enter_full_name()}
-        rules={{
-          required: 'Full name is required',
-          minLength: { value: 3, message: 'Enter at least 3 characters' },
-        }}
+        rules={{ required: TEXT.enter_full_name() }}
         error={errors.primaryName?.message}
       />
 
@@ -153,10 +150,10 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         keyboardType="phone-pad"
         maxLength={10}
         rules={{
-          required: 'Primary number is required',
+          required: TEXT.phone_number_is_required(),
           pattern: {
             value: /^[0-9]{10}$/,
-            message: 'Enter valid 10-digit number',
+            message: TEXT.enter_valid_10_digit_number(),
           },
         }}
         error={errors.primaryMobile?.message}
@@ -166,13 +163,13 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         label={TEXT.alternate_mobile_number()}
         name="primaryAltMobile"
         control={control}
-        placeholder="Enter alternate number"
+        placeholder={TEXT.alternate_mobile_number()}
         keyboardType="phone-pad"
         maxLength={10}
         rules={{
           pattern: {
             value: /^[0-9]{10}$/,
-            message: 'Enter valid 10-digit number',
+            message: TEXT.enter_valid_10_digit_number(),
           },
         }}
         error={errors.primaryAltMobile?.message}

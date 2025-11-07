@@ -1,103 +1,41 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
 import { WIDTH } from '../themes/AppConst';
-import { useNavigation } from '@react-navigation/native';
-import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/RootReducer';
-import ApiManager from '../apis/ApiManager';
-import GetLocation from 'react-native-get-location';
 import { TEXT } from '../i18n/locales/Text';
-
-const defaultImage =
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s';
+import Incident from '../assets/svg/incident.svg';
 
 interface Props {
-  list: any;
+  responders: any;
+  incidents: any;
 }
 
 interface ResourceItem {
   id: number;
-  owner_full_name: string;
-  location: string;
+  full_name: string;
+  tehsil_name: string;
   latitude: string;
   longitude: string;
   resource_type: string;
 }
 
-const OpenStreetMap: React.FC<Props> = ({ list }) => {
-  const navigation = useNavigation<AppStackNavigationProp<'respondersList'>>();
-
+const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
   const location = useSelector(
     (state: RootState) => state?.location?.currentLocation,
   );
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
 
-  const [incidentList, setincidentList] = useState([]);
-  const [responders, setresponders] = useState([]);
-
-  const CurrentLocation = {
-    latitude: Number(location.latitude),
-    longitude: Number(location.longitude),
-    latitudeDelta: 0.03,
-    longitudeDelta: 0.03,
-  };
-
-  useEffect(() => {
-    fetchCurrentLocation();
-  }, []);
-
-  const fetchCurrentLocation = async () => {
-    try {
-      const location = await GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 5000,
-      });
-
-      console.log('asaas', location);
-    } catch (error) {
-      console.warn('Error getting location:', error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchIncidentList = async () => {
-      try {
-        const resp = await ApiManager.incidentList(userToken);
-        if (resp?.data?.success) {
-          setincidentList(resp?.data?.data?.results);
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
-
-    fetchIncidentList();
-  }, []);
-
-  useEffect(() => {
-    const fetchResponderList = async () => {
-      try {
-        const resp = await ApiManager.responderList();
-        if (resp?.data?.success) {
-          setresponders(resp?.data?.data?.results);
-        }
-      } catch (err) {
-        console.error('Error fetching responder list:', err);
-      }
-    };
-
-    fetchResponderList();
-  }, []);
+  const CurrentLocation = useMemo(
+    () => ({
+      latitude: Number(location?.latitude) || 0,
+      longitude: Number(location?.longitude) || 0,
+      latitudeDelta: 0.03,
+      longitudeDelta: 0.03,
+    }),
+    [location],
+  );
 
   const getMarkerIcon = useCallback((type: string) => {
     switch (type) {
@@ -114,26 +52,26 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
     }
   }, []);
 
-  const handleClick = (item: any) => {};
-
   const renderMarker = useCallback(
-    (item: ResourceItem) => (
-      <Marker
-        key={item.id}
-        coordinate={{
-          latitude: parseFloat(item.latitude),
-          longitude: parseFloat(item.longitude),
-        }}
-        title={item.owner_full_name}
-        description={item.location}
-      >
-        <Image
-          source={getMarkerIcon(item.resource_type)}
-          style={styles.markerIcon}
-          resizeMode="contain"
-        />
-      </Marker>
-    ),
+    (item: ResourceItem) => {
+      return (
+        <Marker
+          key={item.id}
+          coordinate={{
+            latitude: parseFloat(item.latitude),
+            longitude: parseFloat(item.longitude),
+          }}
+          title={item.full_name}
+          description={item.tehsil_name}
+        >
+          <Image
+            source={getMarkerIcon(item.resource_type)}
+            style={styles.markerIcon}
+            resizeMode="contain"
+          />
+        </Marker>
+      );
+    },
     [getMarkerIcon],
   );
 
@@ -148,15 +86,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
           }}
         >
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity
-              onPress={() => handleClick(item)}
-              style={styles.infoBox}
-            >
-              {/* <Image
-                source={{ uri: item.img || defaultImage }}
-                style={styles.incidentImage}
-                resizeMode="cover"
-              /> */}
+            <TouchableOpacity style={styles.infoBox}>
               <Text style={styles.incidentTitle} numberOfLines={1}>
                 {item?.incident_type_name}
               </Text>
@@ -164,22 +94,12 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
                 Severity: {item.severity || 'Medium'}
               </Text>
             </TouchableOpacity>
-            <Image
-              source={require('../assets/markers/incident.png')}
-              style={styles.incidentIcon}
-              resizeMode="contain"
-            />
+            <Incident width={60} height={60} />
           </View>
         </Marker>
       );
     },
-    [incidentList],
-  );
-
-  const incidents = useMemo(() => incidentList, [incidentList]);
-  const { ambulance, hospitalList, policeStation, sdrfCenter } = useMemo(
-    () => dummyList,
-    [],
+    [incidents],
   );
 
   return (
@@ -239,10 +159,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
             />
           </Marker>
 
-          {ambulance.map((item: any) => renderMarker(item))}
-          {hospitalList.map((item: any) => renderMarker(item))}
-          {policeStation.map((item: any) => renderMarker(item))}
-          {sdrfCenter.map((item: any) => renderMarker(item))}
+          {responders.map((item: any) => renderMarker(item))}
           {incidents.map((item: any) => renderIncident(item))}
         </MapView>
       )}
@@ -254,7 +171,7 @@ const OpenStreetMap: React.FC<Props> = ({ list }) => {
             style={{ width: WIDTH(10), height: WIDTH(10) }}
           />
           <Text style={{ fontSize: 30, color: COLOR.white }}>
-            <Text>{incidentList.length.toString().padStart(3, '0')}</Text>
+            <Text>{incidents.length.toString().padStart(3, '0')}</Text>
           </Text>
         </View>
         <Text style={{ fontSize: 16, marginTop: 10, color: COLOR.white }}>
@@ -307,12 +224,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     paddingVertical: 4,
   },
-  incidentImage: {
-    width: 45,
-    height: 45,
-    margin: 4,
-    borderRadius: 4,
-  },
   incidentTitle: {
     fontWeight: 'bold',
     fontSize: 14,
@@ -325,158 +236,3 @@ const styles = StyleSheet.create({
   },
   incidentIcon: { width: 50, height: 50 },
 });
-
-const dummyList = {
-  hospitalList: [
-    {
-      id: 1,
-      owner_full_name: 'Orange City Hospital',
-      location: 'Khamla Square, Nagpur',
-      latitude: '21.1187',
-      longitude: '79.0596',
-      resource_type: 'Hospital',
-    },
-    {
-      id: 2,
-      owner_full_name: 'Care Hospital Nagpur',
-      location: 'Ramdaspeth, Nagpur',
-      latitude: '21.1412',
-      longitude: '79.0781',
-      resource_type: 'Hospital',
-    },
-    {
-      id: 3,
-      owner_full_name: 'Wockhardt Hospital',
-      location: 'Shankar Nagar, Nagpur',
-      latitude: '21.1368',
-      longitude: '79.0603',
-      resource_type: 'Hospital',
-    },
-  ],
-
-  ambulance: [
-    {
-      id: 4,
-      owner_full_name: 'Ambulance Unit 1',
-      location: 'Sitabuldi, Nagpur',
-      latitude: '21.1461',
-      longitude: '79.0849',
-      resource_type: 'Ambulance',
-    },
-    {
-      id: 5,
-      owner_full_name: 'Ambulance Unit 2',
-      location: 'Dharampeth, Nagpur',
-      latitude: '21.1475',
-      longitude: '79.0671',
-      resource_type: 'Ambulance',
-    },
-  ],
-
-  policeStation: [
-    {
-      id: 6,
-      owner_full_name: 'Sadar Police Station',
-      location: 'Sadar, Nagpur',
-      latitude: '21.1633',
-      longitude: '79.0736',
-      resource_type: 'Police Station',
-    },
-    {
-      id: 7,
-      owner_full_name: 'Sitabuldi Police Station',
-      location: 'Sitabuldi, Nagpur',
-      latitude: '21.1470',
-      longitude: '79.0820',
-      resource_type: 'Police Station',
-    },
-  ],
-
-  sdrfCenter: [
-    {
-      id: 8,
-      owner_full_name: 'SDRF Central Unit Nagpur',
-      location: 'Civil Lines, Nagpur',
-      latitude: '21.1571',
-      longitude: '79.0719',
-      resource_type: 'SDRF Center',
-    },
-  ],
-};
-
-const incidentList = [
-  {
-    id: 101,
-    incident_type_name: 'Road Accident - Sadar',
-    latitude: '21.1605',
-    longitude: '79.0723',
-    type: 'Accident',
-    severity: 'High',
-    time: '2025-10-28T10:15:00Z',
-    description:
-      'Two vehicles collided near Sadar flyover. Ambulance and police dispatched to the scene.',
-  },
-  {
-    id: 102,
-    incident_type_name: 'Fire Breakout - Dharampeth',
-    latitude: '21.1472',
-    longitude: '79.0679',
-    type: 'Fire',
-    severity: 'Medium',
-    time: '2025-10-28T09:50:00Z',
-    description:
-      'Small fire reported at a residential building in Dharampeth. Fire services are responding.',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s',
-  },
-  {
-    id: 103,
-    incident_type_name: 'Medical Emergency - Ramdaspeth',
-    latitude: '21.1420',
-    longitude: '79.0785',
-    type: 'Medical',
-    severity: 'Low',
-    time: '2025-10-28T08:40:00Z',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s',
-
-    description:
-      'Senior citizen reported chest pain at home. Nearby ambulance is on the way.',
-  },
-  {
-    id: 104,
-    incident_type_name: 'Flooded Road - Sitabuldi',
-    latitude: '21.1468',
-    longitude: '79.0843',
-    type: 'Flood',
-    severity: 'Medium',
-    time: '2025-10-28T07:30:00Z',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s',
-    description:
-      'Heavy rainfall caused waterlogging near Sitabuldi market. Traffic police managing flow.',
-  },
-  {
-    id: 105,
-    incident_type_name: 'Power Outage - Civil Lines',
-    latitude: '21.1575',
-    longitude: '79.0711',
-    type: 'Infrastructure',
-    severity: 'Low',
-    time: '2025-10-28T06:55:00Z',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s',
-
-    description:
-      'Reported power outage affecting multiple buildings in Civil Lines area. Electric board notified.',
-  },
-  {
-    id: 106,
-    incident_type_name: 'Fire - Cotton Market',
-    latitude: '21.1478',
-    longitude: '79.0902',
-    type: 'Fire',
-    severity: 'High',
-    time: '2025-10-28T11:10:00Z',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1XM2wnktL0zldrIsvWCykFb1Od4m6jHh-4Q&s',
-
-    description:
-      'Major fire reported in a warehouse at Cotton Market. Fire brigades are on site.',
-  },
-];

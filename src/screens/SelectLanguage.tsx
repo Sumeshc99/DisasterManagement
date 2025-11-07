@@ -76,7 +76,7 @@ const SelectLanguage = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Select Your Language</Text>
+          <Text style={styles.title}>Select Language</Text>
 
           <View style={styles.languageRow}>
             {languages.map((lang: any) => (

@@ -16,7 +16,8 @@ import { HEIGHT, WIDTH } from '../themes/AppConst';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { clearUser } from '../store/slices/authSlice';
-import { clearUserDraft } from '../store/slices/draftSlice';
+import Edit from '../assets/svg/edit.svg';
+import Pass from '../assets/svg/pass.svg';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.75;
@@ -99,7 +100,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
             onClose();
           }}
         >
-          <Image source={require('../assets/edit.png')} />
+          <Edit />
           <Text style={styles.editProfileText}>Edit Profile</Text>
         </TouchableOpacity>
 
@@ -113,7 +114,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
 
         {/* Change PIN */}
         <TouchableOpacity style={styles.menuItem} onPress={() => changePass()}>
-          <Text style={styles.menuIcon}>🔒</Text>
+          <Pass />
           <Text style={styles.menuText}>Change PIN</Text>
         </TouchableOpacity>
 
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
   },
   menuIcon: {
     fontSize: 16,

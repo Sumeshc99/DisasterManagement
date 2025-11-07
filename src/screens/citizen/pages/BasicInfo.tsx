@@ -15,6 +15,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 interface BasicInfoProps {
   control: Control<any>;
   errors: FieldErrors;
+  tahsilList: any;
   saveInDraft: Function;
   handleSubmit: UseFormHandleSubmit<any>;
   onSubmit: (data: any) => void;
@@ -23,6 +24,7 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({
   control,
   errors,
+  tahsilList,
   saveInDraft,
   handleSubmit,
   onSubmit,
@@ -37,10 +39,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         control={control}
         editable={false}
         placeholder={TEXT.enter_full_name()}
-        rules={{
-          required: 'Full name is required',
-          minLength: { value: 3, message: 'Enter at least 3 characters' },
-        }}
+        rules={{ required: TEXT.enter_full_name() }}
         error={errors.fullName?.message}
       />
 
@@ -52,10 +51,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         placeholder={TEXT.enter_phone_number()}
         keyboardType="phone-pad"
         rules={{
-          required: 'Mobile number is required',
+          required: TEXT.phone_number_is_required(),
           pattern: {
             value: /^[0-9]{10}$/,
-            message: 'Enter valid 10-digit number',
+            message: TEXT.enter_valid_10_digit_number(),
           },
         }}
         error={errors.mobileNumber?.message}
@@ -111,7 +110,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="block"
         control={control}
         placeholder="Select block"
-        items={blocks}
+        items={tahsilList}
         rules={{ required: 'Block is required' }}
         errors={errors}
       />
@@ -187,7 +186,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 30,
   },
   submitButton: {
     backgroundColor: COLOR.white,

@@ -47,8 +47,8 @@ const Profile: React.FC = () => {
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const draft = useSelector((state: RootState) => state?.draft?.user);
-  console.log('user', user);
 
+  const [tahsilList, settahsilList] = useState([]);
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
   const [userData, setUserData] = useState<any>({});
   const [loading, setloading] = useState(false);
@@ -128,6 +128,26 @@ const Profile: React.FC = () => {
       setloading(false);
     }
   };
+
+  useEffect(() => {
+    const getTahsil = () => {
+      ApiManager.tahsilList()
+        .then(resp => {
+          if (resp?.data?.success) {
+            settahsilList(
+              (resp?.data?.data?.tehsils || []).map((item: any) => ({
+                label: item.Tehsil,
+                value: item.id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('error', err.response))
+        .finally(() => hideLoader());
+    };
+
+    getTahsil();
+  }, []);
 
   const changeTab = () => {
     setActiveTab('emergency');
@@ -252,7 +272,7 @@ const Profile: React.FC = () => {
                     activeTab === 'basic' && styles.activeTabText,
                   ]}
                 >
-                  Basic Information
+                  {TEXT.basic_information()}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -298,6 +318,7 @@ const Profile: React.FC = () => {
               <BasicInfo
                 control={control}
                 errors={errors}
+                tahsilList={tahsilList}
                 saveInDraft={saveInDraft}
                 handleSubmit={handleSubmit}
                 onSubmit={changeTab}

@@ -67,4 +67,7 @@ export const TEXT = {
   home: () => t('home', 'Home'),
   community: () => t('community', 'Community'),
   nearby_live_incident: () => t('nearby_live_incident', 'Nearby Live Incident'),
+  basic_information: () => t('basic_information', 'Basic Information'),
+  full_name_is_required: () =>
+    t('full_name_is_required', 'Full name is required'),
 };
