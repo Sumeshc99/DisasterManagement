@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -161,7 +161,10 @@ const CitizenDashboard = () => {
           <Text style={styles.text}>Help</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnWrapper}>
+        <TouchableOpacity
+          onPress={() => setVisible(true)}
+          style={styles.btnWrapper}
+        >
           <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
@@ -185,6 +188,7 @@ const CitizenDashboard = () => {
         }}
       />
       <SuccessScreen ref={successRef} />
+
       <AlertModal
         visible={visible}
         onAcknowledge={() => {

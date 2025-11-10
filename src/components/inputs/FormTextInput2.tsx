@@ -20,7 +20,7 @@ interface FormTextInputProps extends TextInputProps {
   onRightIconPress?: () => void;
 }
 
-const FormTextInput: React.FC<FormTextInputProps> = ({
+const FormTextInput2: React.FC<FormTextInputProps> = ({
   label,
   name,
   control,
@@ -37,10 +37,10 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.labelContainer}>
+      {/* <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         {isRequired && <Text style={styles.requiredMark}>*</Text>}
-      </View>
+      </View> */}
 
       <Controller
         control={control}
@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FormTextInput;
+export default FormTextInput2;

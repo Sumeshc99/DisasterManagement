@@ -70,6 +70,7 @@ const requestPath = {
   getUser: 'mobileapis/getUser',
   updateUser: 'mobileapis/updateProfile',
   changePin: 'mobileapis/changePin',
+  createIncident: 'mobileapis/createIncident',
 };
 
 const ApiManager = {
@@ -101,6 +102,8 @@ const ApiManager = {
     requests.post(requestPath.updateUser, params, token),
   changePin: (params: any, token: string) =>
     requests.post(requestPath.changePin, params, token),
+  createIncident: (params: any, token: string) =>
+    requests.post(requestPath.createIncident, params, token),
 };
 
 export default ApiManager;

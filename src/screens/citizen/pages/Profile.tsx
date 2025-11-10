@@ -97,7 +97,6 @@ const Profile: React.FC = () => {
       if (resp.data.status) {
         const data = resp?.data?.data || {};
         setUserData(data);
-        // console.log('aaaaa', data);
 
         reset({
           fullName: draft?.fullName || data?.full_name || '',
@@ -118,8 +117,8 @@ const Profile: React.FC = () => {
           primaryAltMobile: data?.alternate_mobile || '',
           secondaryName: data?.secondary_contact_name || '',
           secondaryRelation: data?.secondary_relation || '',
-          secondaryMobile: data?.secondary_mobile || '',
-          secondaryAltMobile: data?.secondary_alternate_mobile || '',
+          secondaryMobile: data?.secondary_mobile_no || '',
+          secondaryAltMobile: data?.secondary_alternate_mobile_no || '',
         });
       }
     } catch (error) {
