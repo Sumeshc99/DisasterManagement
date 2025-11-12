@@ -9,38 +9,46 @@ import {
   Keyboard,
 } from 'react-native';
 import Geocoder from 'react-native-geocoding';
-import { WIDTH } from '../themes/AppConst';
+import MapView, { Marker } from 'react-native-maps';
 
 const GOOGLE_API_KEY = 'AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw';
 Geocoder.init(GOOGLE_API_KEY);
 
+interface Location {
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 interface LocationManualProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  onSelectLocation: (location: {
-    latitude: number;
-    longitude: number;
-    latitudeDelta: number;
-    longitudeDelta: number;
-  }) => void;
+  location: Location;
+  onChangeLocation: (updatedLocation: Location) => void;
 }
 
 const LocationManual: React.FC<LocationManualProps> = ({
-  value,
-  onChangeText,
-  onSelectLocation,
+  location,
+  onChangeLocation,
 }) => {
   const [places, setPlaces] = useState<any[]>([]);
-  const [debouncedValue, setDebouncedValue] = useState(value);
+  const [debouncedValue, setDebouncedValue] = useState(location.address);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [region, setRegion] = useState({
+    latitude: location.latitude || 20.5937,
+    longitude: location.longitude || 78.9629,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  });
 
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), 400);
+    const handler = setTimeout(() => setDebouncedValue(location.address), 400);
     return () => clearTimeout(handler);
-  }, [value]);
+  }, [location.address]);
 
   const fetchPlaces = useCallback(async () => {
     if (debouncedValue.trim().length < 2) {
       setPlaces([]);
+      setShowDropdown(false);
       return;
     }
     try {
@@ -48,6 +56,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
         `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_API_KEY}&input=${debouncedValue}&components=country:in`,
       );
       const json = await response.json();
+
       setPlaces(json.predictions || []);
     } catch (error) {
       console.error('Error fetching places:', error);
@@ -59,21 +68,27 @@ const LocationManual: React.FC<LocationManualProps> = ({
   }, [fetchPlaces]);
 
   const handleSelectPlace = async (place: any) => {
-    onChangeText(place.description);
-    setPlaces([]);
     Keyboard.dismiss();
+    setPlaces([]);
+    setShowDropdown(false);
 
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&key=${GOOGLE_API_KEY}`,
       );
       const json = await response.json();
-      const location = json.result.geometry.location;
+      const loc = json.result.geometry.location;
 
-      const address = place.description;
-      onSelectLocation({
-        latitude: location.lat,
-        longitude: location.lng,
+      const updated = {
+        address: place.description,
+        latitude: loc.lat,
+        longitude: loc.lng,
+      };
+
+      onChangeLocation(updated);
+      setRegion({
+        latitude: loc.lat,
+        longitude: loc.lng,
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
       });
@@ -84,16 +99,21 @@ const LocationManual: React.FC<LocationManualProps> = ({
 
   const handleMapPress = async (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
+
     try {
       const json = await Geocoder.from(latitude, longitude);
-      const address = json.results[0]?.formatted_address || '';
-      onSelectLocation({
+      const addr = json.results[0]?.formatted_address || '';
+
+      const updated = { address: addr, latitude, longitude };
+      onChangeLocation(updated);
+      setShowDropdown(false);
+
+      setRegion({
         latitude,
         longitude,
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
       });
-      onChangeText(address);
     } catch (error) {
       console.warn('Geocoding error:', error);
     }
@@ -106,13 +126,16 @@ const LocationManual: React.FC<LocationManualProps> = ({
       <View style={styles.searchBox}>
         <TextInput
           placeholder="Please enter address"
-          value={value}
-          onChangeText={onChangeText}
+          value={location.address}
+          onChangeText={text => {
+            onChangeLocation({ ...location, address: text });
+            setShowDropdown(text.trim().length > 0);
+          }}
           style={styles.input}
         />
       </View>
 
-      {places.length > 0 && (
+      {showDropdown && places.length > 0 && (
         <FlatList
           data={places}
           keyExtractor={item => item.place_id}
@@ -133,6 +156,12 @@ const LocationManual: React.FC<LocationManualProps> = ({
           style={styles.resultList}
         />
       )}
+
+      <View style={styles.mapContainer}>
+        <MapView style={styles.map} region={region} onPress={handleMapPress}>
+          <Marker coordinate={region} />
+        </MapView>
+      </View>
     </View>
   );
 };
@@ -140,15 +169,8 @@ const LocationManual: React.FC<LocationManualProps> = ({
 export default LocationManual;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
+  label: { fontSize: 16, fontWeight: '600', color: '#333' },
   searchBox: {
     marginTop: 8,
     borderWidth: 1,
@@ -157,10 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 12,
   },
-  input: {
-    height: 45,
-    fontSize: 16,
-  },
+  input: { height: 45, fontSize: 16 },
   resultList: {
     marginTop: 5,
     backgroundColor: '#fff',
@@ -170,6 +189,7 @@ const styles = StyleSheet.create({
     zIndex: 20,
     top: 80,
     marginHorizontal: 2,
+    width: '100%',
   },
   resultItem: {
     paddingVertical: 12,
@@ -177,20 +197,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  placeName: {
-    fontWeight: '600',
-    fontSize: 15,
-    color: '#333',
-  },
-  placeAddress: {
-    fontSize: 13,
-    color: '#888',
-  },
+  placeName: { fontWeight: '600', fontSize: 15, color: '#333' },
+  placeAddress: { fontSize: 13, color: '#888' },
   mapContainer: {
     flex: 1,
     marginTop: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  map: {
-    flex: 1,
-  },
+  map: { flex: 1 },
 });

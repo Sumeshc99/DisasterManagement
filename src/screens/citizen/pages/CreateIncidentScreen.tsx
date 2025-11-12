@@ -16,12 +16,13 @@ import DropDownInput from '../../../components/inputs/DropDownInput';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
-import { WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import { TEXT } from '../../../i18n/locales/Text';
 import { RootState } from '../../../store/RootReducer';
 import ApiManager from '../../../apis/ApiManager';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
-import IncidentAdress from '../../../components/bottomSheets/IncidentAddressSheet';
+import IncidentAddressSheet from '../../../components/bottomSheets/IncidentAddressSheet';
+import FormTextInput2 from '../../../components/inputs/FormTextInput2';
 
 interface MediaAsset {
   uri?: string;
@@ -41,7 +42,9 @@ interface IncidentForm {
 const CreateIncidentScreen: React.FC = () => {
   const { showLoader, hideLoader } = useGlobalLoader();
   const { user, userToken } = useSelector((state: RootState) => state.auth);
-  const [tahsilList, setTahsilList] = useState([]);
+
+  const [incidentTypes, setIncidentTypes] = useState([]);
+  const [allAddress, setallAddress] = useState<any>('');
 
   const addressRef = useRef<any>(null);
 
@@ -50,6 +53,7 @@ const CreateIncidentScreen: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
     setValue,
     watch,
   } = useForm<IncidentForm>({
@@ -66,22 +70,15 @@ const CreateIncidentScreen: React.FC = () => {
   const media = watch('media');
   const selectedType = watch('incidentType');
 
-  const incidentTypes = [
-    { label: 'Fire', value: 'fire' },
-    { label: 'Accident', value: 'accident' },
-    { label: 'Medical Emergency', value: 'medical' },
-    { label: 'Other', value: 'other' },
-  ];
-
   useEffect(() => {
-    const getTahsil = async () => {
+    const getIncidentType = async () => {
       try {
-        // showLoader();
-        const resp = await ApiManager.tahsilList();
+        showLoader();
+        const resp = await ApiManager.incidentType();
         if (resp?.data?.success) {
-          setTahsilList(
-            (resp?.data?.data?.tehsils || []).map((item: any) => ({
-              label: item.Tehsil,
+          setIncidentTypes(
+            (resp?.data?.data?.incident_types || []).map((item: any) => ({
+              label: item.name,
               value: item.id,
             })),
           );
@@ -93,7 +90,7 @@ const CreateIncidentScreen: React.FC = () => {
       }
     };
 
-    getTahsil();
+    getIncidentType();
   }, []);
 
   const handleMediaPick = () => {
@@ -132,23 +129,27 @@ const CreateIncidentScreen: React.FC = () => {
       showLoader();
 
       const finalType =
-        data.incidentType === 'other'
+        data.incidentType === 'Others'
           ? data.customIncidentType
           : data.incidentType;
 
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
       formData.append('tehsil', user?.tehsil || '');
-      formData.append('incident_type_id', finalType);
+      formData.append('incident_type_id', 1);
       formData.append('address', data.address);
       formData.append('mobile_number', data.mobileNumber);
       formData.append('description', data.description);
-      formData.append('latitude', user?.latitude || '');
-      formData.append('longitude', user?.longitude || '');
-      formData.append('state_id', user?.state_id || '');
-      formData.append('city_id', user?.city_id || '');
-      formData.append('district_id', user?.district_id || '');
-      formData.append('city_code', user?.city_code || '');
+      formData.append('latitude', allAddress?.latitude || '');
+      formData.append('longitude', allAddress?.longitude || '');
+      // formData.append('state_id', allAddress?.state || '');
+      // formData.append('city_id', allAddress?.city || '');
+      // formData.append('district_id', allAddress?.district_id || '');
+      // formData.append('city_code', allAddress?.pincode || '');
+      formData.append('state_id', 1);
+      formData.append('city_id', 1);
+      formData.append('district_id', 1);
+      formData.append('city_code', 1);
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file, index) => {
@@ -162,7 +163,7 @@ const CreateIncidentScreen: React.FC = () => {
 
       const response = await ApiManager.createIncident(formData, userToken);
 
-      if (response?.data?.success) {
+      if (response?.data?.status) {
         Alert.alert('Success', 'Incident created successfully!');
         reset();
       } else {
@@ -181,7 +182,7 @@ const CreateIncidentScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <DashBoardHeader />
+      <DashBoardHeader drawer={false} setDrawer={() => ''} />
       <ScrollView
         style={styles.innerContainer}
         contentContainerStyle={{ paddingBottom: 40 }}
@@ -201,8 +202,8 @@ const CreateIncidentScreen: React.FC = () => {
         />
 
         {/* If "Other" is selected, show free text field */}
-        {selectedType === 'other' && (
-          <FormTextInput
+        {selectedType === 'Others' && (
+          <FormTextInput2
             label="Specify Other Type"
             name="customIncidentType"
             control={control}
@@ -211,17 +212,6 @@ const CreateIncidentScreen: React.FC = () => {
             error={errors.customIncidentType?.message}
           />
         )}
-
-        {/* Address */}
-        {/* <FormTextInput
-            label="Address"
-            name="address"
-            control={control}
-            multiline
-            placeholder="Please enter address"
-            rules={{ required: 'Address is required' }}
-            error={errors.address?.message}
-          /> */}
 
         <View style={{ marginBottom: 14 }}>
           <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
@@ -236,9 +226,17 @@ const CreateIncidentScreen: React.FC = () => {
             }}
             onPress={() => addressRef.current.open()}
           >
-            <Text style={{ fontSize: 16, color: '#999', marginBottom: 40 }}>
-              Address
-            </Text>
+            {getValues('address') ? (
+              <Text
+                style={{ fontSize: 16, color: COLOR.black, marginBottom: 40 }}
+              >
+                {getValues('address')}
+              </Text>
+            ) : (
+              <Text style={{ fontSize: 16, color: '#999', marginBottom: 40 }}>
+                Address
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -285,14 +283,19 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Submit Button */}
         <TouchableOpacity
           style={styles.createButton}
-          // onPress={handleSubmit(onSubmit)}
-          onPress={() => ''}
+          onPress={handleSubmit(onSubmit)}
+          // onPress={() => ''}
         >
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <IncidentAdress ref={addressRef} />
+      <IncidentAddressSheet
+        ref={addressRef}
+        onSubmit={data => {
+          setValue('address', data?.flat);
+          setallAddress(data);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: FONT.R_SBD_600,
     color: COLOR.blue,
     alignSelf: 'center',
     marginVertical: 20,

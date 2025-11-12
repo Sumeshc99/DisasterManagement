@@ -88,7 +88,7 @@ const CompleteProfileSheet = forwardRef<
           label={TEXT.full_name()}
           name="emgName"
           control={control}
-          placeholder="Enter emergency contact name"
+          placeholder="Enter full name"
           // rules={{
           //   required: 'Emergency contact name is required',
           // }}
@@ -100,7 +100,7 @@ const CompleteProfileSheet = forwardRef<
           label={TEXT.mobile_number()}
           name="emgPhone"
           control={control}
-          placeholder="Enter emergency contact number"
+          placeholder="Enter mobile number"
           keyboardType="number-pad"
           // rules={{
           //   required: 'Emergency mobile number is required',

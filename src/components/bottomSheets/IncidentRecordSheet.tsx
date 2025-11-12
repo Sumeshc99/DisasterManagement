@@ -192,7 +192,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tabButton: {
-    flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
   },
@@ -204,6 +203,7 @@ const styles = StyleSheet.create({
     color: COLOR.blue,
     fontWeight: '600',
     textAlign: 'center',
+    marginHorizontal: 20,
   },
   tabTextActive: {
     color: '#fff',

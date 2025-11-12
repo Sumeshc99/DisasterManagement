@@ -23,7 +23,7 @@ const Community = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.blue }}>
-      <DashBoardHeader />
+      <DashBoardHeader drawer={false} setDrawer={() => ''} />
 
       <View
         style={{

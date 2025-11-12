@@ -18,6 +18,8 @@ import { AppStackNavigationProp } from '../navigation/AppNavigation';
 import { clearUser } from '../store/slices/authSlice';
 import Edit from '../assets/svg/edit.svg';
 import Pass from '../assets/svg/pass.svg';
+import Logout from '../assets/svg/logout.svg';
+import { clearUserDraft } from '../store/slices/draftSlice';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.75;
@@ -49,6 +51,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
 
   const logOut = () => {
     dispatch(clearUser());
+    dispatch(clearUserDraft());
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -124,6 +127,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
         {/* Logout */}
         <View style={{ marginBottom: HEIGHT(10) }}>
           <TouchableOpacity onPress={() => logOut()} style={styles.logoutBtn}>
+            <Logout />
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
 
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   header: {
-    marginTop: 14,
+    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -262,7 +266,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 30,
+    flexDirection: 'row',
+    gap: 6,
   },
   logoutText: {
     color: '#fff',

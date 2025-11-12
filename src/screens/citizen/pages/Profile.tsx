@@ -231,7 +231,7 @@ const Profile: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
-      <DashBoardHeader setDrawer={() => ''} />
+      <DashBoardHeader drawer={false} setDrawer={() => ''} />
 
       {/* Title Bar */}
       <View style={{ flex: 1, backgroundColor: COLOR.white }}>
@@ -311,7 +311,7 @@ const Profile: React.FC = () => {
           {/* Content */}
           <ScrollView
             style={styles.content}
-            showsVerticalScrollIndicator={false}
+            // showsVerticalScrollIndicator={false}
           >
             {activeTab === 'basic' ? (
               <BasicInfo

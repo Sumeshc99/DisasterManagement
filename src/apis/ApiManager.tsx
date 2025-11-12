@@ -71,6 +71,7 @@ const requestPath = {
   updateUser: 'mobileapis/updateProfile',
   changePin: 'mobileapis/changePin',
   createIncident: 'mobileapis/createIncident',
+  incidentType: 'field-config/public/list',
 };
 
 const ApiManager = {
@@ -78,6 +79,7 @@ const ApiManager = {
   language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
+  incidentType: () => requests.get(requestPath.incidentType),
 
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),

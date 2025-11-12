@@ -82,7 +82,7 @@ export default function OTPVerification() {
           showSnackbar('Invalid OTP', 'error');
         }
       })
-      .catch(() => showSnackbar('Invalid OTP', 'error'))
+      .catch(err => showSnackbar(err?.response?.data?.message, 'error'))
       .finally(() => hideLoader());
   };
 
@@ -173,22 +173,17 @@ export default function OTPVerification() {
         ) : null}
 
         {/* Timer OR Resend Button */}
-        {timeLeft > 0 ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <Text style={styles.timerText}>
             {TEXT.otp_expire_in()}:{' '}
             <Text style={styles.timerValue}>{formatTime()} minutes</Text>
           </Text>
-        ) : (
-          <TouchableOpacity
-            onPress={handleResendOtp}
-            disabled={isResending}
-            style={styles.resendButton}
-          >
-            <Text style={styles.resendText}>
-              {isResending ? 'Resending...' : TEXT.resend_otp()}
+          {timeLeft <= 0 && (
+            <Text onPress={handleResendOtp} style={styles.timerValue1}>
+              Resend OTP
             </Text>
-          </TouchableOpacity>
-        )}
+          )}
+        </View>
 
         {/* Next Button */}
         <TouchableOpacity
@@ -252,8 +247,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   errorText: { fontSize: 13, color: '#ef4444' },
-  timerText: { color: '#4b5563', marginVertical: 24 },
+  timerText: { color: '#4b5563', marginVertical: 24, gap: 10 },
   timerValue: { fontWeight: '600', color: '#1f2937' },
+  timerValue1: {
+    fontWeight: '600',
+    color: '#1f2937',
+    fontSize: 18,
+  },
   resendButton: {
     marginVertical: 24,
     paddingHorizontal: 20,

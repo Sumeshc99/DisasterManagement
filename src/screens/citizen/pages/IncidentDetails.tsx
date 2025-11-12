@@ -142,7 +142,7 @@ const IncidentDetails: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
-      <DashBoardHeader />
+      <DashBoardHeader drawer={false} setDrawer={() => ''} />
 
       {/* Title Bar */}
       <View style={{ backgroundColor: COLOR.white }}>

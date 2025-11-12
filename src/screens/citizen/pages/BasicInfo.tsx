@@ -116,7 +116,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Pin code"
+        label="Pin Code"
         name="pincode"
         control={control}
         placeholder="Enter pin code"
@@ -141,7 +141,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <DropDownInput
-        label="Blood group"
+        label="Blood Group"
         name="bloodGroup"
         control={control}
         placeholder="Select blood group"

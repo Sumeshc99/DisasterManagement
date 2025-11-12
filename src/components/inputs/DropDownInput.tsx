@@ -54,7 +54,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             value={value}
             items={localItems}
             setOpen={setOpen}
-            onOpen={handleOpen} // 👈 added
+            onOpen={handleOpen}
             setValue={callback => {
               const newValue = callback(value);
               onChange(newValue);
@@ -71,6 +71,8 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             textStyle={styles.textStyle}
             selectedItemContainerStyle={styles.selectedItemContainerStyle}
             selectedItemLabelStyle={styles.selectedItemLabelStyle}
+            listMode="SCROLLVIEW"
+            arrowIconStyle={{ tintColor: '#888' }}
           />
         )}
       />

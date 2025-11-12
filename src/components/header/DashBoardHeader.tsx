@@ -8,8 +8,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 
 interface props {
-  drawer?: boolean;
-  setDrawer?: any;
+  drawer: boolean;
+  setDrawer: any;
 }
 
 const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
@@ -38,7 +38,7 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
         <TouchableOpacity onPress={() => sheetRef.current?.open()}>
           <Image
             source={require('../../assets/alert.png')}
-            style={styles.iconSmall}
+            style={styles.iconSmall1}
           />
         </TouchableOpacity>
 
@@ -47,17 +47,24 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
         >
           <Image
             source={require('../../assets/bell.png')}
-            style={styles.iconSmall}
+            style={styles.iconSmall1}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
-          // onPress={() => navigation.navigate('profile')}
+          activeOpacity={1}
           onPress={() => setDrawer(true)}
           style={styles.userCircle}
         >
           <Text style={styles.userText}>
-            {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'UN'}
+            {user?.full_name
+              ? user.full_name
+                  .split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map(word => word.charAt(0).toUpperCase())
+                  .join('')
+              : 'UN'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -101,8 +108,13 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   iconSmall: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
+    tintColor: '#fff',
+  },
+  iconSmall1: {
+    width: 26,
+    height: 26,
     tintColor: '#fff',
   },
   userCircle: {
