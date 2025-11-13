@@ -23,6 +23,7 @@ import ApiManager from '../../../apis/ApiManager';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import IncidentAddressSheet from '../../../components/bottomSheets/IncidentAddressSheet';
 import FormTextInput2 from '../../../components/inputs/FormTextInput2';
+import { useNavigation } from '@react-navigation/native';
 
 interface MediaAsset {
   uri?: string;
@@ -40,6 +41,7 @@ interface IncidentForm {
 }
 
 const CreateIncidentScreen: React.FC = () => {
+  const navigation = useNavigation();
   const { showLoader, hideLoader } = useGlobalLoader();
   const { user, userToken } = useSelector((state: RootState) => state.auth);
 
@@ -125,6 +127,7 @@ const CreateIncidentScreen: React.FC = () => {
   };
 
   const onSubmit = async (data: IncidentForm) => {
+    navigation.navigate('incidentDetails');
     try {
       showLoader();
 
@@ -165,6 +168,7 @@ const CreateIncidentScreen: React.FC = () => {
 
       if (response?.data?.status) {
         Alert.alert('Success', 'Incident created successfully!');
+        navigation.navigate('incidentDetails');
         reset();
       } else {
         Alert.alert(
@@ -276,7 +280,7 @@ const CreateIncidentScreen: React.FC = () => {
           rules={{ required: 'At least one media file is required' }}
           error={errors.media?.message}
           media={media}
-          onPickMedia={handleMediaPick}
+          onChangeMedia={handleMediaPick}
           onRemoveMedia={handleRemoveMedia}
         />
 
@@ -284,7 +288,6 @@ const CreateIncidentScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.createButton}
           onPress={handleSubmit(onSubmit)}
-          // onPress={() => ''}
         >
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>

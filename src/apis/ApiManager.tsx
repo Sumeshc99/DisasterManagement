@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-// export const BASE_URL = 'http://192.168.29.49:8085/api/';
-// export const IMG_URL = 'http://192.168.29.49:8085/';
+export const BASE_URL = 'http://192.168.29.54:8085/api/';
+export const IMG_URL = 'http://192.168.29.54:8085/';
 
-export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
-export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
+// export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
+// export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
@@ -72,6 +72,8 @@ const requestPath = {
   changePin: 'mobileapis/changePin',
   createIncident: 'mobileapis/createIncident',
   incidentType: 'field-config/public/list',
+  incidentDetails: 'mobileapis/getIncidentById',
+  incidentSend: 'mobileapis/updateIncidentStatus',
 };
 
 const ApiManager = {
@@ -90,6 +92,8 @@ const ApiManager = {
     requests.get(requestPath.incidentList, token),
   getUser: (id: any, token: string) =>
     requests.get(`${requestPath.getUser}/${id}`, token),
+  incidentDetails: (id: any, token: string) =>
+    requests.get(`${requestPath.incidentDetails}/${id}`, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
@@ -106,6 +110,8 @@ const ApiManager = {
     requests.post(requestPath.changePin, params, token),
   createIncident: (params: any, token: string) =>
     requests.post(requestPath.createIncident, params, token),
+  incidentSend: (params: any, token: string) =>
+    requests.post(requestPath.incidentSend, params, token),
 };
 
 export default ApiManager;

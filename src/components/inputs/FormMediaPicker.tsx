@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,9 @@ import {
   ScrollView,
 } from 'react-native';
 import { Controller, Control, RegisterOptions } from 'react-hook-form';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLOR } from '../../themes/Colors';
+import MediaOptionSheet from '../bottomSheets/MediaOptionSheet';
 
 interface MediaAsset {
   uri?: string;
@@ -22,8 +24,8 @@ interface FormMediaPickerProps {
   control: Control<any>;
   rules?: RegisterOptions;
   error?: string;
-  onPickMedia: () => void;
   media?: MediaAsset[];
+  onChangeMedia?: (newMedia: MediaAsset[]) => void;
   onRemoveMedia?: (index: number) => void;
 }
 
@@ -33,28 +35,54 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   control,
   rules,
   error,
-  onPickMedia,
   media = [],
+  onChangeMedia,
   onRemoveMedia,
 }) => {
   const isRequired = !!rules?.required;
+  const sheetRef = useRef<any>(null);
+
+  const openSheet = useCallback(() => {
+    sheetRef.current?.open();
+  }, []);
+
+  const openCamera = async () => {
+    sheetRef.current?.close();
+    const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
+    if (result.assets?.length) {
+      onChangeMedia?.([...media, ...result.assets]);
+    }
+  };
+
+  const openGallery = async () => {
+    sheetRef.current?.close();
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      selectionLimit: 5,
+    });
+    if (result.assets?.length) {
+      onChangeMedia?.([...media, ...result.assets]);
+    }
+  };
 
   return (
     <View style={styles.container}>
+      {/* Label */}
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         {isRequired && <Text style={styles.requiredMark}>*</Text>}
       </View>
 
+      {/* Controller */}
       <Controller
         control={control}
         name={name}
         rules={rules}
         render={() => (
-          <View>
+          <>
             <TouchableOpacity
               style={[styles.uploadBox, error && styles.inputError]}
-              onPress={onPickMedia}
+              onPress={openSheet}
               activeOpacity={0.8}
             >
               <Text style={styles.placeholderText}>
@@ -62,7 +90,6 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
               </Text>
             </TouchableOpacity>
 
-            {/* Thumbnails */}
             {media?.length > 0 && (
               <ScrollView
                 horizontal
@@ -80,19 +107,27 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
                         style={styles.removeButton}
                         onPress={() => onRemoveMedia(index)}
                       >
-                        {/* <X size={16} color="#fff" /> */}
-                        <Text>X</Text>
+                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                          ✕
+                        </Text>
                       </TouchableOpacity>
                     )}
                   </View>
                 ))}
               </ScrollView>
             )}
-          </View>
+          </>
         )}
       />
 
       {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {/* ✅ Bottom Sheet (kept outside Controller) */}
+      <MediaOptionSheet
+        ref={sheetRef}
+        onCamera={openCamera}
+        onGallery={openGallery}
+      />
     </View>
   );
 };
@@ -100,19 +135,13 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
 export default FormMediaPicker;
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
+  container: { marginBottom: 16 },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 6,
   },
-  label: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-  },
+  label: { fontSize: 16, color: '#000', fontWeight: '500' },
   requiredMark: {
     color: 'red',
     marginLeft: 4,
@@ -128,37 +157,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  previewScroll: {
-    marginTop: 10,
-  },
-  thumbnailWrapper: {
-    position: 'relative',
-    marginRight: 10,
-  },
-  previewImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 6,
-  },
+  placeholderText: { fontSize: 16, color: '#888', textAlign: 'center' },
+  previewScroll: { marginTop: 10 },
+  thumbnailWrapper: { position: 'relative', marginRight: 10 },
+  previewImage: { width: 90, height: 90, borderRadius: 6 },
   removeButton: {
     position: 'absolute',
     top: 4,
     right: 4,
     backgroundColor: 'rgba(0,0,0,0.6)',
     borderRadius: 10,
-    padding: 2,
+    paddingHorizontal: 4,
   },
-  placeholderText: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-  },
-  inputError: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 4,
-  },
+  inputError: { borderColor: 'red' },
+  errorText: { color: 'red', fontSize: 12, marginTop: 4 },
 });
