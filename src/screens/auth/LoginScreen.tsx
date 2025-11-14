@@ -1,341 +1,202 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
   Image,
+  ImageBackground,
   ScrollView,
+  StatusBar,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
-import { HEIGHT } from '../../config/AppConst';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
-import Svg, { Path } from 'react-native-svg';
-import WaveBackground from './WaveBackground';
-import { useTranslation } from 'react-i18next';
+import { COLOR } from '../../themes/Colors';
+import { HEIGHT, WIDTH } from '../../themes/AppConst';
 import '../../../i18n';
+import ApiManager from '../../apis/ApiManager';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import { useForm } from 'react-hook-form';
+import FormTextInput from '../../components/inputs/FormTextInput';
+import DropDownInput from '../../components/inputs/DropDownInput';
+import { useTranslation } from 'react-i18next';
+import { TEXT } from '../../i18n/locales/Text';
 
-interface TehsilOption {
-  label: string;
-  value: string;
+interface LoginFormData {
+  phone: string;
+  tehsil: string;
 }
 
 const LoginScreen = () => {
-  const navigation = useNavigation<AppStackNavigationProp<'otpVerification'>>();
-  const { t, i18n } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = React.useState<string>(i18n.language);
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const { t } = useTranslation();
 
-  console.log("trans", t)
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [selectedTehsil, setSelectedTehsil] = useState<string>('');
-  const [showTehsilDropdown, setShowTehsilDropdown] = useState<boolean>(false);
+  const [tahsilList, settahsilList] = useState([]);
 
-  const tehsilOptions: TehsilOption[] = [
-    { label: 'Select tehsil', value: '' },
-    { label: 'Nagpur', value: 'nagpur' },
-    { label: 'Mumbai', value: 'mumbai' },
-    { label: 'Pune', value: 'pune' },
-    { label: 'Nashik', value: 'nashik' },
-    { label: 'Thane', value: 'thane' },
-  ];
-  const handleNext = () => {
-    // console.log('Selected language:', selectedLanguage);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    defaultValues: {
+      phone: '',
+      tehsil: '',
+    },
+  });
 
-  };
-  const handleLogin = () => {
-    if (!phoneNumber || !selectedTehsil) {
-      Alert.alert('Please fill all required fields');
-      return;
-    }
-    navigation.navigate('otpVerification');
-    console.log('Phone:', phoneNumber, 'Tehsil:', selectedTehsil);
-    // Handle login logic
-  };
+  useEffect(() => {
+    const getTahsil = () => {
+      showLoader();
+      ApiManager.tahsilList()
+        .then(resp => {
+          if (resp?.data?.success) {
+            settahsilList(
+              (resp?.data?.data?.tehsils || []).map((item: any) => ({
+                label: item.Tehsil,
+                value: item.id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('error', err.response))
+        .finally(() => hideLoader());
+    };
 
-  const handleTehsilSelect = (value: string) => {
-    setSelectedTehsil(value);
-    setShowTehsilDropdown(false);
+    getTahsil();
+  }, []);
+
+  const handleLogin = async (data: LoginFormData) => {
+    const { phone, tehsil } = data;
+
+    const body = {
+      mobile: phone,
+      tehsil: tehsil,
+    };
+
+    showLoader();
+    ApiManager.userLogin(body)
+      .then(resp => {
+        if (resp?.data?.status) {
+          if (resp?.data?.data?.is_registered) {
+            navigation.navigate('pinLoginScreen', { data: resp?.data });
+          } else {
+            navigation.navigate('otpVerification', { data: resp?.data });
+          }
+        } else {
+          Alert.alert('Login Failed', resp?.data?.message || 'Unknown error');
+        }
+      })
+      .catch(err => console.log('error', err.response))
+      .finally(() => hideLoader());
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ImageBackground
+        source={require('../../assets/bg2.png')}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+        imageStyle={{ opacity: 0.95 }}
       >
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
+        <SafeAreaView style={styles.container}>
+          <StatusBar
+            barStyle="dark-content"
+            backgroundColor="transparent"
+            translucent
           />
-        </View>
 
-        {/* Title */}
-        <Text style={styles.title}> Please enter your Mobile</Text>
-        <Text style={styles.title}>Number and Tehsil</Text>
-
-        {/* Form Container */}
-        <View style={styles.formContainer}>
-          {/* Phone Number Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Your Phone Number <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your phone number"
-              placeholderTextColor="#999999"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType="phone-pad"
-              maxLength={10}
-            />
-          </View>
-
-          {/* Tehsil Dropdown */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Select Tehsil <Text style={styles.required}>*</Text>
-            </Text>
-            <TouchableOpacity
-              style={styles.dropdown}
-              onPress={() => setShowTehsilDropdown(!showTehsilDropdown)}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !selectedTehsil && styles.placeholderText,
-                ]}
-              >
-                {selectedTehsil
-                  ? tehsilOptions.find(t => t.value === selectedTehsil)?.label
-                  : 'Select tehsil'}
-              </Text>
-              <Text style={styles.dropdownArrow}>▼</Text>
-            </TouchableOpacity>
-
-            {/* Dropdown Options */}
-            {showTehsilDropdown && (
-              <View style={styles.dropdownList}>
-                {tehsilOptions.map((option, index) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.dropdownItem,
-                      index === tehsilOptions.length - 1 &&
-                      styles.dropdownItemLast,
-                    ]}
-                    onPress={() => handleTehsilSelect(option.value)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.dropdownItemText}>{option.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Login Button */}
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-            activeOpacity={0.8}
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingHorizontal: WIDTH(4),
+              marginTop: HEIGHT(14),
+            }}
           >
-            <View style={styles.loginButtonContent}>
-              <View style={styles.userIcon}>
-                <Text style={styles.userIconText}>👤</Text>
-              </View>
-              <Text style={styles.loginButtonText}>Login</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
 
-      {/* Bottom Wave */}
-      {/* <View style={styles.waveContainer}>
-        <View style={styles.wave} />
-      </View> */}
-      {/* <View style={styles.container}> */}
-      <WaveBackground />
+            <Text style={styles.title}>
+              {TEXT.please_enter_your_mobile_telsil_name()}
+            </Text>
 
-      {/* </View> */}
-    </View>
+            <FormTextInput
+              name="phone"
+              label={TEXT.your_phone_number()}
+              control={control}
+              placeholder={TEXT.enter_phone_number()}
+              keyboardType="number-pad"
+              rules={{
+                required: TEXT.phone_number_is_required(),
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: TEXT.enter_valid_10_digit_number(),
+                },
+              }}
+              error={errors.phone?.message as string}
+            />
+
+            <DropDownInput
+              name="tehsil"
+              label={TEXT.select_tehsil()}
+              placeholder={TEXT.select_tehsil()}
+              control={control}
+              rules={{ required: TEXT.tehsil_is_required() }}
+              items={tahsilList}
+              errors={errors}
+            />
+
+            {/* LOGIN BUTTON */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit(handleLogin)}
+              activeOpacity={0.8}
+            >
+              <Image
+                source={require('../../assets/user.png')}
+                style={{ width: 24, height: 24, marginRight: 8 }}
+              />
+              <Text style={styles.buttonText}>{TEXT.login()}</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: HEIGHT(16),
-    paddingBottom: 200,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-  },
+  container: { flex: 1 },
+  logo: { width: 100, height: 100, alignSelf: 'center', marginBottom: 30 },
   title: {
     fontSize: 22,
     fontWeight: '600',
-    color: '#424242',
+    color: '#333',
     textAlign: 'center',
-    lineHeight: 32,
+    marginBottom: 30,
+    width: WIDTH(80),
+    alignSelf: 'center',
   },
-  formContainer: {
-    marginTop: 40,
-  },
-  inputGroup: {
-    marginBottom: 24,
-    position: 'relative',
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#424242',
-    marginBottom: 8,
-  },
-  required: {
-    color: '#D32F2F',
-  },
-  input: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
-    color: '#333333',
-  },
-  dropdown: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  button: {
+    marginTop: 30,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    backgroundColor: COLOR.blue,
+    borderRadius: 35,
+    paddingVertical: 14,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  dropdownText: {
-    fontSize: 15,
-    color: '#333333',
-  },
-  placeholderText: {
-    color: '#999999',
-  },
-  dropdownArrow: {
-    fontSize: 10,
-    color: '#757575',
-  },
-  dropdownList: {
-    position: 'absolute',
-    top: 70,
-    left: 0,
-    right: 0,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    zIndex: 1000,
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    width: 160,
+    alignSelf: 'center',
   },
-  dropdownItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  dropdownItemLast: {
-    borderBottomWidth: 0,
-  },
-  dropdownItemText: {
-    fontSize: 15,
-    color: '#333333',
-  },
-  loginButton: {
-    backgroundColor: '#1565C0',
-    borderRadius: 30,
-    paddingVertical: 14,
-    marginTop: 16,
-    alignItems: 'center',
-    shadowColor: '#1565C0',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  loginButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  userIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  userIconText: {
-    fontSize: 14,
-    color: '#FFFFFF',
-  },
-  loginButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  waveContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 100,
-    overflow: 'hidden',
-  },
-  wave: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 180,
-    backgroundColor: '#1565C0',
-    borderTopLeftRadius: 250,
-    borderTopRightRadius: 250,
-    transform: [{ scaleX: 1.5 }],
-  },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: '700' },
 });
 
 export default LoginScreen;

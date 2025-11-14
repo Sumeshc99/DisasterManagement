@@ -9,6 +9,12 @@ import SelectLanguage from '../screens/SelectLanguage';
 import LoginScreen from '../screens/auth/LoginScreen';
 import MainAppSelector from './MainAppSelector';
 import OTPVerification from '../screens/auth/OTPVerification';
+import PinLoginScreen from '../screens/auth/PinLoginScreen';
+import PinResetScreen from '../screens/auth/PinResetScreen';
+import OTPVerifyForPin from '../screens/auth/OTPVerifyForPin';
+import Profile from '../screens/citizen/pages/Profile';
+import CreateIncidentScreen from '../screens/citizen/pages/CreateIncidentScreen';
+import IncidentDetails from '../screens/citizen/pages/IncidentDetails';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -24,7 +30,7 @@ const AppNavigation = () => {
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
-        initialRouteName="splashScreen"
+        initialRouteName="incidentDetails"
         screenOptions={{
           headerShown: false,
           animation: 'fade_from_bottom',
@@ -34,8 +40,17 @@ const AppNavigation = () => {
         <Stack.Screen name="splashScreen" component={SplashScreen} />
         <Stack.Screen name="selectLanguage" component={SelectLanguage} />
         <Stack.Screen name="loginScreen" component={LoginScreen} />
-        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
+        <Stack.Screen name="pinLoginScreen" component={PinLoginScreen} />
+        <Stack.Screen name="pinResetScreen" component={PinResetScreen} />
         <Stack.Screen name="otpVerification" component={OTPVerification} />
+        <Stack.Screen name="otpVerifyForPin" component={OTPVerifyForPin} />
+        <Stack.Screen name="mainAppSelector" component={MainAppSelector} />
+        <Stack.Screen
+          name="createIncidentScreen"
+          component={CreateIncidentScreen}
+        />
+        <Stack.Screen name="profile" component={Profile} />
+        <Stack.Screen name="incidentDetails" component={IncidentDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -51,5 +66,12 @@ type AppStackParamList = {
   selectLanguage: undefined;
   loginScreen: undefined;
   mainAppSelector: undefined;
-  otpVerification: undefined;
+  otpVerification: { data: any };
+  otpVerifyForPin: { data: any };
+  pinLoginScreen: { data: any };
+  pinResetScreen: { data: any };
+  createIncidentScreen: undefined;
+  profile: undefined;
+  incidentDetails: undefined;
+  incidentRecordsScreen: undefined;
 };

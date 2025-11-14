@@ -6,174 +6,189 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WIDTH } from '../config/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
-import WaveBackgroundHeader from './auth/WaveBackgroundHeader';
-import { useTranslation } from 'react-i18next';
-import '../../i18n';
+import { HEIGHT, WIDTH } from '../themes/AppConst';
+import { COLOR } from '../themes/Colors';
+import i18n from '../i18n/i18n';
+import { useDispatch } from 'react-redux';
+import { setLanguage } from '../store/slices/LanguageSlice';
 
 const SelectLanguage = () => {
-  const { i18n } = useTranslation();
-
-  // const languages = [
-  //   { code: 'en', name: 'English' },
-  //   { code: 'hi', name: 'हिन्दी' },
-  //   { code: 'mr', name: 'मराठी' }
-  // ];
-
-
-
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+  const dispatch = useDispatch();
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-  console.log(selectedLanguage)
+
   const languages: any = [
     {
       id: 1,
       name: 'English',
       code: 'en',
       subText: '',
-      icon: require('../assets/citizen/english-icon.png'),
+      icon: require('../assets/e.png'),
+      icon1: require('../assets/e1.png'),
     },
     {
       id: 2,
       name: 'Marathi',
       code: 'mr',
       subText: 'मराठी',
-      icon: require('../assets/citizen/hindi-icon.png'),
+      icon: require('../assets/h.png'),
+      icon1: require('../assets/h1.png'),
     },
     {
       id: 3,
       name: 'Hindi',
       code: 'hi',
       subText: 'हिन्दी',
-      icon: require('../assets/citizen/hindi-icon.png'),
+      icon: require('../assets/m.png'),
+      icon1: require('../assets/m1.png'),
     },
   ];
 
-  // const handleNext = async (langCode: string): Promise<void> => {
-  //   console.log(langCode)
-  //   await i18n.changeLanguage('mr');
-  //   selectedLanguage?.(langCode);
-  //   navigation.navigate('loginScreen');
-  // };
   const handleNext = () => {
-    console.log('Selected language:', selectedLanguage);
     navigation.navigate('loginScreen');
   };
 
+  const SelectLanguage = (item: any) => {
+    setSelectedLanguage(item.name);
+    i18n.changeLanguage(item.code);
+    dispatch(setLanguage(item.code));
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1E4A92" barStyle="light-content" />
+    <ImageBackground
+      source={require('../assets/bg1.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+      imageStyle={{ opacity: 0.95 }}
+    >
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor={COLOR.blue} barStyle="light-content" />
 
-      {/* Blue Header */}
-      <View>
-        <WaveBackgroundHeader></WaveBackgroundHeader>
-      </View>
+        {/* Content Section */}
+        <View style={styles.contentContainer}>
+          <Image
+            source={require('../assets/citizen/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Select Language</Text>
 
-      {/* <View style={styles.header}>
-        <Image
-          source={require('../assets/citizen/logo.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.headerTitle}>Select Language</Text>
-      </View> */}
+          <View style={styles.languageRow}>
+            {languages.map((lang: any) => (
+              <TouchableOpacity
+                key={lang.id}
+                style={[
+                  styles.languageCard,
+                  selectedLanguage === lang.name && styles.selectedCard,
+                ]}
+                onPress={() => SelectLanguage(lang)}
+              >
+                <View>
+                  <Text
+                    style={[
+                      styles.languageText,
+                      selectedLanguage === lang.name && styles.selectedText,
+                    ]}
+                  >
+                    {lang.name}
+                  </Text>
 
-      {/* Curved White Section */}
-      <View style={styles.contentContainer}>
-        <View style={styles.languageRow}>
-          {languages.map(lang => (
-            <TouchableOpacity
-              key={lang.id}
-              style={[
-                styles.languageCard,
-                selectedLanguage === lang.name && styles.selectedCard,
-              ]}
-              onPress={() => setSelectedLanguage(lang.name)}
-            >
-              <View>
-                <Text
+                  {lang.subText ? (
+                    <Text
+                      style={[
+                        styles.subText,
+                        selectedLanguage === lang.name && styles.selectedText,
+                      ]}
+                    >
+                      {lang.subText}
+                    </Text>
+                  ) : null}
+                </View>
+
+                <Image
+                  source={
+                    selectedLanguage === lang.name ? lang.icon1 : lang.icon
+                  }
+                  style={styles.icon}
+                />
+
+                <View
                   style={[
-                    styles.languageText,
-                    selectedLanguage === lang.name && styles.selectedText,
+                    styles.radioOuter,
+                    selectedLanguage === lang.name && styles.radioSelected,
                   ]}
                 >
-                  {lang.name}
-                </Text>
-                {lang.subText ? (
-                  <Text style={styles.subText}>{lang.subText}</Text>
-                ) : null}
-              </View>
+                  {selectedLanguage === lang.name && (
+                    <View style={styles.radioInner} />
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-              <Image source={lang.icon} style={styles.icon} />
-              <View
-                style={[
-                  styles.radioOuter,
-                  selectedLanguage === lang.name && styles.radioSelected,
-                ]}
-              >
-                {selectedLanguage === lang.name && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
-            </TouchableOpacity>
-          ))}
+          {/* Next Button */}
+          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <Text style={styles.nextText}>Next</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Next Button */}
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView >
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
+export default SelectLanguage;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  // header: {
-  //   backgroundColor: '#1E4A92',
-  //   alignItems: 'center',
-  //   paddingVertical: 40,
-  // },
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
-    marginBottom: 10,
+  backgroundImage: {
+    flex: 1,
   },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   contentContainer: {
     flex: 1,
-    paddingTop: 40,
     alignItems: 'center',
+    marginTop: HEIGHT(6),
+    paddingHorizontal: WIDTH(4),
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLOR.white,
+    marginBottom: 30,
   },
   languageRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 16,
-    marginBottom: 20,
+    gap: WIDTH(4),
+    marginTop: HEIGHT(10),
     flexWrap: 'wrap',
   },
   languageCard: {
-    backgroundColor: '#dcdcdcff',
+    backgroundColor: '#dcdcdc',
     borderRadius: 12,
-    width: WIDTH(42),
+    width: WIDTH(44),
     flexDirection: 'row',
-    padding: 12,
+    alignItems: 'center',
+    padding: WIDTH(4),
   },
   selectedCard: {
-    backgroundColor: '#1E4A92',
+    backgroundColor: COLOR.blue,
   },
   languageText: {
     fontWeight: 'bold',
     color: '#000',
+    fontSize: 16,
   },
   selectedText: {
     color: '#fff',
@@ -187,7 +202,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     resizeMode: 'contain',
-    marginTop: 8,
+    marginLeft: 'auto',
+    marginRight: 25,
   },
   radioOuter: {
     position: 'absolute',
@@ -197,7 +213,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#828282ff',
+    borderColor: '#828282',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -207,13 +223,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#fff',
   },
-  radioSelected: { borderColor: '#fff' },
+  radioSelected: {
+    borderColor: '#fff',
+  },
   nextButton: {
-    backgroundColor: '#1E4A92',
+    backgroundColor: COLOR.blue,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
-    marginTop: 40,
+    marginTop: HEIGHT(10),
+    width: 150,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   nextText: {
     color: '#fff',
@@ -221,5 +246,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default SelectLanguage;
