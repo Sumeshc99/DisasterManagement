@@ -24,6 +24,8 @@ import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
+import SuccessScreen from '../../../components/bottomSheets/SuccessScreen';
+import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOptionsSheet';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -38,7 +40,11 @@ interface IncidentDetailsForm {
 
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
+
   const sheetRef = useRef<any>(null);
+  const successRef = useRef<any>(null);
+  const cancelRef = useRef<any>(null);
+  const acceptRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -243,7 +249,7 @@ const IncidentDetails: React.FC = () => {
           >
             <TouchableOpacity
               style={styles.submitButton}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => successRef.current.open()}
             >
               <Text style={styles.submitButtonText}>Update</Text>
             </TouchableOpacity>
@@ -268,6 +274,32 @@ const IncidentDetails: React.FC = () => {
         cancelText="Cancel"
         onConfirm={() => console.log('Confirmed')}
         onCancel={() => console.log('Cancelled')}
+      />
+
+      <SuccessScreen
+        ref={successRef}
+        description={
+          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
+        }
+        onNo={() => {
+          successRef.current.close(), cancelRef.current.open();
+        }}
+        onYes={() => {
+          successRef.current.close(), acceptRef.current.open();
+        }}
+        height={320}
+      />
+
+      <SuccessScreen
+        ref={cancelRef}
+        icon={require('../../../assets/cancel1.png')}
+        description={'Your report has been successfully cancelled.'}
+        height={200}
+      />
+
+      <SelfHelpBottomSheet
+        ref={acceptRef}
+        onClose={() => console.log('Closed')}
       />
     </SafeAreaView>
   );

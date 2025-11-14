@@ -1,14 +1,40 @@
 import React, { forwardRef } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { COLOR } from '../../themes/Colors';
+import { FONT, WIDTH } from '../../themes/AppConst';
 
-const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>>(
-  (_, ref) => {
+interface Props {
+  icon?: any;
+  title?: string;
+  height: number;
+  description?: string;
+  yesLabel?: string;
+  noLabel?: string;
+  onYes?: () => void;
+  onNo?: () => void;
+}
+
+const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
+  (
+    {
+      icon = require('../../assets/success.png'),
+      description = 'Your PIN has been reset successfully.',
+      height,
+      yesLabel = 'Yes',
+      noLabel = 'No',
+      onYes,
+      onNo,
+    },
+    ref,
+  ) => {
+    const showButtons = onYes || onNo;
+
     return (
       <RBSheet
         ref={ref}
         closeOnPressMask
-        height={300}
+        height={height}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },
@@ -16,15 +42,34 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>>(
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
+
           <View style={styles.iconWrapper}>
-            <Image
-              source={require('../../assets/success.png')}
-              style={styles.icon}
-            />
-            {/* </View> */}
+            <Image source={icon} style={styles.icon} />
           </View>
 
-          <Text style={styles.message}>Your PIN is updated successfully</Text>
+          <Text style={styles.description}>{description}</Text>
+
+          {showButtons && (
+            <View style={styles.buttonRow}>
+              {onNo && (
+                <TouchableOpacity
+                  style={[styles.button, styles.noButton]}
+                  onPress={onNo}
+                >
+                  <Text style={styles.noButtonText}>{noLabel}</Text>
+                </TouchableOpacity>
+              )}
+
+              {onYes && (
+                <TouchableOpacity
+                  style={[styles.button, styles.yesButton]}
+                  onPress={onYes}
+                >
+                  <Text style={styles.yesButtonText}>{yesLabel}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </RBSheet>
     );
@@ -47,24 +92,58 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingVertical: 25,
+    paddingVertical: 20,
     alignItems: 'center',
   },
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
+    // marginBottom: 10,
   },
-
   icon: {
-    width: 150,
-    height: 150,
-    // tintColor: '#fff',
+    width: 100,
+    height: 100,
   },
-  message: {
-    fontSize: 16,
+  title: {
+    fontSize: 18,
+    color: '#111',
+    fontWeight: '600',
+    marginTop: 10,
+  },
+  description: {
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.darkGray,
+    textAlign: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+    width: WIDTH(80),
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    width: '80%',
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 8,
+    borderRadius: 50,
+    alignItems: 'center',
+  },
+  noButton: {
+    backgroundColor: '#eee',
+  },
+  yesButton: {
+    backgroundColor: COLOR.blue,
+  },
+  noButtonText: {
     color: '#333',
     fontWeight: '500',
-    textAlign: 'center',
+  },
+  yesButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });
 

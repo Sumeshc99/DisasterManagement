@@ -120,6 +120,7 @@ const CitizenDashboard = () => {
     remindRef.current?.close();
     navigation.navigate('profile');
   }, [navigation]);
+  successRef.current?.open();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -187,7 +188,7 @@ const CitizenDashboard = () => {
           successRef.current?.open();
         }}
       />
-      <SuccessScreen ref={successRef} />
+      <SuccessScreen ref={successRef} height={300} />
 
       <AlertModal
         visible={visible}
