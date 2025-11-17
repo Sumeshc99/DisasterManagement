@@ -12,4 +12,6 @@ export const COLOR = {
   yellow: '#ffbf00',
   lightBlue: '#1465D0',
   orange: '#FB7805',
+  textGrey: '#525151',
+  lightTextGrey: '#8C8C8C',
 };

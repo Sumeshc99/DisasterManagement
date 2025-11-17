@@ -180,7 +180,7 @@ export default function OTPVerification() {
           </Text>
           {timeLeft <= 0 && (
             <Text onPress={handleResendOtp} style={styles.timerValue1}>
-              Resend OTP
+              {TEXT.resend_otp()}
             </Text>
           )}
         </View>

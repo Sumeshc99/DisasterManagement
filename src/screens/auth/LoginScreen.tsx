@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
-import { HEIGHT, WIDTH } from '../../themes/AppConst';
+import { FONT, HEIGHT, WIDTH } from '../../themes/AppConst';
 import '../../../i18n';
 import ApiManager from '../../apis/ApiManager';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
   logo: { width: 100, height: 100, alignSelf: 'center', marginBottom: 30 },
   title: {
     fontSize: 22,
-    fontWeight: '600',
-    color: '#333',
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
     textAlign: 'center',
     marginBottom: 30,
     width: WIDTH(80),
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     width: 160,
     alignSelf: 'center',
   },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  buttonText: { color: '#fff', fontSize: 18, fontFamily: FONT.R_BOLD_700 },
 });
 
 export default LoginScreen;

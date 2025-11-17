@@ -8,6 +8,8 @@ import {
   I18nManager,
 } from 'react-native';
 import { Controller, Control, RegisterOptions } from 'react-hook-form';
+import { COLOR } from '../../themes/Colors';
+import { FONT } from '../../themes/AppConst';
 
 interface FormTextInputProps extends TextInputProps {
   label: string;
@@ -94,14 +96,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#000000',
-    fontWeight: '500',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_MED_500,
   },
   requiredMark: {
     color: 'red',
     marginLeft: 4,
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONT.R_SBD_600,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     paddingVertical: 12,
   },
   disabledInput: {

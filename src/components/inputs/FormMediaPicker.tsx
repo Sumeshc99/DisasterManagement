@@ -141,7 +141,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  label: { fontSize: 16, color: '#000', fontWeight: '500' },
+  label: {
+    fontSize: 16,
+    color: COLOR.textGrey,
+    fontWeight: '500',
+  },
+ 
+
   requiredMark: {
     color: 'red',
     marginLeft: 4,
@@ -168,6 +174,20 @@ const styles = StyleSheet.create({
     right: 4,
     backgroundColor: 'rgba(0,0,0,0.6)',
     borderRadius: 10,
+    padding: 2,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: COLOR.lightTextGrey,
+    textAlign: 'center',
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 4,
     paddingHorizontal: 4,
   },
   inputError: { borderColor: 'red' },

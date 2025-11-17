@@ -15,6 +15,7 @@ import { COLOR } from '../../themes/Colors';
 import FormTextInput from '../inputs/FormTextInput';
 import FormTextInput2 from '../inputs/FormTextInput2';
 import LocationManual from '../LocationManual';
+import { TEXT } from '../../i18n/locales/Text';
 import { FONT } from '../../themes/AppConst';
 
 const { height } = Dimensions.get('window');
@@ -126,7 +127,7 @@ const IncidentAddressSheet = forwardRef<
         <View style={styles.dragIndicator} />
 
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Confirm Your Address</Text>
+          <Text style={styles.title}>{TEXT.confirm_address()}</Text>
           <TouchableOpacity onPress={() => (ref as any)?.current?.close?.()}>
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
@@ -141,35 +142,35 @@ const IncidentAddressSheet = forwardRef<
               />
 
               <TouchableOpacity style={styles.button} onPress={() => settab(1)}>
-                <Text style={styles.buttonText}>Look Good</Text>
+                <Text style={styles.buttonText}>{TEXT.look_good()}</Text>
               </TouchableOpacity>
             </>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
               <FormTextInput
-                label="Country/region"
+                label={TEXT.country_region()}
                 name="country"
                 control={control}
                 editable={false}
-                placeholder="Country"
+                placeholder={TEXT.country_region()}
                 rules={{ required: 'Country is required' }}
                 error={errors.country?.message}
               />
 
               <FormTextInput
-                label="Detailed address"
+                label={TEXT.detailed_address()}
                 name="flat"
                 control={control}
-                placeholder="Flat, house, etc."
+                placeholder={TEXT.flat_house()}
                 rules={{ required: 'Address is required' }}
                 error={errors.flat?.message}
               />
               <View style={{ marginTop: -6 }} />
               <FormTextInput2
-                label="Street address"
+                label={TEXT.street_address()}
                 name="street"
                 control={control}
-                placeholder="Street address"
+                placeholder={TEXT.street_address()}
                 error={errors.street?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -177,7 +178,7 @@ const IncidentAddressSheet = forwardRef<
                 label="Nearby landmark (If applicable)"
                 name="landmark"
                 control={control}
-                placeholder="Nearby landmark"
+                placeholder={TEXT.nearby_landmark()}
                 error={errors.landmark?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -185,7 +186,7 @@ const IncidentAddressSheet = forwardRef<
                 label="City"
                 name="city"
                 control={control}
-                placeholder="City"
+                placeholder={TEXT.city()}
                 error={errors.city?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -193,7 +194,7 @@ const IncidentAddressSheet = forwardRef<
                 label="Division"
                 name="division"
                 control={control}
-                placeholder="Division"
+                placeholder={TEXT.division()}
                 error={errors.division?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -201,7 +202,7 @@ const IncidentAddressSheet = forwardRef<
                 label="State"
                 name="state"
                 control={control}
-                placeholder="State"
+                placeholder={TEXT.state()}
                 error={errors.state?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -209,9 +210,9 @@ const IncidentAddressSheet = forwardRef<
                 label="PIN code"
                 name="pincode"
                 control={control}
-                placeholder="PIN code"
+                placeholder={TEXT.pincode()}
                 keyboardType="numeric"
-                rules={{ required: 'PIN code is required' }}
+                rules={{ required: TEXT.pin_code_required() }}
                 error={errors.pincode?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -248,7 +249,7 @@ const IncidentAddressSheet = forwardRef<
                 style={styles.button}
                 onPress={handleSubmit(handleFormSubmit)}
               >
-                <Text style={styles.buttonText}>Confirm</Text>
+                <Text style={styles.buttonText}>{TEXT.confirm()}</Text>
               </TouchableOpacity>
             </ScrollView>
           )}
@@ -286,8 +287,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#000',
+    fontFamily: FONT.R_BOLD_700,
+    color: COLOR.textGrey,
   },
   closeIcon: {
     fontSize: 18,

@@ -100,7 +100,7 @@ const CompleteProfileSheet = forwardRef<
           label={TEXT.mobile_number()}
           name="emgPhone"
           control={control}
-          placeholder="Enter mobile number"
+          placeholder={TEXT.enter_mobile_number()}
           keyboardType="number-pad"
           // rules={{
           //   required: 'Emergency mobile number is required',

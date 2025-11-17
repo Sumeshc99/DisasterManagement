@@ -12,6 +12,7 @@ import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { HEIGHT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Incident {
   id: string;
@@ -110,7 +111,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
 
-          <Text style={styles.titleHeader}>Incident Records</Text>
+          <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
 
           {/* Tabs */}
           <View style={styles.tabContainer}>
@@ -121,7 +122,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
               <Text
                 style={[styles.tabText, !isAssignedTab && styles.tabTextActive]}
               >
-                My Incident Records
+                {TEXT.my_incident_records()}
               </Text>
             </TouchableOpacity>
 
@@ -132,7 +133,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
               <Text
                 style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
               >
-                Assigned Incident Records
+                {TEXT.assigned_incident_records()}
               </Text>
             </TouchableOpacity>
           </View>
