@@ -15,6 +15,7 @@ import { COLOR } from '../../themes/Colors';
 import FormTextInput from '../inputs/FormTextInput';
 import FormTextInput2 from '../inputs/FormTextInput2';
 import LocationManual from '../LocationManual';
+import { FONT } from '../../themes/AppConst';
 
 const { height } = Dimensions.get('window');
 
@@ -163,7 +164,7 @@ const IncidentAddressSheet = forwardRef<
                 rules={{ required: 'Address is required' }}
                 error={errors.flat?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="Street address"
                 name="street"
@@ -171,7 +172,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder="Street address"
                 error={errors.street?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="Nearby landmark (If applicable)"
                 name="landmark"
@@ -179,7 +180,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder="Nearby landmark"
                 error={errors.landmark?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="City"
                 name="city"
@@ -187,7 +188,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder="City"
                 error={errors.city?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="Division"
                 name="division"
@@ -195,7 +196,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder="Division"
                 error={errors.division?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="State"
                 name="state"
@@ -203,7 +204,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder="State"
                 error={errors.state?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="PIN code"
                 name="pincode"
@@ -213,7 +214,7 @@ const IncidentAddressSheet = forwardRef<
                 rules={{ required: 'PIN code is required' }}
                 error={errors.pincode?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <View style={styles.coordRow}>
                 <View style={{ flex: 1 }}>
                   <FormTextInput2
@@ -290,12 +291,13 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     fontSize: 18,
+    fontFamily: FONT.R_BLK_900,
     color: '#444',
   },
   coordRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 14,
+    gap: 10,
   },
   switchRow: {
     flexDirection: 'row',

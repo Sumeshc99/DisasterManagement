@@ -11,21 +11,20 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
-
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
 import { WIDTH } from '../../../themes/AppConst';
-import ConfirmationSheet from '../../../components/bottomSheets/ConfirmationSheetProps';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import SuccessScreen from '../../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOptionsSheet';
+import { TEXT } from '../../../i18n/locales/Text';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -40,14 +39,16 @@ interface IncidentDetailsForm {
 
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
+  const route = useRoute();
 
-  const sheetRef = useRef<any>(null);
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
+
+  const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setincidentData] = useState('');
 
@@ -73,7 +74,6 @@ const IncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // 📸 Handle Media Upload
   const handleImageUpload = () => {
     launchImageLibrary(
       { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
@@ -104,7 +104,7 @@ const IncidentDetails: React.FC = () => {
   useEffect(() => {
     const getIncedentDetails = () => {
       showLoader();
-      ApiManager.incidentDetails(24, userToken)
+      ApiManager.incidentDetails(data.incident_auto_id, userToken)
         .then(resp => {
           if (resp?.data?.status) {
             const data = resp?.data?.data;
@@ -130,23 +130,29 @@ const IncidentDetails: React.FC = () => {
     getIncedentDetails();
   }, []);
 
-  const onSubmit = (data: IncidentDetailsForm) => {
-    Alert.alert('Success', 'Incident details submitted successfully!');
-    console.log('Form Data:', data);
-
-    submitIncident();
-    sheetRef.current?.open();
-  };
-
-  const submitIncident = () => {
+  const incidentUpdateStatus = () => {
     const body = {
-      incident_id: '24',
+      incident_id: data?.incident_auto_id,
       button_type: 'Yes',
       cancel_reason: '',
+      duplicate_incident_id: '',
+      reason_for_cancellation: '',
     };
-    ApiManager.incidentDetails(body, userToken).then(resp => {
-      console.log('12121', resp.data);
-    });
+    ApiManager.incidentStatusUpdate(body, userToken)
+      .then(resp => {
+        if (resp.data.status) {
+          successRef.current.close();
+          acceptRef.current.open();
+        } else {
+        }
+      })
+      .catch(err => console.log('err', err.response));
+  };
+
+  const onSuccessNo = () => {
+    successRef.current.close();
+    cancelRef.current.open();
+    cancelRef.current.close();
   };
 
   return (
@@ -198,8 +204,8 @@ const IncidentDetails: React.FC = () => {
             rules={{
               required: 'Mobile number is required',
               pattern: {
-                value: /^[6-9]\d{9}$/,
-                message: 'Invalid mobile number (10 digits, starts with 6-9)',
+                value: /^[0-9]{10}$/,
+                message: TEXT.enter_valid_10_digit_number(),
               },
             }}
             error={errors.mobileNumber?.message}
@@ -248,14 +254,14 @@ const IncidentDetails: React.FC = () => {
             style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
           >
             <TouchableOpacity
-              style={styles.submitButton}
-              onPress={() => successRef.current.open()}
+              style={[styles.submitButton, { backgroundColor: COLOR.darkGray }]}
+              onPress={() => cancelRef.current.open()}
             >
-              <Text style={styles.submitButtonText}>Update</Text>
+              <Text style={styles.submitButtonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.submitButton}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => successRef.current.open()}
             >
               <Text style={styles.submitButtonText}>Send</Text>
             </TouchableOpacity>
@@ -263,38 +269,25 @@ const IncidentDetails: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* <AssignResponderSheet ref={sheetRef} /> */}
-
-      <ConfirmationSheet
-        ref={sheetRef}
-        icon={require('../../../assets/a1.png')}
-        iconColor="#FF9800"
-        message="Are you sure you want to delete this report?"
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={() => console.log('Confirmed')}
-        onCancel={() => console.log('Cancelled')}
-      />
-
       <SuccessScreen
         ref={successRef}
         description={
           'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
         }
         onNo={() => {
-          successRef.current.close(), cancelRef.current.open();
+          onSuccessNo();
         }}
         onYes={() => {
-          successRef.current.close(), acceptRef.current.open();
+          incidentUpdateStatus();
         }}
-        height={320}
+        height={340}
       />
 
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../../assets/cancel1.png')}
         description={'Your report has been successfully cancelled.'}
-        height={200}
+        height={240}
       />
 
       <SelfHelpBottomSheet
@@ -348,7 +341,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: COLOR.blue,
-    paddingVertical: 14,
+    paddingVertical: 10,
     borderRadius: 50,
     alignItems: 'center',
     marginTop: 24,

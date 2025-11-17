@@ -25,7 +25,7 @@ interface FormMediaPickerProps {
   rules?: RegisterOptions;
   error?: string;
   media?: MediaAsset[];
-  onChangeMedia?: (newMedia: MediaAsset[]) => void;
+  onChangeMedia?: any;
   onRemoveMedia?: (index: number) => void;
 }
 
@@ -45,12 +45,13 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   const openSheet = useCallback(() => {
     sheetRef.current?.open();
   }, []);
+  console.log('media', media);
 
   const openCamera = async () => {
     sheetRef.current?.close();
     const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
     if (result.assets?.length) {
-      onChangeMedia?.([...media, ...result.assets]);
+      onChangeMedia?.([...media, result.assets]);
     }
   };
 
@@ -61,7 +62,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
       selectionLimit: 5,
     });
     if (result.assets?.length) {
-      onChangeMedia?.([...media, ...result.assets]);
+      onChangeMedia?.([...media, result.assets]);
     }
   };
 
@@ -85,44 +86,43 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
               onPress={openSheet}
               activeOpacity={0.8}
             >
-              <Text style={styles.placeholderText}>
-                Capture or upload images/videos
-              </Text>
+              {media?.length > 0 ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.previewScroll}
+                >
+                  {media?.map((item, index) => (
+                    <View key={index} style={styles.thumbnailWrapper}>
+                      <Image
+                        source={{ uri: item[0].uri }}
+                        style={styles.previewImage}
+                      />
+                      {onRemoveMedia && (
+                        <TouchableOpacity
+                          style={styles.removeButton}
+                          onPress={() => onRemoveMedia(index)}
+                        >
+                          <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                            ✕
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : (
+                <Text style={styles.placeholderText}>
+                  Capture or upload images
+                </Text>
+              )}
             </TouchableOpacity>
-
-            {media?.length > 0 && (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.previewScroll}
-              >
-                {media.map((item, index) => (
-                  <View key={index} style={styles.thumbnailWrapper}>
-                    <Image
-                      source={{ uri: item.uri }}
-                      style={styles.previewImage}
-                    />
-                    {onRemoveMedia && (
-                      <TouchableOpacity
-                        style={styles.removeButton}
-                        onPress={() => onRemoveMedia(index)}
-                      >
-                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                          ✕
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ))}
-              </ScrollView>
-            )}
           </>
         )}
       />
 
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      {/* ✅ Bottom Sheet (kept outside Controller) */}
       <MediaOptionSheet
         ref={sheetRef}
         onCamera={openCamera}
@@ -155,10 +155,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.white,
     height: 100,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   placeholderText: { fontSize: 16, color: '#888', textAlign: 'center' },
-  previewScroll: { marginTop: 10 },
+  previewScroll: {
+    marginTop: 4,
+  },
   thumbnailWrapper: { position: 'relative', marginRight: 10 },
   previewImage: { width: 90, height: 90, borderRadius: 6 },
   removeButton: {

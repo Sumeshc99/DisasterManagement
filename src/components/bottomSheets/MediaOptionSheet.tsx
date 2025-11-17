@@ -1,7 +1,8 @@
 import React, { forwardRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
+import { FONT } from '../../themes/AppConst';
 
 interface MediaOptionSheetProps {
   onCamera: () => void;
@@ -13,7 +14,7 @@ const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
     return (
       <RBSheet
         ref={ref}
-        height={180}
+        height={200}
         closeOnPressMask
         customStyles={{
           container: styles.sheetContainer,
@@ -22,14 +23,31 @@ const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
-
-          <TouchableOpacity style={styles.optionButton} onPress={onCamera}>
-            <Text style={styles.optionText}>Take a Photo</Text>
+          <Text style={styles.optionText}>Please upload the photo</Text>
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => (ref as any)?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={styles.closeIcon}
+            />
           </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              gap: 40,
+            }}
+          >
+            <TouchableOpacity style={styles.optionButton} onPress={onCamera}>
+              <Image source={require('../../assets/camera.png')} />
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton} onPress={onGallery}>
-            <Text style={styles.optionText}>Choose from Gallery</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.optionButton} onPress={onGallery}>
+              <Image source={require('../../assets/galary.png')} />
+            </TouchableOpacity>
+          </View>
         </View>
       </RBSheet>
     );
@@ -50,25 +68,37 @@ const styles = StyleSheet.create({
     height: 5,
     backgroundColor: '#ccc',
     borderRadius: 3,
-    marginVertical: 10,
+    marginVertical: 20,
   },
   content: {
     width: '100%',
     alignItems: 'center',
   },
   optionButton: {
-    width: '90%',
+    width: 70,
+    height: 70,
     backgroundColor: COLOR.white,
     paddingVertical: 14,
-    borderRadius: 10,
-    marginVertical: 6,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    borderRadius: 50,
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 20,
     color: COLOR.black,
-    fontWeight: '500',
+    fontFamily: FONT.R_BOLD_700,
+  },
+  closeIconContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    borderRadius: 20,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
   },
 });
