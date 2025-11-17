@@ -165,7 +165,7 @@ const IncidentAddressSheet = forwardRef<
                 rules={{ required: 'Address is required' }}
                 error={errors.flat?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label={TEXT.street_address()}
                 name="street"
@@ -173,7 +173,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder={TEXT.street_address()}
                 error={errors.street?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="Nearby landmark (If applicable)"
                 name="landmark"
@@ -181,7 +181,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder={TEXT.nearby_landmark()}
                 error={errors.landmark?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="City"
                 name="city"
@@ -189,7 +189,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder={TEXT.city()}
                 error={errors.city?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="Division"
                 name="division"
@@ -197,7 +197,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder={TEXT.division()}
                 error={errors.division?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="State"
                 name="state"
@@ -205,7 +205,7 @@ const IncidentAddressSheet = forwardRef<
                 placeholder={TEXT.state()}
                 error={errors.state?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <FormTextInput2
                 label="PIN code"
                 name="pincode"
@@ -215,7 +215,7 @@ const IncidentAddressSheet = forwardRef<
                 rules={{ required: TEXT.pin_code_required() }}
                 error={errors.pincode?.message}
               />
-
+              <View style={{ marginTop: -6 }} />
               <View style={styles.coordRow}>
                 <View style={{ flex: 1 }}>
                   <FormTextInput2
@@ -292,12 +292,13 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     fontSize: 18,
+    fontFamily: FONT.R_BLK_900,
     color: '#444',
   },
   coordRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 14,
+    gap: 10,
   },
   switchRow: {
     flexDirection: 'row',

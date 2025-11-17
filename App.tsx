@@ -1,7 +1,6 @@
 import { LogBox, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainIndex from './src/MainIndex';
-
 import { Provider } from 'react-redux';
 import { Persistor, Store } from './src/store/Store';
 import { PersistGate } from 'redux-persist/integration/react';

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -189,7 +189,7 @@ const CitizenDashboard = () => {
           successRef.current?.open();
         }}
       />
-      <SuccessScreen ref={successRef} />
+      <SuccessScreen ref={successRef} height={220} />
 
       <AlertModal
         visible={visible}

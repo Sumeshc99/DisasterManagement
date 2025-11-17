@@ -7,6 +7,7 @@ import { GlobalLoaderProvider } from './hooks/GlobalLoaderContext';
 import { SnackbarProvider } from './hooks/SnackbarProvider';
 import GlobalLoader from './components/GlobalLoader';
 import { I18nProvider } from './i18n/i18n';
+import GetCameraPermission from './config/GetCameraPermission';
 
 const MainIndex = () => {
   const theme = {
@@ -24,6 +25,8 @@ const MainIndex = () => {
         <GlobalLoaderProvider>
           <SnackbarProvider>
             <GetCurrentLocation />
+            <GetCameraPermission />
+            {/* <GetMediaPermission /> */}
             <AppNavigation />
             <GlobalLoader />
           </SnackbarProvider>

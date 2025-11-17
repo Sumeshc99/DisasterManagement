@@ -23,6 +23,7 @@ import ApiManager from '../../../apis/ApiManager';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import IncidentAddressSheet from '../../../components/bottomSheets/IncidentAddressSheet';
 import FormTextInput2 from '../../../components/inputs/FormTextInput2';
+import { useNavigation } from '@react-navigation/native';
 
 interface MediaAsset {
   uri?: string;
@@ -40,6 +41,7 @@ interface IncidentForm {
 }
 
 const CreateIncidentScreen: React.FC = () => {
+  const navigation = useNavigation();
   const { showLoader, hideLoader } = useGlobalLoader();
   const { user, userToken } = useSelector((state: RootState) => state.auth);
 
@@ -55,10 +57,11 @@ const CreateIncidentScreen: React.FC = () => {
     reset,
     getValues,
     setValue,
+    register,
     watch,
   } = useForm<IncidentForm>({
     defaultValues: {
-      incidentType: '',
+      incidentType: '1',
       customIncidentType: '',
       address: '',
       mobileNumber: '',
@@ -69,6 +72,11 @@ const CreateIncidentScreen: React.FC = () => {
 
   const media = watch('media');
   const selectedType = watch('incidentType');
+
+  // 📌 Register Address Field
+  useEffect(() => {
+    register('address', { required: 'Address is required' });
+  }, [register]);
 
   useEffect(() => {
     const getIncidentType = async () => {
@@ -93,30 +101,10 @@ const CreateIncidentScreen: React.FC = () => {
     getIncidentType();
   }, []);
 
-  const handleMediaPick = () => {
-    launchImageLibrary(
-      { mediaType: 'mixed', quality: 0.7, selectionLimit: 0 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert(
-            'Error',
-            response.errorMessage || 'Failed to pick media.',
-          );
-          return;
-        }
-
-        const newAssets =
-          response.assets?.map(a => ({
-            uri: a.uri,
-            type: a.type,
-            fileName: a.fileName,
-          })) || [];
-
-        const updated = [...(media || []), ...newAssets];
-        setValue('media', updated);
-      },
-    );
+  const handleMediaPick = (items: any[]) => {
+    const updated = [...media, ...items]; // merge old + new
+    // setMedia(updated); // update UI state
+    setValue('media', updated); // update React Hook Form field
   };
 
   const handleRemoveMedia = (index: number) => {
@@ -128,11 +116,6 @@ const CreateIncidentScreen: React.FC = () => {
     try {
       showLoader();
 
-      const finalType =
-        data.incidentType === 'Others'
-          ? data.customIncidentType
-          : data.incidentType;
-
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
       formData.append('tehsil', user?.tehsil || '');
@@ -142,14 +125,10 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('description', data.description);
       formData.append('latitude', allAddress?.latitude || '');
       formData.append('longitude', allAddress?.longitude || '');
-      // formData.append('state_id', allAddress?.state || '');
-      // formData.append('city_id', allAddress?.city || '');
-      // formData.append('district_id', allAddress?.district_id || '');
-      // formData.append('city_code', allAddress?.pincode || '');
-      formData.append('state_id', 1);
-      formData.append('city_id', 1);
-      formData.append('district_id', 1);
-      formData.append('city_code', 1);
+      formData.append('state_id', allAddress?.state || '');
+      formData.append('city_id', allAddress?.city || '');
+      formData.append('district_id', allAddress?.district_id || '');
+      formData.append('city_code', allAddress?.pincode || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file, index) => {
@@ -164,7 +143,9 @@ const CreateIncidentScreen: React.FC = () => {
       const response = await ApiManager.createIncident(formData, userToken);
 
       if (response?.data?.status) {
-        Alert.alert('Success', 'Incident created successfully!');
+        navigation.navigate('incidentDetails', {
+          data: response?.data?.incident_id,
+        });
         reset();
       } else {
         Alert.alert(
@@ -173,7 +154,6 @@ const CreateIncidentScreen: React.FC = () => {
         );
       }
     } catch (error: any) {
-      console.log('Create Incident Error:', error.response || error);
       Alert.alert('Error', 'Something went wrong while creating the incident.');
     } finally {
       hideLoader();
@@ -201,7 +181,7 @@ const CreateIncidentScreen: React.FC = () => {
           errors={errors}
         />
 
-        {/* If "Other" is selected, show free text field */}
+        {/* Custom Other Type */}
         {selectedType === 'Others' && (
           <FormTextInput2
             label="Specify Other Type"
@@ -213,6 +193,7 @@ const CreateIncidentScreen: React.FC = () => {
           />
         )}
 
+        {/* Address */}
         <View style={{ marginBottom: 14 }}>
           <Text
             style={{
@@ -224,13 +205,17 @@ const CreateIncidentScreen: React.FC = () => {
           >
             Address <Text style={{ color: 'red' }}>*</Text>
           </Text>
+
           <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderRadius: 4,
-              borderColor: COLOR.gray,
-              padding: 14,
-            }}
+            style={[
+              {
+                borderWidth: 1,
+                borderRadius: 4,
+                borderColor: COLOR.gray,
+                padding: 14,
+              },
+              errors.address && { borderColor: 'red' },
+            ]}
             onPress={() => addressRef.current.open()}
           >
             {getValues('address') ? (
@@ -245,6 +230,12 @@ const CreateIncidentScreen: React.FC = () => {
               </Text>
             )}
           </TouchableOpacity>
+
+          {errors.address && (
+            <Text style={{ color: 'red', fontSize: 12 }}>
+              {errors.address.message}
+            </Text>
+          )}
         </View>
 
         {/* Mobile Number */}
@@ -277,13 +268,13 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Media Picker */}
         <FormMediaPicker
-          label="Attach photo/video"
+          label="Upload Image"
           name="media"
           control={control}
           rules={{ required: 'At least one media file is required' }}
           error={errors.media?.message}
           media={media}
-          onPickMedia={handleMediaPick}
+          onChangeMedia={handleMediaPick}
           onRemoveMedia={handleRemoveMedia}
         />
 
@@ -291,15 +282,15 @@ const CreateIncidentScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.createButton}
           onPress={handleSubmit(onSubmit)}
-          // onPress={() => ''}
         >
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>
       </ScrollView>
+
       <IncidentAddressSheet
         ref={addressRef}
         onSubmit={data => {
-          setValue('address', data?.flat);
+          setValue('address', data?.flat || '', { shouldValidate: true });
           setallAddress(data);
         }}
       />
@@ -332,6 +323,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 20,
+    alignSelf: 'center',
+    width: 150,
   },
   createButtonText: {
     color: '#fff',
