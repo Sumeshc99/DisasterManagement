@@ -16,7 +16,7 @@ const getAuthHeader = (token: string, isFormData = false) => ({
   'Access-Control-Allow-Origin': '*',
   Authorization: `Bearer ${token}`,
 });
-// 7736421542
+
 const constructApiRequest = (
   path: string,
   method: string,
@@ -74,6 +74,7 @@ const requestPath = {
   incidentType: 'field-config/public/list',
   incidentDetails: 'mobileapis/getIncidentById',
   incidentSend: 'mobileapis/updateIncidentStatus',
+  incidentStatusUpdate: 'mobileapis/updateIncidentStatus',
 };
 
 const ApiManager = {
@@ -112,6 +113,8 @@ const ApiManager = {
     requests.post(requestPath.createIncident, params, token),
   incidentSend: (params: any, token: string) =>
     requests.post(requestPath.incidentSend, params, token),
+  incidentStatusUpdate: (params: any, token: string) =>
+    requests.post(requestPath.incidentStatusUpdate, params, token),
 };
 
 export default ApiManager;

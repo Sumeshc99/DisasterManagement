@@ -35,6 +35,8 @@ const SelfHelpBottomSheet = forwardRef<
     }
   };
 
+  const getResponders = (type: String) => {};
+
   return (
     <RBSheet
       ref={ref}
@@ -115,7 +117,10 @@ const SelfHelpBottomSheet = forwardRef<
 
         {/* Service Cards */}
         <View style={styles.servicesGrid}>
-          <TouchableOpacity style={styles.serviceCard}>
+          <TouchableOpacity
+            onPress={() => getResponders('clinic')}
+            style={styles.serviceCard}
+          >
             <Image
               source={require('../../assets/hospi.png')}
               resizeMode="contain"
@@ -123,7 +128,10 @@ const SelfHelpBottomSheet = forwardRef<
             />
             <Text style={styles.serviceCardText}>Clinic/Hospital</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.serviceCard}>
+          <TouchableOpacity
+            onPress={() => getResponders('police')}
+            style={styles.serviceCard}
+          >
             <Image
               source={require('../../assets/police.png')}
               resizeMode="contain"
@@ -131,15 +139,21 @@ const SelfHelpBottomSheet = forwardRef<
             />
             <Text style={styles.serviceCardText}>Police Station</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.serviceCard}>
+          <TouchableOpacity
+            onPress={() => getResponders('ambulance')}
+            style={styles.serviceCard}
+          >
             <Image
               source={require('../../assets/amb.png')}
               resizeMode="contain"
               style={{ width: 70, height: 70 }}
             />
-            <Text style={styles.serviceCardText}>Ambulances</Text>
+            <Text style={styles.serviceCardText}>Ambulance</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.serviceCard}>
+          <TouchableOpacity
+            onPress={() => getResponders('fire')}
+            style={styles.serviceCard}
+          >
             <Image
               source={require('../../assets/firev.png')}
               resizeMode="contain"
@@ -176,8 +190,8 @@ const styles = StyleSheet.create({
   },
   closeIconContainer: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    top: 5,
+    right: 5,
     borderRadius: 20,
   },
   closeIcon: {
@@ -204,7 +218,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 10,
     borderRadius: 25,
     marginBottom: 12,
     width: 130,
@@ -240,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderRadius: 25,
     width: 130,
     gap: 10,

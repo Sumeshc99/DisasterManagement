@@ -43,33 +43,35 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
 
-          <View style={styles.iconWrapper}>
-            <Image source={icon} style={styles.icon} />
-          </View>
-
-          <Text style={styles.description}>{description}</Text>
-
-          {showButtons && (
-            <View style={styles.buttonRow}>
-              {onNo && (
-                <TouchableOpacity
-                  style={[styles.button, styles.noButton]}
-                  onPress={onNo}
-                >
-                  <Text style={styles.noButtonText}>{noLabel}</Text>
-                </TouchableOpacity>
-              )}
-
-              {onYes && (
-                <TouchableOpacity
-                  style={[styles.button, styles.yesButton]}
-                  onPress={onYes}
-                >
-                  <Text style={styles.yesButtonText}>{yesLabel}</Text>
-                </TouchableOpacity>
-              )}
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <View style={styles.iconWrapper}>
+              <Image source={icon} style={styles.icon} />
             </View>
-          )}
+
+            <Text style={styles.description}>{description}</Text>
+
+            {showButtons && (
+              <View style={styles.buttonRow}>
+                {onNo && (
+                  <TouchableOpacity
+                    style={[styles.button, styles.noButton]}
+                    onPress={onNo}
+                  >
+                    <Text style={styles.noButtonText}>{noLabel}</Text>
+                  </TouchableOpacity>
+                )}
+
+                {onYes && (
+                  <TouchableOpacity
+                    style={[styles.button, styles.yesButton]}
+                    onPress={onYes}
+                  >
+                    <Text style={styles.yesButtonText}>{yesLabel}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </View>
         </View>
       </RBSheet>
     );
@@ -98,7 +100,6 @@ const styles = StyleSheet.create({
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    // marginBottom: 10,
   },
   icon: {
     width: 100,
@@ -116,7 +117,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
     paddingHorizontal: 20,
-    width: WIDTH(80),
+    width: WIDTH(85),
+    fontSize: 16,
   },
   buttonRow: {
     flexDirection: 'row',
