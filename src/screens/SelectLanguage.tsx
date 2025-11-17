@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
-import { HEIGHT, WIDTH } from '../themes/AppConst';
+import { FONT, HEIGHT, WIDTH } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
 import i18n from '../i18n/i18n';
 import { useDispatch } from 'react-redux';
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: FONT.R_SBD_600,
     color: COLOR.white,
     marginBottom: 30,
   },
@@ -186,12 +186,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.blue,
   },
   languageText: {
-    fontWeight: 'bold',
-    color: '#000',
+   fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
     fontSize: 16,
   },
   selectedText: {
     color: '#fff',
+    fontFamily: FONT.R_SBD_600,
   },
   subText: {
     fontSize: 14,
@@ -243,6 +244,6 @@ const styles = StyleSheet.create({
   nextText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: FONT.R_SBD_600,
   },
 });

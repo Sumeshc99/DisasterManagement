@@ -29,6 +29,7 @@ import Maps from '../../assets/svg/maps.svg';
 import Weather from '../../assets/svg/wea.svg';
 import Help from '../../assets/svg/help.svg';
 import Dis from '../../assets/svg/dis.svg';
+import { TEXT } from '../../i18n/locales/Text';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -147,7 +148,7 @@ const CitizenDashboard = () => {
             )}
           </View>
           <Text style={styles.text}>
-            {showResponders ? 'Maps' : 'Responders'}
+            {showResponders ? <Text style={styles.text}>{TEXT.maps()}</Text> : <Text style={styles.text}>{TEXT.responders()}</Text>}
           </Text>
         </TouchableOpacity>
 
@@ -158,7 +159,8 @@ const CitizenDashboard = () => {
           <View style={styles.floatingBtn}>
             <Help width={26} height={26} />
           </View>
-          <Text style={styles.text}>Help</Text>
+                    <Text style={styles.text}>{TEXT.help()}</Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -168,7 +170,7 @@ const CitizenDashboard = () => {
           <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
-          <Text style={styles.text}>Weather</Text>
+           <Text style={styles.text}>{TEXT.weather()}</Text>
         </TouchableOpacity>
       </View>
 

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { TEXT } from '../../../i18n/locales/Text';
 
 interface props {
   responders: any[];
@@ -67,7 +68,7 @@ const RespondersList: React.FC<props> = ({ responders }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        <Text style={styles.pageTitle}>On-Duty Responders</Text>
+        <Text style={styles.pageTitle}>{TEXT.on_duty_responders()}</Text>
 
         {renderSection('Ambulance Service', categorized.Ambulance)}
         {renderSection('Hospital', categorized.Hospital)}

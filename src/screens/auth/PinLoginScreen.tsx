@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
-import { HEIGHT } from '../../themes/AppConst';
+import { FONT, HEIGHT } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
 import { useDispatch } from 'react-redux';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
@@ -158,12 +158,17 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 40,
   },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#1f2937', marginTop: 30 },
+  title: {
+    fontSize: 28,
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
+    marginTop: 30,
+  },
   description: {
     fontSize: 16,
     color: '#525151',
     marginBottom: 20,
-    fontWeight: '500',
+    fontFamily: FONT.R_MED_500,
     marginTop: 20,
   },
   phoneContainer: {
@@ -172,7 +177,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     gap: 8,
   },
-  phoneNumber: { fontSize: 16, fontWeight: '600', color: '#1f2937' },
+  phoneNumber: {
+    fontSize: 16,
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
+  },
   editIcon: { padding: 4 },
   editIconText: { fontSize: 16, color: '#9ca3af' },
   errorText: { fontSize: 13, color: '#ef4444', marginTop: 8 },
@@ -182,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     marginTop: 20,
   },
-  timerValue: { fontWeight: '600', color: '#1f2937' },
+  timerValue: { fontFamily: FONT.R_SBD_600, color: '#1f2937' },
   nextButton: {
     width: 140,
     paddingVertical: 14,
@@ -192,7 +201,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  nextButtonText: { fontSize: 16, fontWeight: '600', color: '#4b5563' },
+  nextButtonText: {
+    fontSize: 16,
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
+  },
   nextButtonActive: { backgroundColor: COLOR.blue },
   nextButtonTextActive: { color: '#ffffff' },
   forgotText: {

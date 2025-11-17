@@ -116,7 +116,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Pin Code"
+        label={TEXT.pincode()}
         name="pincode"
         control={control}
         placeholder="Enter pin code"
@@ -141,7 +141,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <DropDownInput
-        label="Blood Group"
+        label={TEXT.blood_group()}
         name="bloodGroup"
         control={control}
         placeholder="Select blood group"
@@ -162,7 +162,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
           style={styles.submitButton}
           onPress={() => saveInDraft(formValues)}
         >
-          <Text style={styles.submitButtonText}>Save as draft</Text>
+          <Text style={styles.submitButtonText}>{TEXT.save_as_draft()}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.submitButton, { backgroundColor: COLOR.blue }]}

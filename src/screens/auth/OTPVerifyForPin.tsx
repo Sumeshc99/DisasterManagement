@@ -16,7 +16,7 @@ import OTPInput from '../../components/OTPInput';
 import ApiManager from '../../apis/ApiManager';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
-import { HEIGHT } from '../../themes/AppConst';
+import { FONT, HEIGHT } from '../../themes/AppConst';
 import { TEXT } from '../../i18n/locales/Text';
 
 export default function OTPVerifyForPin() {
@@ -177,7 +177,7 @@ export default function OTPVerifyForPin() {
           </Text>
           {timeLeft <= 0 && (
             <Text onPress={handleResendOtp} style={styles.timerValue1}>
-              Resend OTP
+              {TEXT.resend_otp()}
             </Text>
           )}
         </View>

@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../../components/OTPInput';
-import { HEIGHT } from '../../themes/AppConst';
+import { FONT, HEIGHT } from '../../themes/AppConst';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import ApiManager from '../../apis/ApiManager';
@@ -80,12 +80,12 @@ export default function PinResetScreen() {
         />
 
         {/* Title */}
-        <Text style={styles.title}>PIN Reset</Text>
+        <Text style={styles.title}> {TEXT.pin_reset()}</Text>
         <Text style={styles.description}>{TEXT.securely_reset_your_pin()}</Text>
 
         {/* New PIN */}
         <View style={styles.pinSection}>
-          <Text style={styles.label}>New PIN</Text>
+          <Text style={styles.label}>{TEXT.new_pin()}</Text>
           <OTPInput
             onChangeOTP={value => {
               setNewPin(value);
@@ -96,7 +96,7 @@ export default function PinResetScreen() {
 
         {/* Confirm PIN */}
         <View style={styles.pinSection}>
-          <Text style={styles.label}>Confirm PIN</Text>
+          <Text style={styles.label}>{TEXT.confirm_pin()}</Text>
           <OTPInput
             onChangeOTP={value => {
               setConfirmPin(value);
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   logo: { width: 100, height: 100, marginBottom: 30 },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#1f2937',
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
     marginBottom: 6,
   },
   subtitle: { fontSize: 14, color: '#6b7280', marginBottom: 40 },
@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 10,
     fontSize: 15,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontFamily: FONT.R_SBD_600,
+    color: COLOR.textGrey,
     marginBottom: 10,
   },
   errorText: { color: '#ef4444', fontSize: 13, marginBottom: 10 },
@@ -165,9 +165,9 @@ const styles = StyleSheet.create({
   submitTextActive: { color: '#ffffff' },
   description: {
     fontSize: 16,
-    color: '#525151',
+    color: COLOR.lightTextGrey,
     marginBottom: 20,
-    fontWeight: '500',
+    fontFamily: FONT.R_MED_500,
     marginTop: 10,
   },
 });

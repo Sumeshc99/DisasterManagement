@@ -57,7 +57,7 @@ export const TEXT = {
   upload_document: () => t('upload_document', 'Upload Document'),
   primary_contact_name: () => t('primary_contact_name', 'Primary Contact Name'),
   relation: () => t('relation', 'Relation'),
-  Select_relation: () => t('Select relation', 'Select relation'),
+  Select_relation: () => t('select_relation', 'Select relation'),
   primary_mobile_number: () =>
     t('primary_mobile_number', 'Primary Mobile Number'),
   enter_primary_mobile_number: () =>
@@ -70,4 +70,64 @@ export const TEXT = {
   basic_information: () => t('basic_information', 'Basic Information'),
   full_name_is_required: () =>
     t('full_name_is_required', 'Full name is required'),
+  incident_records: () => t('incident_records', 'Incident Records'),
+  my_incident_records: () => t('my_incident_records', ' My Incident Records'),
+  assigned_incident_records: () =>
+    t('assigned_incident_records', 'Assigned Incident Record'),
+  help: () => t('help', 'Help'),
+  weather: () => t('weather', 'Weather'),
+  maps: () => t('maps', 'Maps'),
+
+  responders: () => t('responders', 'Responders'),
+  edit_profile: () => t('edit_profile', 'Edit Profile'),
+  profile_incomplete: () => t('profile_incomplete', 'Profile Incomplete'),
+  change_pin: () => t('change_pin', 'Change PIN'),
+  log_out: () => t('log_out', 'Log Out'),
+  pin_code_required: () => t('pin_code_required', 'Pin code required'),
+  save_as_draft: () => t('save_as_draft', 'Save as draft'),
+  blood_group: () => t('blood_group', 'Blood Group'),
+  secondary_contact_name: () =>
+    t('secondary_contact_name', 'Secondary Contact Name'),
+  pin_reset: () => t('pin_reset', 'PIN Reset'),
+  new_pin: () => t('new_pin', 'New PIN'),
+  confirm_pin: () => t('confirm_pin', 'Confirm PIN'),
+  pincode: () => t('pincode', 'PIN Code'),
+  secondary_mobile_number: () =>
+    t('secondary_mobile_number', 'Secondary Mobile Number'),
+
+  enter_mobile_number: () => t('enter_mobile_number', 'Enter Mobile Number'),
+  enter_alternate_mobile_number: () =>
+    t('enter_alternate_mobile_number', 'Enter Alternate Mobile Number'),
+  on_duty_responders: () => t('on_duty_responders', 'On-Duty Responders'),
+
+  incident_type: () => t('incident_type', 'Incident Type'),
+  enter_description: () => t('enter_description', 'Please Enter Description'),
+
+  description_required: () => t('description_required', 'Description Required'),
+  select_incident_type: () => t('select_incident_type', 'Select Incident Type'),
+  look_good: () => t('look_good', 'Look Good'),
+  confirm_address: () => t('confirm_address', 'Confirm your Address'),
+
+  country_region: () => t('country_region', 'Country/region'),
+  country: () => t('country', 'Country'),
+
+  detailed_address: () => t('detailed_address', 'Detailed address'),
+
+  flat_house: () => t('flat_house', 'Flat, house, etc.'),
+
+  street_address: () => t('street_address', 'Street address'),
+  nearby_landmark: () => t('nearby_landmark', 'Nearby landmark'),
+
+  division: () => t('division', 'Division'),
+
+  state: () => t('state', 'State'),
+
+  show_location: () => t('show_location', 'Show your specific location'),
+  confirm: () => t('confirm', 'Confirm'),
+
+  upload_valid_id: () => t('upload_valid_id', 'Upload valid ID proof'),
+
+  state: () => t('state', 'State'),
+
+  state: () => t('state', 'State'),
 };

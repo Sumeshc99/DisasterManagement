@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Keyboard } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Controller, Control } from 'react-hook-form';
 import { COLOR } from '../../themes/Colors';
+import { FONT } from '../../themes/AppConst';
 
 interface DropDownInputProps {
   name: string;
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  label: { fontSize: 16, color: '#000', fontWeight: '500' },
+  label: { fontSize: 16, color: COLOR.textGrey, fontFamily: FONT.R_SBD_600 },
   requiredMark: {
     color: 'red',
     marginLeft: 4,
@@ -118,7 +119,12 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     backgroundColor: '#fff',
   },
-  textStyle: { fontSize: 16, color: '#333', marginHorizontal: 6 },
+  textStyle: {
+    fontSize: 16,
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_REG_400,
+    marginHorizontal: 6,
+  },
   placeholderStyle: { fontSize: 16, color: '#888' },
   selectedItemContainerStyle: { backgroundColor: COLOR.blue, borderRadius: 4 },
   selectedItemLabelStyle: { color: '#fff', fontWeight: '500' },

@@ -20,6 +20,7 @@ import Edit from '../assets/svg/edit.svg';
 import Pass from '../assets/svg/pass.svg';
 import Logout from '../assets/svg/logout.svg';
 import { clearUserDraft } from '../store/slices/draftSlice';
+import { TEXT } from '../i18n/locales/Text';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.75;
@@ -104,13 +105,12 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
           }}
         >
           <Edit />
-          <Text style={styles.editProfileText}>Edit Profile</Text>
+          <Text style={styles.editProfileText}>{TEXT.edit_profile()}</Text>
         </TouchableOpacity>
 
         {/* Profile message */}
         <Text style={styles.infoText}>
-          Your profile is incomplete. Please click the 'Edit Profile' button to
-          complete it.
+          {TEXT.profile_incomplete()}
         </Text>
 
         <View style={styles.divider} />
@@ -118,7 +118,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
         {/* Change PIN */}
         <TouchableOpacity style={styles.menuItem} onPress={() => changePass()}>
           <Pass />
-          <Text style={styles.menuText}>Change PIN</Text>
+          <Text style={styles.menuText}>{TEXT.change_pin()}</Text>
         </TouchableOpacity>
 
         {/* Spacer */}
@@ -128,7 +128,7 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
         <View style={{ marginBottom: HEIGHT(10) }}>
           <TouchableOpacity onPress={() => logOut()} style={styles.logoutBtn}>
             <Logout />
-            <Text style={styles.logoutText}>Log Out</Text>
+            <Text style={styles.logoutText}>{TEXT.log_out()}</Text>
           </TouchableOpacity>
 
           {/* Version */}

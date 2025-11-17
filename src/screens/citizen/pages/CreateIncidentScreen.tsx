@@ -192,10 +192,10 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Incident Type */}
         <DropDownInput
-          label="Incident Type"
+          label={TEXT.incident_type()}
           name="incidentType"
           control={control}
-          placeholder="Select Incident Type"
+          placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
           rules={{ required: 'Incident type is required' }}
           errors={errors}
@@ -214,7 +214,14 @@ const CreateIncidentScreen: React.FC = () => {
         )}
 
         <View style={{ marginBottom: 14 }}>
-          <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: FONT.R_MED_500,
+              marginBottom: 8,
+              color: COLOR.textGrey,
+            }}
+          >
             Address <Text style={{ color: 'red' }}>*</Text>
           </Text>
           <TouchableOpacity
@@ -263,8 +270,8 @@ const CreateIncidentScreen: React.FC = () => {
           name="description"
           control={control}
           multiline
-          placeholder="Please enter description"
-          rules={{ required: 'Description is required' }}
+          placeholder={TEXT.enter_description()}
+          rules={{ required: TEXT.description_required() }}
           error={errors.description?.message}
         />
 

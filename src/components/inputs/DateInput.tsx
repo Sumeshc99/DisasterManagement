@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Controller } from 'react-hook-form';
+import { COLOR } from '../../themes/Colors';
+import { FONT } from '../../themes/AppConst';
 
 interface DateInputProps {
   label?: string;
@@ -131,9 +133,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 6,
-    color: '#000',
+    color: COLOR.textGrey,
     textAlign: 'left',
-    fontWeight: '500',
+    fontFamily: FONT.R_MED_500,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -147,7 +149,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    fontFamily: FONT.R_REG_400,
+    color: COLOR.textGrey,
   },
   error: {
     color: 'red',

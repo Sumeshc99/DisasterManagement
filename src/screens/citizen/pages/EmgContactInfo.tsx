@@ -19,7 +19,7 @@ import FormTextInput from '../../../components/inputs/FormTextInput';
 import DropDownInput from '../../../components/inputs/DropDownInput';
 import { COLOR } from '../../../themes/Colors';
 import { TEXT } from '../../../i18n/locales/Text';
-import { WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 
 const relations = [
   { label: 'Father', value: 'father' },
@@ -108,7 +108,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
                 style={styles.uploadButton}
                 onPress={handleImageUpload}
               >
-                <Text style={styles.uploadText}>Upload valid ID proof</Text>
+                <Text style={styles.uploadText}>{TEXT.upload_valid_id()}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -177,7 +177,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
 
       {/* Secondary Contact */}
       <FormTextInput
-        label="Secondary Contact Name"
+        label={TEXT.secondary_contact_name()}
         name="secondaryName"
         control={control}
         placeholder={TEXT.enter_full_name()}
@@ -192,19 +192,19 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       />
 
       <FormTextInput
-        label="Secondary Mobile Number"
+        label={TEXT.secondary_mobile_number()}
         name="secondaryMobile"
         control={control}
-        placeholder="Enter mobile number"
+        placeholder={TEXT.enter_mobile_number()}
         keyboardType="phone-pad"
         maxLength={10}
       />
 
       <FormTextInput
-        label="Alternate Mobile Number"
+        label={TEXT.alternate_mobile_number()}
         name="secondaryAltMobile"
         control={control}
-        placeholder="Enter alternate number"
+        placeholder={TEXT.enter_alternate_mobile_number()}
         keyboardType="phone-pad"
         maxLength={10}
       />
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#333333',
+    color: COLOR.textGrey,
     marginBottom: 8,
   },
   required: { color: '#FF0000' },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   uploadText: { fontSize: 14, color: '#666666', textAlign: 'center' },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: FONT.R_MED_500,
     color: COLOR.blue,
     marginBottom: 16,
     marginTop: 16,

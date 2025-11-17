@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     fontWeight: '500',
   },
   requiredMark: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 16,
-    color: '#888',
+    color: COLOR.lightTextGrey,
     textAlign: 'center',
   },
   inputError: {
