@@ -45,7 +45,6 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   const openSheet = useCallback(() => {
     sheetRef.current?.open();
   }, []);
-  console.log('media', media);
 
   const openCamera = async () => {
     sheetRef.current?.close();
@@ -92,10 +91,10 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
                   showsHorizontalScrollIndicator={false}
                   style={styles.previewScroll}
                 >
-                  {media?.map((item, index) => (
+                  {media?.map((item: any, index) => (
                     <View key={index} style={styles.thumbnailWrapper}>
                       <Image
-                        source={{ uri: item[0].uri }}
+                        source={{ uri: (item[0] as { uri: any }).uri }}
                         style={styles.previewImage}
                       />
                       {onRemoveMedia && (
@@ -146,7 +145,6 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontWeight: '500',
   },
- 
 
   requiredMark: {
     color: 'red',
@@ -162,7 +160,6 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: 'center',
   },
-  placeholderText: { fontSize: 16, color: '#888', textAlign: 'center' },
   previewScroll: {
     marginTop: 4,
   },
@@ -181,9 +178,7 @@ const styles = StyleSheet.create({
     color: COLOR.lightTextGrey,
     textAlign: 'center',
   },
-  inputError: {
-    borderColor: 'red',
-  },
+
   errorText: {
     color: 'red',
     fontSize: 12,
@@ -191,5 +186,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   inputError: { borderColor: 'red' },
-  errorText: { color: 'red', fontSize: 12, marginTop: 4 },
 });

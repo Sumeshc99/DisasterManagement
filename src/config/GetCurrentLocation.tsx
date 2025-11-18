@@ -106,9 +106,9 @@ const GetCurrentLocation = () => {
             [{ text: 'Retry', onPress: () => getLocation() }],
           );
         } else {
-          Alert.alert('Error', 'Unable to fetch location.', [
-            { text: 'Retry', onPress: () => getLocation() },
-          ]);
+          // Alert.alert('Error', 'Unable to fetch location.', [
+          //   { text: 'Retry', onPress: () => getLocation() },
+          // ]);
         }
 
         setLoading(false);

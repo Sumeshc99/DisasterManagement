@@ -25,6 +25,7 @@ import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import SuccessScreen from '../../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../../i18n/locales/Text';
+import ScreenStateHandler from '../../../components/ScreenStateHandler';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -45,12 +46,13 @@ const IncidentDetails: React.FC = () => {
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
+  const { userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
   const data = (route as { params?: { data?: any } })?.params?.data;
 
-  const [incidentData, setincidentData] = useState('');
+  const [incidentData, setIncidentData] = useState<any>('');
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -61,20 +63,50 @@ const IncidentDetails: React.FC = () => {
     setValue,
   } = useForm<IncidentDetailsForm>({
     defaultValues: {
-      incidentId: 'NAG-060825-CT-970',
-      incidentType: 'Fire',
-      address: 'Civil Lines, Amavati Road, Nagpur, MH, 440001',
-      mobileNumber: '8626054838',
-      description: 'Please help, there is a fire at my home',
+      incidentId: '',
+      incidentType: '',
+      address: '',
+      mobileNumber: '',
+      description: '',
       media: [],
-      status: 'New',
-      dateTime: '08/04/2025, 05:10 PM',
+      status: '',
+      dateTime: '',
     },
   });
 
   const media = watch('media');
 
-  const handleImageUpload = () => {
+  // ==================== LOAD INCIDENT DETAILS =====================
+  useEffect(() => {
+    const getIncidentDetails = () => {
+      setLoading(true);
+      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+        .then(resp => {
+          if (resp?.data?.status) {
+            const inc = resp?.data?.data;
+            setIncidentData(inc);
+
+            reset({
+              incidentId: inc?.incident_id,
+              incidentType: inc?.incident_type_name,
+              address: inc?.address,
+              mobileNumber: inc?.mobile_number,
+              description: inc?.description,
+              media: inc?.upload_media,
+              status: inc?.status,
+              dateTime: inc?.date_time_reporting,
+            });
+          }
+        })
+        .catch(err => console.log('err', err.response))
+        .finally(() => setLoading(false));
+    };
+
+    getIncidentDetails();
+  }, []);
+
+  // ==================== IMAGE UPLOAD ============================
+  const handleImageUpload1 = (item: any) => {
     launchImageLibrary(
       { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
       response => {
@@ -96,57 +128,57 @@ const IncidentDetails: React.FC = () => {
     );
   };
 
+  const handleImageUpload = (items: any[]) => {
+    const updated = [...media, ...items];
+    setValue('media', updated);
+  };
+
   const handleRemoveMedia = (index: number) => {
     const updated = media.filter((_, i) => i !== index);
     setValue('media', updated);
   };
 
-  useEffect(() => {
-    const getIncedentDetails = () => {
-      showLoader();
-      ApiManager.incidentDetails(data.incident_auto_id, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const data = resp?.data?.data;
-            console.log('data', data);
-            setincidentData(data);
-            reset({
-              incidentId: data?.incident_id,
-              incidentType: data?.incident_type,
-              address: data?.address,
-              mobileNumber: data?.mobile_number,
-              description: data?.description,
-              media: data?.upload_media,
-              status: data?.status,
-              dateTime: data?.date_time_reporting,
-            });
-          } else {
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => hideLoader());
+  // ==================== UPDATE INCIDENT ============================
+  const updateIncedents = (formData: IncidentDetailsForm) => {
+    const body = {
+      incident_id: incidentData?.id,
+      address: formData.address,
+      mobile_number: formData.mobileNumber,
+      description: formData.description,
+      upload_media: formData.media || [],
     };
+    console.log('qwqwqw', body);
 
-    getIncedentDetails();
-  }, []);
+    showLoader();
+    ApiManager.updateIncident(body, userToken)
+      .then(resp => {
+        if (resp.data.status) {
+          Alert.alert('Success', 'Incident updated successfully.');
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => hideLoader());
+  };
 
+  // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = () => {
     const body = {
-      incident_id: data?.incident_auto_id,
+      incident_id: data?.incident_auto_id || data,
       button_type: 'Yes',
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
     };
+    showLoader();
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
           successRef.current.close();
           acceptRef.current.open();
-        } else {
         }
       })
-      .catch(err => console.log('err', err.response));
+      .catch(err => console.log('err', err.response))
+      .finally(() => hideLoader());
   };
 
   const onSuccessNo = () => {
@@ -160,6 +192,7 @@ const IncidentDetails: React.FC = () => {
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
       <DashBoardHeader drawer={false} setDrawer={() => ''} />
 
+      {/* HEADER */}
       <View style={styles.titleBar}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -171,118 +204,133 @@ const IncidentDetails: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.form}>
-          <Text style={styles.label}>Incident ID</Text>
-          <View style={styles.disabledBox}>
-            <Text style={styles.disabledText}>{watch('incidentId')}</Text>
-          </View>
-
-          <View style={{ marginVertical: 10 }}>
-            <Text style={styles.label}>Incident Type</Text>
-            <View style={styles.disabledBox}>
-              <Text style={styles.disabledText}>{watch('incidentType')}</Text>
-            </View>
-          </View>
-
-          <FormTextInput
-            label="Address"
-            name="address"
-            control={control}
-            placeholder="Enter address"
-            multiline
-            rules={{ required: 'Address is required' }}
-            error={errors.address?.message}
-          />
-
-          <FormTextInput
-            label="Mobile Number"
-            name="mobileNumber"
-            control={control}
-            placeholder="Enter mobile number"
-            keyboardType="phone-pad"
-            rules={{
-              required: 'Mobile number is required',
-              pattern: {
-                value: /^[0-9]{10}$/,
-                message: TEXT.enter_valid_10_digit_number(),
-              },
-            }}
-            error={errors.mobileNumber?.message}
-          />
-
-          <FormTextInput
-            label="Description"
-            name="description"
-            control={control}
-            placeholder="Enter description"
-            multiline
-            rules={{ required: 'Description is required' }}
-            error={errors.description?.message}
-          />
-
-          <View style={{ flexDirection: 'row', gap: 14 }}>
-            <View style={{ width: WIDTH(30) }}>
-              <FormMediaPicker
-                label="Images"
-                name="media"
-                control={control}
-                rules={{ required: 'At least one image is required' }}
-                error={errors.media?.message}
-                media={media}
-                onChangeMedia={handleImageUpload}
-                onRemoveMedia={handleRemoveMedia}
-              />
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Text style={styles.label}>Status</Text>
-              <View style={styles.disabledBox}>
-                <Text style={styles.disabledText}>{watch('status')}</Text>
-              </View>
-
-              <Text style={[styles.label, { marginTop: 6 }]}>
-                Date & Time of Reporting
-              </Text>
-              <View style={styles.disabledBox}>
-                <Text style={styles.disabledText}>{watch('dateTime')}</Text>
-              </View>
-            </View>
-          </View>
-
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+      {/* CONTENT */}
+      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
+        <ScreenStateHandler loading={loading} isEmpty={!incidentData}>
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}
           >
-            <TouchableOpacity
-              style={[styles.submitButton, { backgroundColor: COLOR.darkGray }]}
-              onPress={() => cancelRef.current.open()}
-            >
-              <Text style={styles.submitButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={() => successRef.current.open()}
-            >
-              <Text style={styles.submitButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
+            <View style={styles.form}>
+              <Text style={styles.label}>Incident ID</Text>
+              <View style={styles.disabledBox}>
+                <Text style={styles.disabledText}>{watch('incidentId')}</Text>
+              </View>
 
+              <View style={{ marginVertical: 10 }}>
+                <Text style={styles.label}>Incident Type</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>
+                    {watch('incidentType')}
+                  </Text>
+                </View>
+              </View>
+
+              <FormTextInput
+                label="Address"
+                name="address"
+                control={control}
+                placeholder="Enter address"
+                multiline
+                rules={{ required: 'Address is required' }}
+                error={errors.address?.message}
+              />
+
+              <FormTextInput
+                label="Mobile Number"
+                name="mobileNumber"
+                control={control}
+                placeholder="Enter mobile number"
+                keyboardType="phone-pad"
+                rules={{
+                  required: 'Mobile number is required',
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: TEXT.enter_valid_10_digit_number(),
+                  },
+                }}
+                error={errors.mobileNumber?.message}
+              />
+
+              <FormTextInput
+                label="Description"
+                name="description"
+                control={control}
+                placeholder="Enter description"
+                multiline
+                rules={{ required: 'Description is required' }}
+                error={errors.description?.message}
+              />
+
+              {/* MEDIA + STATUS */}
+              <View style={{ flexDirection: 'row', gap: 14 }}>
+                <View style={{ width: WIDTH(30) }}>
+                  {/* <FormMediaPicker
+                    label="Images"
+                    name="media"
+                    control={control}
+                    rules={{ required: 'At least one image is required' }}
+                    error={errors.media?.message}
+                    media={media}
+                    onChangeMedia={handleImageUpload}
+                    onRemoveMedia={handleRemoveMedia}
+                  /> */}
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>Status</Text>
+                  <View style={styles.disabledBox}>
+                    <Text style={styles.disabledText}>{watch('status')}</Text>
+                  </View>
+
+                  <Text style={[styles.label, { marginTop: 6 }]}>
+                    Date & Time of Reporting
+                  </Text>
+                  <View style={styles.disabledBox}>
+                    <Text style={styles.disabledText}>{watch('dateTime')}</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* BUTTONS */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  gap: 20,
+                }}
+              >
+                <TouchableOpacity
+                  style={[styles.submitButton]}
+                  onPress={handleSubmit(updateIncedents)}
+                >
+                  <Text style={styles.submitButtonText}>Update</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={() => successRef.current.open()}
+                >
+                  <Text style={styles.submitButtonText}>Send</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </ScreenStateHandler>
+      </View>
+
+      {/* SEND CONFIRMATION */}
       <SuccessScreen
         ref={successRef}
         description={
-          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
+          'Your disaster report will be sent. Do you want to proceed?'
         }
-        onNo={() => {
-          onSuccessNo();
-        }}
-        onYes={() => {
-          incidentUpdateStatus();
-        }}
+        onNo={onSuccessNo}
+        onYes={incidentUpdateStatus}
         height={340}
       />
 
+      {/* CANCEL */}
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../../assets/cancel1.png')}
@@ -290,6 +338,7 @@ const IncidentDetails: React.FC = () => {
         height={240}
       />
 
+      {/* ACCEPT */}
       <SelfHelpBottomSheet
         ref={acceptRef}
         onClose={() => console.log('Closed')}
@@ -300,6 +349,7 @@ const IncidentDetails: React.FC = () => {
 
 export default IncidentDetails;
 
+// ===================== STYLES ======================
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLOR.blue },
   titleBar: {
@@ -335,17 +385,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 12,
   },
-  disabledText: {
-    fontSize: 15,
-    color: '#555',
-  },
+  disabledText: { fontSize: 15, color: '#555' },
   submitButton: {
     backgroundColor: COLOR.blue,
     paddingVertical: 10,
     borderRadius: 50,
     alignItems: 'center',
     marginTop: 24,
-    alignSelf: 'center',
     width: 160,
   },
   submitButtonText: {
