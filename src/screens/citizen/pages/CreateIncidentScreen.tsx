@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
@@ -73,7 +72,6 @@ const CreateIncidentScreen: React.FC = () => {
   const media = watch('media');
   const selectedType = watch('incidentType');
 
-  // 📌 Register Address Field
   useEffect(() => {
     register('address', { required: 'Address is required' });
   }, [register]);
@@ -82,7 +80,7 @@ const CreateIncidentScreen: React.FC = () => {
     const getIncidentType = async () => {
       try {
         showLoader();
-        const resp = await ApiManager.incidentType();
+        const resp = await ApiManager.incidentType(userToken);
         if (resp?.data?.success) {
           setIncidentTypes(
             (resp?.data?.data?.incident_types || []).map((item: any) => ({
@@ -92,7 +90,7 @@ const CreateIncidentScreen: React.FC = () => {
           );
         }
       } catch (err: any) {
-        console.log('Tahsil Error:', err.response || err);
+        console.log('Incident Error:', err.response || err);
       } finally {
         hideLoader();
       }
@@ -102,9 +100,8 @@ const CreateIncidentScreen: React.FC = () => {
   }, []);
 
   const handleMediaPick = (items: any[]) => {
-    const updated = [...media, ...items]; // merge old + new
-    // setMedia(updated); // update UI state
-    setValue('media', updated); // update React Hook Form field
+    const updated = [...media, ...items];
+    setValue('media', updated);
   };
 
   const handleRemoveMedia = (index: number) => {
@@ -119,7 +116,7 @@ const CreateIncidentScreen: React.FC = () => {
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
       formData.append('tehsil', user?.tehsil || '');
-      formData.append('incident_type_id', 1);
+      formData.append('incident_type_id', String(data?.incidentType));
       formData.append('address', data.address);
       formData.append('mobile_number', data.mobileNumber);
       formData.append('description', data.description);
@@ -131,9 +128,9 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('city_code', allAddress?.pincode || '');
 
       if (Array.isArray(data.media)) {
-        data.media.forEach((file, index) => {
+        data.media.forEach((file: any, index) => {
           formData.append('upload_media[]', {
-            uri: file.uri,
+            uri: file[0]?.uri,
             type: file.type || 'image/jpeg',
             name: file.fileName || `media_${index}.jpg`,
           });
@@ -172,10 +169,10 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Incident Type */}
         <DropDownInput
-          label={TEXT.incident_type()}
+          label="Incident Type"
           name="incidentType"
           control={control}
-          placeholder={TEXT.select_incident_type()}
+          placeholder="Select Incident Type"
           items={incidentTypes}
           rules={{ required: 'Incident type is required' }}
           errors={errors}
@@ -195,14 +192,7 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Address */}
         <View style={{ marginBottom: 14 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: FONT.R_MED_500,
-              marginBottom: 8,
-              color: COLOR.textGrey,
-            }}
-          >
+          <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
             Address <Text style={{ color: 'red' }}>*</Text>
           </Text>
 
@@ -261,8 +251,8 @@ const CreateIncidentScreen: React.FC = () => {
           name="description"
           control={control}
           multiline
-          placeholder={TEXT.enter_description()}
-          rules={{ required: TEXT.description_required() }}
+          placeholder="Please enter description"
+          rules={{ required: 'Description is required' }}
           error={errors.description?.message}
         />
 

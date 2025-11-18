@@ -75,6 +75,7 @@ const requestPath = {
   incidentDetails: 'mobileapis/getIncidentById',
   incidentSend: 'mobileapis/updateIncidentStatus',
   incidentStatusUpdate: 'mobileapis/updateIncidentStatus',
+  updateIncident: 'mobileapis/updateIncident',
 };
 
 const ApiManager = {
@@ -82,7 +83,6 @@ const ApiManager = {
   language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
-  incidentType: () => requests.get(requestPath.incidentType),
 
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
@@ -95,6 +95,8 @@ const ApiManager = {
     requests.get(`${requestPath.getUser}/${id}`, token),
   incidentDetails: (id: any, token: string) =>
     requests.get(`${requestPath.incidentDetails}/${id}`, token),
+  incidentType: (token: string) =>
+    requests.get(requestPath.incidentType, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
@@ -115,6 +117,8 @@ const ApiManager = {
     requests.post(requestPath.incidentSend, params, token),
   incidentStatusUpdate: (params: any, token: string) =>
     requests.post(requestPath.incidentStatusUpdate, params, token),
+  updateIncident: (params: any, token: string) =>
+    requests.post(requestPath.updateIncident, params, token),
 };
 
 export default ApiManager;
