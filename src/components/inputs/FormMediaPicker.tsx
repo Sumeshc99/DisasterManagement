@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontWeight: '500',
   },
- 
 
   requiredMark: {
     color: 'red',
@@ -162,7 +161,11 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: 'center',
   },
-  placeholderText: { fontSize: 16, color: '#888', textAlign: 'center' },
+  placeholderText: {
+    fontSize: 16,
+    color: COLOR.lightTextGrey,
+    textAlign: 'center',
+  },
   previewScroll: {
     marginTop: 4,
   },
@@ -176,11 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 2,
   },
-  placeholderText: {
-    fontSize: 16,
-    color: COLOR.lightTextGrey,
-    textAlign: 'center',
-  },
+
   inputError: {
     borderColor: 'red',
   },
