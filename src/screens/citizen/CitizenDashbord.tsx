@@ -30,6 +30,7 @@ import Weather from '../../assets/svg/wea.svg';
 import Help from '../../assets/svg/help.svg';
 import Dis from '../../assets/svg/dis.svg';
 import { TEXT } from '../../i18n/locales/Text';
+import ReviewerSection from '../receiver/ReviewerSection';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -38,7 +39,6 @@ const CitizenDashboard = () => {
 
   const [incidentList, setIncidentList] = useState<any[]>([]);
   const [responders, setResponders] = useState<any[]>([]);
-  const [visible, setVisible] = useState(false);
   const [showResponders, setShowResponders] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -47,7 +47,6 @@ const CitizenDashboard = () => {
   const showHelpRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
-  const rejectRef = useRef<any>(null);
 
   GetCurrentLocation();
   useBackExit();
@@ -166,16 +165,22 @@ const CitizenDashboard = () => {
           <Text style={styles.text}>{TEXT.help()}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => setVisible(true)}
-          style={styles.btnWrapper}
-        >
+        <TouchableOpacity onPress={() => ''} style={styles.btnWrapper}>
           <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
           <Text style={styles.text}>{TEXT.weather()}</Text>
         </TouchableOpacity>
       </View>
+
+      <RightDrawer
+        open={drawerOpen}
+        changePass={() => {
+          setDrawerOpen(false);
+          changePassRef.current?.open();
+        }}
+        onClose={() => setDrawerOpen(false)}
+      />
 
       {/* Bottom sheets */}
       <CompleteProfileSheet
@@ -194,27 +199,7 @@ const CitizenDashboard = () => {
       />
       <SuccessScreen ref={successRef} height={220} />
 
-      <AlertModal
-        visible={visible}
-        onAcknowledge={() => {
-          setVisible(false);
-          rejectRef.current.open();
-        }}
-        onViewDetails={() => {
-          setVisible(false);
-          navigation.navigate('incidentDetails');
-        }}
-        onClose={() => setVisible(false)}
-      />
-      <RejectReasonSheet ref={rejectRef} />
-      <RightDrawer
-        open={drawerOpen}
-        changePass={() => {
-          setDrawerOpen(false);
-          changePassRef.current?.open();
-        }}
-        onClose={() => setDrawerOpen(false)}
-      />
+      <ReviewerSection />
     </SafeAreaView>
   );
 };

@@ -76,6 +76,8 @@ const requestPath = {
   incidentSend: 'mobileapis/updateIncidentStatus',
   incidentStatusUpdate: 'mobileapis/updateIncidentStatus',
   updateIncident: 'mobileapis/updateIncident',
+  getIncidentDta: 'mobileapis/getUserId',
+  assignedIncident: 'mobileapis/getReviewerAssignedIncident',
 };
 
 const ApiManager = {
@@ -97,6 +99,10 @@ const ApiManager = {
     requests.get(`${requestPath.incidentDetails}/${id}`, token),
   incidentType: (token: string) =>
     requests.get(requestPath.incidentType, token),
+  getIncidentDta: (id: any, token: string) =>
+    requests.get(`${requestPath.getIncidentDta}/${id}`, token),
+  assignedIncident: (id: any, token: string) =>
+    requests.get(`${requestPath.assignedIncident}/${id}`, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>

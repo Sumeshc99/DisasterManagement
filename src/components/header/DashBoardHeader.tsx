@@ -6,6 +6,7 @@ import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
+import IncidentRecordsSheet2 from '../bottomSheets/IncidentRecordsSheet2';
 
 interface props {
   drawer: boolean;
@@ -69,7 +70,11 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
         </TouchableOpacity>
       </View>
 
-      <IncidentRecordsSheet ref={sheetRef} />
+      {user?.role === 'citizen' ? (
+        <IncidentRecordsSheet ref={sheetRef} />
+      ) : (
+        <IncidentRecordsSheet2 ref={sheetRef} />
+      )}
     </View>
   );
 };
