@@ -26,6 +26,7 @@ import SuccessScreen from '../../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
+import BackArrow from '../../../assets/svg/backArrow.svg';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -198,9 +199,9 @@ const IncidentDetails: React.FC = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Image source={require('../../../assets/backArrow.png')} />
+          <BackArrow />
         </TouchableOpacity>
-        <Text style={styles.title}>Incident Details</Text>
+        <Text style={styles.title}>{TEXT.incident_details()}</Text>
         <View style={styles.backButton} />
       </View>
 
@@ -212,13 +213,13 @@ const IncidentDetails: React.FC = () => {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.form}>
-              <Text style={styles.label}>Incident ID</Text>
+              <Text style={styles.label}>{TEXT.incident_id()}</Text>
               <View style={styles.disabledBox}>
                 <Text style={styles.disabledText}>{watch('incidentId')}</Text>
               </View>
 
               <View style={{ marginVertical: 10 }}>
-                <Text style={styles.label}>Incident Type</Text>
+                <Text style={styles.label}>{TEXT.incident_type()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>
                     {watch('incidentType')}
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
   form: { paddingHorizontal: 16, paddingBottom: 16 },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     fontWeight: '500',
     marginBottom: 4,
   },
@@ -385,7 +386,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 12,
   },
-  disabledText: { fontSize: 15, color: '#555' },
+  disabledText: { fontSize: 15, color: COLOR.textGrey },
   submitButton: {
     backgroundColor: COLOR.blue,
     paddingVertical: 10,

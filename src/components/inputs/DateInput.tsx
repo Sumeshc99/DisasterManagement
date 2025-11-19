@@ -12,6 +12,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Controller } from 'react-hook-form';
 import { COLOR } from '../../themes/Colors';
 import { FONT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface DateInputProps {
   label?: string;
@@ -33,7 +34,7 @@ const formatDateToYMD = (date: Date): string => {
 };
 
 const DateInput: React.FC<DateInputProps> = ({
-  label = 'Date of birth',
+  label = TEXT.date_of_birth(),
   name,
   control,
   rules,

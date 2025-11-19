@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -104,7 +105,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       >
         <View style={styles.headerRow}>
           <Text style={styles.incidentId}>
-            Incident ID - {item.incident_id}
+            {TEXT.incident_id()} - {item.incident_id}
           </Text>
 
           {renderStatus(item.status)}
@@ -144,7 +145,19 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
 
-          <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => ref.current.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={{ width: WIDTH(8), height: WIDTH(8) }}
+              />
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.tabContainer}>
             <TouchableOpacity
@@ -220,8 +233,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: COLOR.blue,
+    position: 'absolute', // keeps text in center
+    left: 0,
+    right: 0,
     textAlign: 'center',
-    marginBottom: 16,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -248,14 +263,24 @@ const styles = StyleSheet.create({
   },
 
   card: { marginBottom: 10 },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+
   incidentId: {
     fontSize: 13,
-    color: '#555',
+    color: COLOR.textGrey,
     marginBottom: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+    marginTop: 10,
+  },
+
+  closeBtn: {
+    position: 'absolute',
+    right: 0, // moves cancel button to right end
+    padding: 5,
   },
   title: {
     color: COLOR.blue,

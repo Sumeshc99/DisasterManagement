@@ -176,7 +176,9 @@ export default function OTPVerification() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <Text style={styles.timerText}>
             {TEXT.otp_expire_in()}:{' '}
-            <Text style={styles.timerValue}>{formatTime()} minutes</Text>
+            <Text style={styles.timerValue}>
+              {formatTime()} {TEXT.minutes()}
+            </Text>
           </Text>
           {timeLeft <= 0 && (
             <Text onPress={handleResendOtp} style={styles.timerValue1}>

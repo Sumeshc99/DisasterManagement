@@ -130,4 +130,30 @@ export const TEXT = {
   enter_address: () => t('enter_address', 'Enter Address'),
 
   address: () => t('address', 'Address'),
+  block: () => t('block', 'Block'),
+
+  block_required: () => t('block_required', 'Block required'),
+
+  date_of_birth: () => t('date_of_birth', 'Date of Birth'),
+
+  enter_secondary_mobile: () =>
+    t('enter_secondary_mobile', 'Enter Secondary Mobile Number'),
+
+  enter_pin_code: () => t('enter_pin_code', 'Enter Pin code'),
+
+  minutes: () => t('minutes', 'Minutes'),
+
+  no_incident_records: () =>
+    t('no_incident_records', 'No incident records found'),
+
+  create: () => t('create', 'Create'),
+
+  description: () => t('description', 'Description'),
+  incident_details: () => t('incident_details', 'Incident Details'),
+
+  incident_id: () => t('incident_id', 'Incident Id'),
+
+  address: () => t('address', 'Address'),
+
+  address: () => t('address', 'Address'),
 };

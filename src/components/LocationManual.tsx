@@ -129,7 +129,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
 
       <View style={styles.searchBox}>
         <TextInput
-          placeholder="Please enter address"
+          placeholder={TEXT.enter_address()}
           value={location.address}
           onChangeText={text => {
             onChangeLocation({ ...location, address: text });
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     flex: 1, // input takes full remaining width
     height: 45,
     fontSize: 16,
+    color: COLOR.textGrey,
   },
   resultList: {
     marginTop: 5,

@@ -86,7 +86,7 @@ const CreateIncidentScreen: React.FC = () => {
           setIncidentTypes(
             (resp?.data?.data?.incident_types || []).map((item: any) => ({
               label: item.name,
-              value: item.id,
+              value: item.name,
             })),
           );
         }
@@ -272,8 +272,8 @@ const CreateIncidentScreen: React.FC = () => {
           multiline
           placeholder={TEXT.enter_description()}
           // rules={{ required: TEXT.description_required() }}
-          placeholder="Please enter description"
-          rules={{ required: 'Description is required' }}
+
+          // rules={{ required: 'Description is required' }}
           error={errors.description?.message}
         />
 

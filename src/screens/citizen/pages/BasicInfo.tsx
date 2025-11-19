@@ -106,12 +106,12 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <DropDownInput
-        label="Block"
+        label={TEXT.block()}
         name="block"
         control={control}
         placeholder="Select block"
         items={tahsilList}
-        rules={{ required: 'Block is required' }}
+        rules={{ required: TEXT.block_required() }}
         errors={errors}
       />
 
