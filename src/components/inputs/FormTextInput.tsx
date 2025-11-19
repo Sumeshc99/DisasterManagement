@@ -1,0 +1,145 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TextInputProps,
+  I18nManager,
+} from 'react-native';
+import { Controller, Control, RegisterOptions } from 'react-hook-form';
+import { COLOR } from '../../themes/Colors';
+import { FONT } from '../../themes/AppConst';
+
+interface FormTextInputProps extends TextInputProps {
+  label: string;
+  name: string;
+  control: Control<any>;
+  rules?: RegisterOptions;
+  error?: any;
+  multiline?: boolean;
+  numberOfLines?: number;
+  onRightIconPress?: () => void;
+}
+
+const FormTextInput: React.FC<FormTextInputProps> = ({
+  label,
+  name,
+  control,
+  rules,
+  error,
+  secureTextEntry,
+  multiline = false,
+  numberOfLines = 1,
+  onRightIconPress,
+  editable = true,
+  ...textInputProps
+}) => {
+  const isRequired = !!rules?.required;
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>{label}</Text>
+        {isRequired && <Text style={styles.requiredMark}>*</Text>}
+      </View>
+
+      <Controller
+        control={control}
+        name={name}
+        rules={rules}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <View
+            style={[
+              styles.inputWrapper,
+              error && styles.inputError,
+              !editable && styles.disabledWrapper,
+            ]}
+          >
+            <TextInput
+              autoCapitalize="none"
+              style={[
+                styles.input,
+                multiline && styles.multilineInput,
+                !editable && styles.disabledInput,
+              ]}
+              placeholder={`Enter ${label.toLowerCase()}`}
+              placeholderTextColor="#999"
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+              secureTextEntry={secureTextEntry}
+              multiline={multiline}
+              numberOfLines={numberOfLines}
+              textAlignVertical={multiline ? 'top' : 'center'}
+              textAlign={I18nManager.isRTL ? 'right' : 'left'}
+              editable={editable}
+              {...textInputProps}
+            />
+          </View>
+        )}
+      />
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  label: {
+    fontSize: 16,
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_MED_500,
+  },
+  requiredMark: {
+    color: 'red',
+    marginLeft: 4,
+    fontSize: 16,
+    fontFamily: FONT.R_SBD_600,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+  },
+  disabledWrapper: {
+    backgroundColor: '#D9D9D9',
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: COLOR.textGrey,
+    paddingVertical: 12,
+  },
+  disabledInput: {
+    color: '#525151',
+  },
+  multilineInput: {
+    height: 100,
+    paddingTop: 12,
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+  },
+  iconWrapper: {
+    paddingLeft: 8,
+  },
+});
+
+export default FormTextInput;

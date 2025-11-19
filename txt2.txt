@@ -1,0 +1,109 @@
+
+//Create Incident Screen Validation Text
+
+Incident type is required
+Please specify the incident type
+Description is required
+At least one media file is required
+Create
+
+//Indident details Screen Validation Text
+At least one image is required
+Description is required
+Invalid mobile number (10 digits, starting with 6-9)
+Mobile number is required
+Address is required
+Submit Report
+
+
+
+
+
+
+-------------------
+Country is required
+
+
+//Headings
+
+Confirm Your Address
+Country is required
+
+ Confirm Your Address
+Address
+Look Good
+
+
+Country/region
+Detailed address
+--------------------------------------------------------------------
+
+//Field Placeholders
+Country
+Flat, house, etc.
+Street address
+Nearby landmark
+City
+Division
+State
+PIN code
+Latitude
+Longitude
+ Show your specific location
+ Confirm
+ Capture or upload images/videos
+ Please enter description
+
+
+
+/// check if there is word indb
+
+ Resend OTP
+ Reset
+
+ Block
+ Incident type
+ Create Incident
+ Description
+ Attach photo/video
+
+
+ // Not in DB
+ Block 
+ Address
+ Date of Birth
+ Enter Secondary Mobile Number
+ Enter Pin code
+ Enter Address
+ minutes
+ No incident records found
+ Create
+ Create Incident
+  Description
+  Incident type is required
+  At least one media file is required
+  Attach photo/video
+  Capture or upload images/videos
+  Confirm Your Address
+  Please enter address
+  No incident records found
+  Enter Latitude
+  Enter Longitude
+   Show your specific location
+
+
+
+//18/11
+
+Enter Description
+Enter your address
+Other Incident Records
+
+
+//19/11
+
+Specify Other Type
+Enter incident type
+Please specify the incident type
+Upload media
+

@@ -3,6 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import CitizenNav from './userNav/CitizenNav';
 import ReceiverNav from './userNav/ReceiverNav';
 import ResponderNav from './userNav/ResponderNav';
+import SideDrawerNav from './SideDrawerNav';
 
 // Fallback loader
 const FallbackLoader = () => (
@@ -21,6 +22,7 @@ const MainAppSelector = () => {
       {userType === 'citizen' && <CitizenNav />}
       {/* {userType === 'receiver' && <ReceiverNav />}
       {userType === 'ResponderNav' && <ResponderNav />} */}
+      {/* <SideDrawerNav /> */}
     </Suspense>
   );
 };

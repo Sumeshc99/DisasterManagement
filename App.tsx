@@ -1,17 +1,24 @@
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { LogBox, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainIndex from './src/MainIndex';
-import CustomStatusBar from './src/themes/CustomStatusBar';
+import { Provider } from 'react-redux';
+import { Persistor, Store } from './src/store/Store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-
+  LogBox.ignoreAllLogs();
   return (
-    <SafeAreaProvider>
-      {/* <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} /> */}
-      {/* <CustomStatusBar /> */}
-      <MainIndex />
-    </SafeAreaProvider>
+    <Provider store={Store}>
+      <PersistGate
+        // loading={<ActivityIndicator />}
+        persistor={Persistor}
+      >
+        <SafeAreaProvider>
+          <MainIndex />
+        </SafeAreaProvider>
+      </PersistGate>
+    </Provider>
   );
 }
 

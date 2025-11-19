@@ -9,12 +9,16 @@ import {
   Animated,
 } from 'react-native';
 import { AppStackNavigationProp } from '../navigation/AppNavigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/RootReducer';
 
 const { width, height } = Dimensions.get('window');
 
 const SplashScreen = () => {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
+  const { user } = useSelector((state: RootState) => state.auth as any);
 
   useEffect(() => {
     Animated.spring(scaleAnim, {
@@ -26,7 +30,11 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      navigation.navigate('selectLanguage');
+      if (user?.id) {
+        navigation.replace('mainAppSelector');
+      } else {
+        navigation.navigate('selectLanguage');
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -45,9 +53,6 @@ const SplashScreen = () => {
         style={styles.backgroundImage}
         resizeMode="cover"
       >
-        <View style={styles.overlay} />
-
-        {/* Animated Logo */}
         <View style={styles.content}>
           <Animated.Image
             source={require('../assets/citizen/logo.png')}
@@ -63,8 +68,12 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   backgroundImage: { flex: 1, width: width, height: height },
-  overlay: { backgroundColor: 'rgba(0,0,0,0.45)' },
-  content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.50)',
+  },
   logo: { width: 205, height: 205 },
 });
 

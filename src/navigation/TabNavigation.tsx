@@ -10,12 +10,17 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CitizenDashbord from '../screens/citizen/CitizenDashbord';
 import Community from '../screens/citizen/Community';
-import { COLOR } from '../config/Colors';
-import { WIDTH } from '../config/AppConst';
+import { COLOR } from '../themes/Colors';
+import { WIDTH } from '../themes/AppConst';
+import { useNavigation } from '@react-navigation/native';
+import { AppStackNavigationProp } from './AppNavigation';
+import { TEXT } from '../i18n/locales/Text';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
+  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -41,7 +46,7 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              Home
+              {TEXT.home()}
             </Text>
           ),
           tabBarIcon: ({ focused }) => (
@@ -66,7 +71,7 @@ const TabNavigation = () => {
           tabBarButton: () => (
             <TouchableOpacity
               style={styles.sosButtonContainer}
-              onPress={() => Alert.alert('SOS Triggered!')}
+              onPress={() => navigation.navigate('createIncidentScreen')}
             >
               <Image
                 source={require('../assets/sosImg.png')}
@@ -90,7 +95,7 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              Community
+              {TEXT.community()}
             </Text>
           ),
           tabBarIcon: ({ focused }) => (
