@@ -16,7 +16,8 @@ import FormTextInput from '../inputs/FormTextInput';
 import FormTextInput2 from '../inputs/FormTextInput2';
 import LocationManual from '../LocationManual';
 import { TEXT } from '../../i18n/locales/Text';
-import { FONT } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
+import ReuseButton from '../UI/ReuseButton';
 
 const { height } = Dimensions.get('window');
 
@@ -127,8 +128,14 @@ const IncidentAddressSheet = forwardRef<
         <View style={styles.dragIndicator} />
 
         <View style={styles.headerRow}>
-          <Text style={styles.title}>{TEXT.confirm_address()}</Text>
-          <TouchableOpacity onPress={() => (ref as any)?.current?.close?.()}>
+          <View style={styles.sideBox} /> {/* empty left box */}
+          <View style={styles.centerBox}>
+            <Text style={styles.title}>{TEXT.confirm_address()}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.sideBox}
+            onPress={() => (ref as any)?.current?.close?.()}
+          >
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
         </View>
@@ -140,10 +147,15 @@ const IncidentAddressSheet = forwardRef<
                 location={location}
                 onChangeLocation={setLocation}
               />
+              <ReuseButton
+                text={TEXT.look_good()}
+                onPress={() => settab(1)}
+                style={{ width: WIDTH(50), alignSelf: 'center' }}
+              />
 
-              <TouchableOpacity style={styles.button} onPress={() => settab(1)}>
+              {/* <TouchableOpacity style={styles.button} onPress={() => settab(1)}>
                 <Text style={styles.buttonText}>{TEXT.look_good()}</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -328,5 +340,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  sideBox: {
+    width: 40, // same width on both sides ensures center alignment
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  centerBox: {
+    flex: 1, // title takes full center space
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -6,6 +6,7 @@ import {
   Alert,
   ScrollView,
   View,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -165,7 +166,20 @@ const CreateIncidentScreen: React.FC = () => {
         contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.header}>Create Incident</Text>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Image
+              source={require('../../../assets/backArrow.png')}
+              style={styles.backIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          <Text style={styles.header}>Create Incident</Text>
+        </View>
 
         {/* Incident Type */}
         <DropDownInput
@@ -174,7 +188,6 @@ const CreateIncidentScreen: React.FC = () => {
           control={control}
           placeholder="Select Incident Type"
           items={incidentTypes}
-          rules={{ required: 'Incident type is required' }}
           errors={errors}
         />
 
@@ -215,8 +228,14 @@ const CreateIncidentScreen: React.FC = () => {
                 {getValues('address')}
               </Text>
             ) : (
-              <Text style={{ fontSize: 16, color: '#999', marginBottom: 40 }}>
-                Address
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: COLOR.lightTextGrey,
+                  marginBottom: 40,
+                }}
+              >
+                {TEXT.enter_address()}
               </Text>
             )}
           </TouchableOpacity>
@@ -251,6 +270,8 @@ const CreateIncidentScreen: React.FC = () => {
           name="description"
           control={control}
           multiline
+          placeholder={TEXT.enter_description()}
+          // rules={{ required: TEXT.description_required() }}
           placeholder="Please enter description"
           rules={{ required: 'Description is required' }}
           error={errors.description?.message}
@@ -261,7 +282,7 @@ const CreateIncidentScreen: React.FC = () => {
           label="Upload Image"
           name="media"
           control={control}
-          rules={{ required: 'At least one media file is required' }}
+          // rules={{ required: 'At least one media file is required' }}
           error={errors.media?.message}
           media={media}
           onChangeMedia={handleMediaPick}
@@ -304,8 +325,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: FONT.R_SBD_600,
     color: COLOR.blue,
-    alignSelf: 'center',
-    marginVertical: 20,
+    textAlign: 'center',
   },
   createButton: {
     backgroundColor: COLOR.blue,
@@ -320,5 +340,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  headerContainer: {
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    position: 'relative',
+    marginVertical: 10,
+  },
+
+  backButton: {
+    position: 'absolute',
+    left: -8,
+  },
+
+  backIcon: {
+    width: 24,
+    height: 24,
   },
 });

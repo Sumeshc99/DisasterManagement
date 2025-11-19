@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import MapView, { Marker } from 'react-native-maps';
+import { COLOR } from '../themes/Colors';
+import { FONT } from '../themes/AppConst';
+import { TEXT } from '../i18n/locales/Text';
+import SearchIcon from '../assets/svg/searchIcon.svg';
 
 const GOOGLE_API_KEY = 'AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw';
 Geocoder.init(GOOGLE_API_KEY);
@@ -121,7 +125,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Address</Text>
+      <Text style={styles.label}>{TEXT.address()}</Text>
 
       <View style={styles.searchBox}>
         <TextInput
@@ -133,6 +137,9 @@ const LocationManual: React.FC<LocationManualProps> = ({
           }}
           style={styles.input}
         />
+        <View style={styles.iconWrapper}>
+          <SearchIcon width={18} height={18} />
+        </View>
       </View>
 
       {showDropdown && places.length > 0 && (
@@ -170,7 +177,7 @@ export default LocationManual;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  label: { fontSize: 16, fontWeight: '600', color: '#333' },
+  label: { fontSize: 16, fontFamily: FONT.R_SBD_600, color: COLOR.textGrey },
   searchBox: {
     marginTop: 8,
     borderWidth: 1,
@@ -178,8 +185,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     paddingHorizontal: 12,
+    flexDirection: 'row', // ← important
+    alignItems: 'center',
   },
-  input: { height: 45, fontSize: 16 },
+
+  input: {
+    flex: 1, // input takes full remaining width
+    height: 45,
+    fontSize: 16,
+  },
   resultList: {
     marginTop: 5,
     backgroundColor: '#fff',
@@ -204,6 +218,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 10,
     overflow: 'hidden',
+  },
+  iconWrapper: {
+    paddingLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  searchIcon: {
+    fontSize: 20,
+    color: COLOR.darkGray,
   },
   map: { flex: 1 },
 });

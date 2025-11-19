@@ -127,7 +127,7 @@ export const TEXT = {
 
   upload_valid_id: () => t('upload_valid_id', 'Upload valid ID proof'),
 
-  state: () => t('state', 'State'),
+  enter_address: () => t('enter_address', 'Enter Address'),
 
-  state: () => t('state', 'State'),
+  address: () => t('address', 'Address'),
 };

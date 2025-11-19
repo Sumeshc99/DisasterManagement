@@ -173,12 +173,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 2,
   },
+  inputError: {
+    borderColor: 'red',
+  },
   placeholderText: {
     fontSize: 16,
     color: COLOR.lightTextGrey,
     textAlign: 'center',
   },
-
   errorText: {
     color: 'red',
     fontSize: 12,

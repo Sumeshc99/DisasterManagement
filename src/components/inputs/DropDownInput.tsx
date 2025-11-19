@@ -73,7 +73,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             selectedItemContainerStyle={styles.selectedItemContainerStyle}
             selectedItemLabelStyle={styles.selectedItemLabelStyle}
             listMode="SCROLLVIEW"
-            arrowIconStyle={{ tintColor: '#888' }}
+            arrowIconStyle={{ tintColor: COLOR.darkGray }}
           />
         )}
       />
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT.R_REG_400,
     marginHorizontal: 6,
   },
-  placeholderStyle: { fontSize: 16, color: '#888' },
+  placeholderStyle: { fontSize: 16, color: COLOR.lightTextGrey },
   selectedItemContainerStyle: { backgroundColor: COLOR.blue, borderRadius: 4 },
   selectedItemLabelStyle: { color: '#fff', fontWeight: '500' },
   error: { color: 'red', fontSize: 12, marginTop: 4 },
