@@ -323,7 +323,7 @@ const IncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={successRef}
         description={
-          'Your disaster report will be sent. Do you want to proceed?'
+          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
         }
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}

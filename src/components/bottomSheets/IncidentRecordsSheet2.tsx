@@ -13,16 +13,20 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
-import { WIDTH } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
+import Filter from '../../assets/filter.svg';
 
-const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
+const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
     const navigation = useNavigation();
     const { user, userToken } = useSelector((state: RootState) => state.auth);
 
     const [myIncident, setMyIncident] = useState([]);
     const [assignedIncident, setAssignedIncident] = useState([]);
+    const [assignedInc, setassignedInc] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+    const [showFilter, setshowFilter] = useState(false);
+    const [incType, setincType] = useState<0 | 1>(0);
 
     const [refreshing, setRefreshing] = useState(false);
 
@@ -43,9 +47,22 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
+    const getAssignedIncident = async () => {
+      try {
+        const resp = await ApiManager.assignedIncident(user?.id, userToken);
+        if (resp?.data?.success) {
+          const results = resp?.data?.data?.results || [];
+          setassignedInc(results);
+        }
+      } catch (err) {
+        console.error('Error fetching incident list:', err);
+      }
+    };
+
     // Initial load
     useEffect(() => {
       fetchIncidentList();
+      getAssignedIncident();
     }, [userToken]);
 
     // --- Pull to refresh ---
@@ -129,7 +146,11 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       </TouchableOpacity>
     );
 
-    const listData = isAssignedTab ? assignedIncident : myIncident;
+    const listData = isAssignedTab
+      ? assignedInc
+      : incType
+      ? myIncident
+      : assignedInc;
 
     return (
       <RBSheet
@@ -173,10 +194,99 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
               <Text
                 style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
               >
-                {/* {TEXT.assigned_incident_records()} */}
-                All Incident Records
+                {TEXT.assigned_incident_records()}
               </Text>
             </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              marginVertical: 10,
+              alignItems: 'center',
+            }}
+          >
+            <Filter />
+            <Text
+              style={{
+                fontSize: 16,
+                marginLeft: 10,
+                fontFamily: FONT.R_BOLD_700,
+                color: COLOR.darkGray,
+              }}
+            >
+              Filter :
+            </Text>
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setshowFilter(!showFilter);
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    marginLeft: 10,
+                    fontFamily: FONT.R_MED_500,
+                    color: COLOR.darkGray,
+                  }}
+                >
+                  {incType ? 'My incident' : 'Other incident'}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: COLOR.darkGray,
+                  }}
+                >
+                  {showFilter ? '▲' : '▼'}
+                </Text>
+              </TouchableOpacity>
+
+              {showFilter && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    backgroundColor: COLOR.white,
+                    zIndex: 10,
+                    borderWidth: 1,
+                    top: 26,
+                    left: 10,
+                    paddingHorizontal: 6,
+                    borderRadius: 2,
+                    borderColor: COLOR.darkGray,
+                    gap: 2,
+                  }}
+                >
+                  <Text
+                    onPress={() => {
+                      setshowFilter(!showFilter), setincType(0);
+                    }}
+                    style={{
+                      fontSize: 16,
+                      color: COLOR.darkGray,
+                      fontFamily: FONT.R_MED_500,
+                    }}
+                  >
+                    My incident
+                  </Text>
+                  <Text
+                    onPress={() => {
+                      setshowFilter(!showFilter), setincType(1);
+                    }}
+                    style={{
+                      fontSize: 16,
+                      color: COLOR.darkGray,
+                      fontFamily: FONT.R_MED_500,
+                    }}
+                  >
+                    All incident
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
 
           <FlatList
@@ -196,6 +306,8 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     );
   },
 );
+
+export default IncidentRecordsSheet2;
 
 const styles = StyleSheet.create({
   sheetContainer: {
@@ -282,5 +394,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default IncidentRecordsSheet;

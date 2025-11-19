@@ -72,6 +72,6 @@ type AppStackParamList = {
   pinResetScreen: { data: any };
   createIncidentScreen: undefined;
   profile: undefined;
-  incidentDetails: undefined;
+  incidentDetails: { data: any };
   incidentRecordsScreen: undefined;
 };
