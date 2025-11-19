@@ -14,8 +14,6 @@ import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileS
 import ProfileReminder from '../../components/bottomSheets/ProfileReminder';
 import ChangePinSheet from '../../components/bottomSheets/ChangePinSheet';
 import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
-import AlertModal from '../../components/AlertModal';
-import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 
 import { COLOR } from '../../themes/Colors';
 import { RootState } from '../../store/RootReducer';

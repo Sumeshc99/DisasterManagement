@@ -1,24 +1,91 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { RadioButton, TextInput } from 'react-native-paper';
-import { COLOR } from '../../themes/Colors'; // your color constants
+import { COLOR } from '../../themes/Colors';
+import { FONT, WIDTH } from '../../themes/AppConst';
+import DropDownInput from '../inputs/DropDownInput';
+import ApiManager from '../../apis/ApiManager';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
+import { useForm } from 'react-hook-form';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
 
-const RejectReasonSheet = forwardRef((props, ref) => {
-  const [selectedReason, setSelectedReason] = useState('cancel');
+interface props {
+  ref: any;
+  data: any;
+}
+
+const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
+  const { userToken } = useSelector((state: RootState) => state.auth);
+
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const snackbar = useSnackbar();
+
+  const [selectedReason, setSelectedReason] = useState<'duplicate' | 'cancel'>(
+    'duplicate',
+  );
+  const [idList, setidList] = useState([]);
   const [details, setDetails] = useState('');
 
-  const onSave = () => {
-    console.log('Selected Reason:', selectedReason);
-    console.log('Cancellation Note:', details);
-    ref.current?.close();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      insId: '',
+      reason: '',
+    },
+  });
+
+  useEffect(() => {
+    const getIncidentIds = () => {
+      ApiManager.getIncidentIds(userToken)
+        .then(resp => {
+          if (resp.data.status) {
+            setidList(
+              (resp?.data?.data || []).map((item: any) => ({
+                label: item.incident_id,
+                value: item.id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('err', err.response))
+        .finally(() => '');
+    };
+
+    getIncidentIds();
+  }, []);
+
+  const incidentUpdateStatus = (item: any) => {
+    const body = {
+      incident_id: data.data.id,
+      button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
+      cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
+      duplicate_incident_id: selectedReason === 'duplicate' ? item?.insId : '',
+      reason_for_cancellation: selectedReason === 'cancel' ? details : '',
+    };
+    console.log('ookokoko', body);
+
+    showLoader();
+    ApiManager.incidentStatusUpdate(body, userToken)
+      .then(resp => {
+        if (resp.data.status) {
+          snackbar(resp?.data?.message, 'success');
+          ref?.current?.close();
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => hideLoader());
   };
 
   return (
     <RBSheet
       ref={ref}
-      height={420}
-      closeOnDragDown={true}
+      height={480}
       customStyles={{
         wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
         draggableIcon: { backgroundColor: '#ccc' },
@@ -30,9 +97,10 @@ const RejectReasonSheet = forwardRef((props, ref) => {
     >
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
+
         <Text style={styles.title}>Select reason for rejection</Text>
 
-        {/* Radio Button Options */}
+        {/* Radio Buttons */}
         <View style={styles.radioRow}>
           <TouchableOpacity
             style={[
@@ -83,34 +151,60 @@ const RejectReasonSheet = forwardRef((props, ref) => {
           </TouchableOpacity>
         </View>
 
-        {/* Reason Input */}
-        <Text style={styles.label}>
-          Reason for cancellation <Text style={{ color: COLOR.red }}>*</Text>
-        </Text>
+        {/* Dynamic Input Based on Condition */}
+        {selectedReason === 'duplicate' ? (
+          <>
+            <Text style={styles.label}>
+              Select duplicate incident Id{' '}
+              <Text style={{ color: COLOR.red }}>*</Text>
+            </Text>
 
-        <TextInput
-          mode="outlined"
-          placeholder="Provide reason for cancellation"
-          value={details}
-          onChangeText={setDetails}
-          outlineColor="#D9D9D9"
-          activeOutlineColor={COLOR.blue}
-          multiline
-          numberOfLines={3}
-          style={styles.textInput}
-        />
+            <DropDownInput
+              label="Incident Id"
+              name="insId"
+              control={control}
+              placeholder="Select block"
+              items={idList || []}
+              rules={{ required: 'Block is required' }}
+              errors={errors}
+            />
+          </>
+        ) : (
+          <>
+            <Text style={styles.label}>
+              Reason for cancellation{' '}
+              <Text style={{ color: COLOR.red }}>*</Text>
+            </Text>
+
+            <TextInput
+              mode="outlined"
+              placeholder="Provide reason for cancellation"
+              value={details}
+              onChangeText={setDetails}
+              outlineColor="#D9D9D9"
+              activeOutlineColor={COLOR.blue}
+              multiline
+              numberOfLines={3}
+              style={styles.textInput}
+            />
+          </>
+        )}
 
         {/* Save Button */}
-        <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        style={styles.saveBtn}
+        onPress={handleSubmit(incidentUpdateStatus)}
+      >
+        <Text style={styles.saveText}>Save</Text>
+      </TouchableOpacity>
     </RBSheet>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
@@ -124,8 +218,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontFamily: FONT.R_SBD_600,
     color: COLOR.blue,
     textAlign: 'center',
     marginBottom: 20,
@@ -145,9 +239,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
-  radioBtnActiveGray: {
-    backgroundColor: '#E0E0E0',
-  },
   radioBtnActiveBlue: {
     backgroundColor: COLOR.blue,
   },
@@ -157,20 +248,25 @@ const styles = StyleSheet.create({
     color: COLOR.black,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontFamily: FONT.R_MED_500,
     color: COLOR.blue,
     marginBottom: 6,
   },
   textInput: {
     backgroundColor: COLOR.white,
     marginBottom: 20,
+    paddingVertical: 12,
+    fontSize: 16,
   },
   saveBtn: {
+    margin: WIDTH(4),
     backgroundColor: COLOR.blue,
     borderRadius: 30,
     paddingVertical: 12,
     alignItems: 'center',
+    alignSelf: 'center',
+    width: 160,
   },
   saveText: {
     color: COLOR.white,

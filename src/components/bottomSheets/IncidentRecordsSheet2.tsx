@@ -19,18 +19,19 @@ import Filter from '../../assets/filter.svg';
 const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
     const navigation = useNavigation();
+
     const { user, userToken } = useSelector((state: RootState) => state.auth);
 
     const [myIncident, setMyIncident] = useState([]);
     const [assignedIncident, setAssignedIncident] = useState([]);
-    const [assignedInc, setassignedInc] = useState([]);
+    const [assignedInc, setAssignedInc] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
-    const [showFilter, setshowFilter] = useState(false);
-    const [incType, setincType] = useState<0 | 1>(0);
+
+    const [showFilter, setShowFilter] = useState(false);
+    const [incType, setIncType] = useState<0 | 1>(0);
 
     const [refreshing, setRefreshing] = useState(false);
 
-    // --- Fetch API ---
     const fetchIncidentList = async () => {
       try {
         const resp = await ApiManager.incidentList(userToken);
@@ -50,22 +51,21 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const getAssignedIncident = async () => {
       try {
         const resp = await ApiManager.assignedIncident(user?.id, userToken);
-        if (resp?.data?.success) {
-          const results = resp?.data?.data?.results || [];
-          setassignedInc(results);
+
+        if (resp?.data?.status) {
+          const results = resp?.data?.data || [];
+          setAssignedInc(results);
         }
       } catch (err) {
-        console.error('Error fetching incident list:', err);
+        console.error('Error fetching assigned incidents:', err);
       }
     };
 
-    // Initial load
     useEffect(() => {
       fetchIncidentList();
       getAssignedIncident();
     }, [userToken]);
 
-    // --- Pull to refresh ---
     const onRefresh = async () => {
       setRefreshing(true);
       await fetchIncidentList();
@@ -113,9 +113,12 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         activeOpacity={0.8}
         onPress={() => {
           (ref as { current: any } | null)?.current?.close();
-          navigation.navigate('incidentDetails', {
-            data: item.id,
-          });
+          navigation.navigate(
+            !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
+            {
+              data: item.id,
+            },
+          );
         }}
         style={styles.card}
       >
@@ -123,17 +126,16 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
           <Text style={styles.incidentId}>
             Incident ID - {item.incident_id}
           </Text>
-
           {renderStatus(item.status)}
         </View>
 
-        <Text style={styles.title}>{item.incident_type_name}</Text>
-        <Text style={styles.location}>{item.address}</Text>
+        <Text style={styles.cardTitle}>{item.incident_type_name}</Text>
+        <Text style={styles.cardLocation}>{item.address}</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+        <View style={styles.rowBetween}>
+          <Text style={styles.cardDate}>{formatDateTime(item.created_on)}</Text>
 
-          {item.status == 'New' && (
+          {item.status === 'New' && (
             <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
               <Text style={[styles.statusText, { color: COLOR.white }]}>
                 Edit
@@ -148,9 +150,9 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
     const listData = isAssignedTab
       ? assignedInc
-      : incType
+      : incType === 0
       ? myIncident
-      : assignedInc;
+      : assignedIncident;
 
     return (
       <RBSheet
@@ -167,13 +169,10 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
           <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
 
+          {/* ------------------- TABS ----------------------- */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
-              style={[
-                styles.tabButton,
-                !isAssignedTab && styles.tabActive,
-                { width: WIDTH(43) },
-              ]}
+              style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
               onPress={() => setIsAssignedTab(false)}
             >
               <Text
@@ -184,11 +183,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.tabButton,
-                isAssignedTab && styles.tabActive,
-                { width: WIDTH(49) },
-              ]}
+              style={[styles.tabButton1, isAssignedTab && styles.tabActive]}
               onPress={() => setIsAssignedTab(true)}
             >
               <Text
@@ -199,95 +194,53 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
             </TouchableOpacity>
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginVertical: 10,
-              alignItems: 'center',
-            }}
-          >
-            <Filter />
-            <Text
-              style={{
-                fontSize: 16,
-                marginLeft: 10,
-                fontFamily: FONT.R_BOLD_700,
-                color: COLOR.darkGray,
-              }}
-            >
-              Filter :
-            </Text>
-            <View>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => {
-                  setshowFilter(!showFilter);
-                }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    marginLeft: 10,
-                    fontFamily: FONT.R_MED_500,
-                    color: COLOR.darkGray,
-                  }}
-                >
-                  {incType ? 'My incident' : 'Other incident'}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: COLOR.darkGray,
-                  }}
-                >
-                  {showFilter ? '▲' : '▼'}
-                </Text>
-              </TouchableOpacity>
+          {!isAssignedTab && (
+            <View style={styles.filterRow}>
+              <Filter />
+              <Text style={styles.filterTitle}>Filter :</Text>
 
-              {showFilter && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    backgroundColor: COLOR.white,
-                    zIndex: 10,
-                    borderWidth: 1,
-                    top: 26,
-                    left: 10,
-                    paddingHorizontal: 6,
-                    borderRadius: 2,
-                    borderColor: COLOR.darkGray,
-                    gap: 2,
-                  }}
+              <View>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setShowFilter(!showFilter)}
+                  style={styles.filterDropdownButton}
                 >
-                  <Text
-                    onPress={() => {
-                      setshowFilter(!showFilter), setincType(0);
-                    }}
-                    style={{
-                      fontSize: 16,
-                      color: COLOR.darkGray,
-                      fontFamily: FONT.R_MED_500,
-                    }}
-                  >
-                    My incident
+                  <Text style={styles.filterDropdownText}>
+                    {incType === 0 ? 'My incident' : 'Other incident'}
                   </Text>
-                  <Text
-                    onPress={() => {
-                      setshowFilter(!showFilter), setincType(1);
-                    }}
-                    style={{
-                      fontSize: 16,
-                      color: COLOR.darkGray,
-                      fontFamily: FONT.R_MED_500,
-                    }}
-                  >
-                    All incident
+
+                  <Text style={styles.dropdownArrow}>
+                    {showFilter ? '▲' : '▼'}
                   </Text>
-                </View>
-              )}
+                </TouchableOpacity>
+
+                {/* DROPDOWN LIST */}
+                {showFilter && (
+                  <View style={styles.dropdownContainer}>
+                    <Text
+                      onPress={() => {
+                        setIncType(0);
+                        setShowFilter(false);
+                      }}
+                      style={styles.dropdownItem}
+                    >
+                      My incident
+                    </Text>
+
+                    <Text
+                      onPress={() => {
+                        setIncType(1);
+                        setShowFilter(false);
+                      }}
+                      style={styles.dropdownItem}
+                    >
+                      Other incident
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
+          )}
 
           <FlatList
             data={listData}
@@ -295,9 +248,8 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
             keyExtractor={(item: any, index) =>
               item?.id?.toString() || index.toString()
             }
-            contentContainerStyle={{ paddingBottom: 30 }}
+            contentContainerStyle={{ paddingBottom: 30, marginTop: 10 }}
             showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />
@@ -313,9 +265,10 @@ const styles = StyleSheet.create({
   sheetContainer: {
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    backgroundColor: '#fff',
+    backgroundColor: COLOR.white,
     paddingTop: 20,
   },
+
   dragIndicator: {
     alignSelf: 'center',
     width: 60,
@@ -324,59 +277,144 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     marginBottom: 20,
   },
+
   content: {
     paddingHorizontal: WIDTH(4),
     flex: 1,
   },
+
   titleHeader: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FONT.R_BOLD_700,
     color: COLOR.blue,
     textAlign: 'center',
     marginBottom: 16,
   },
+
+  // Tabs
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: '#F2F5FA',
     borderRadius: 10,
     marginBottom: 10,
+    width: WIDTH(92),
   },
+
   tabButton: {
     paddingVertical: 10,
+    width: WIDTH(43),
+    alignItems: 'center',
+  },
+  tabButton1: {
+    paddingVertical: 10,
+    width: WIDTH(49),
     alignItems: 'center',
   },
   tabActive: {
     backgroundColor: COLOR.blue,
-    borderRadius: 8,
-  },
-  tabText: {
-    color: COLOR.blue,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  tabTextActive: {
-    color: '#fff',
+    borderRadius: 10,
   },
 
+  tabText: {
+    color: COLOR.blue,
+    fontFamily: FONT.R_MED_500,
+  },
+
+  tabTextActive: {
+    color: COLOR.white,
+    fontFamily: FONT.R_BOLD_700,
+  },
+
+  // Filter
+  filterRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+    alignItems: 'center',
+  },
+
+  filterTitle: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontFamily: FONT.R_BOLD_700,
+    color: COLOR.darkGray,
+  },
+
+  filterDropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    gap: 5,
+  },
+
+  filterDropdownText: {
+    fontSize: 16,
+    fontFamily: FONT.R_MED_500,
+    color: COLOR.darkGray,
+  },
+
+  dropdownArrow: {
+    fontSize: 16,
+    color: COLOR.darkGray,
+  },
+
+  dropdownContainer: {
+    position: 'absolute',
+    backgroundColor: COLOR.white,
+    zIndex: 10,
+    borderWidth: 1,
+    top: 26,
+    left: 10,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    borderColor: COLOR.darkGray,
+    width: 130,
+  },
+
+  dropdownItem: {
+    fontSize: 16,
+    paddingVertical: 5,
+    fontFamily: FONT.R_MED_500,
+    color: COLOR.darkGray,
+  },
+
+  // Card
   card: { marginBottom: 10 },
+
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+
   incidentId: {
     fontSize: 13,
     color: '#555',
     marginBottom: 4,
   },
-  title: {
+
+  cardTitle: {
     color: COLOR.blue,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FONT.R_BOLD_700,
     marginBottom: 5,
   },
-  location: { color: '#666', fontSize: 14 },
-  date: { fontSize: 12, color: '#777', marginTop: 2 },
+
+  cardLocation: {
+    color: '#666',
+    fontSize: 14,
+  },
+
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  cardDate: {
+    fontSize: 12,
+    color: '#777',
+    marginTop: 2,
+  },
+
   divider: {
     height: 1,
     backgroundColor: '#eee',
@@ -388,9 +426,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
+
   statusText: {
     color: '#000',
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: FONT.R_BOLD_700,
   },
 });

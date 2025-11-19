@@ -13,19 +13,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
-import DashBoardHeader from '../../../components/header/DashBoardHeader';
-import FormTextInput from '../../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
-import { COLOR } from '../../../themes/Colors';
-import { WIDTH } from '../../../themes/AppConst';
-import ApiManager from '../../../apis/ApiManager';
+import DashBoardHeader from '../../components/header/DashBoardHeader';
+import FormTextInput from '../../components/inputs/FormTextInput';
+import FormMediaPicker from '../../components/inputs/FormMediaPicker';
+import { COLOR } from '../../themes/Colors';
+import { WIDTH } from '../../themes/AppConst';
+import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store/RootReducer';
-import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
-import SuccessScreen from '../../../components/bottomSheets/SuccessScreen';
-import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOptionsSheet';
-import { TEXT } from '../../../i18n/locales/Text';
-import ScreenStateHandler from '../../../components/ScreenStateHandler';
+import { RootState } from '../../store/RootReducer';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
+import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
+import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSheet';
+import { TEXT } from '../../i18n/locales/Text';
+import ScreenStateHandler from '../../components/ScreenStateHandler';
+import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
+import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -38,10 +40,12 @@ interface IncidentDetailsForm {
   dateTime: string;
 }
 
-const IncidentDetails: React.FC = () => {
+const ResIncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
+  const rejectRef = useRef<any>(null);
+  const assignRef = useRef<any>(null);
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
@@ -198,7 +202,7 @@ const IncidentDetails: React.FC = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Image source={require('../../../assets/backArrow.png')} />
+          <Image source={require('../../assets/backArrow.png')} />
         </TouchableOpacity>
         <Text style={styles.title}>Incident Details</Text>
         <View style={styles.backButton} />
@@ -232,6 +236,7 @@ const IncidentDetails: React.FC = () => {
                 control={control}
                 placeholder="Enter address"
                 multiline
+                editable={false}
                 rules={{ required: 'Address is required' }}
                 error={errors.address?.message}
               />
@@ -242,6 +247,7 @@ const IncidentDetails: React.FC = () => {
                 control={control}
                 placeholder="Enter mobile number"
                 keyboardType="phone-pad"
+                editable={false}
                 rules={{
                   required: 'Mobile number is required',
                   pattern: {
@@ -257,6 +263,7 @@ const IncidentDetails: React.FC = () => {
                 name="description"
                 control={control}
                 placeholder="Enter description"
+                editable={false}
                 multiline
                 rules={{ required: 'Description is required' }}
                 error={errors.description?.message}
@@ -301,17 +308,20 @@ const IncidentDetails: React.FC = () => {
                 }}
               >
                 <TouchableOpacity
-                  style={[styles.submitButton]}
-                  onPress={handleSubmit(updateIncedents)}
+                  style={[
+                    styles.submitButton,
+                    { backgroundColor: COLOR.darkGray },
+                  ]}
+                  onPress={() => rejectRef.current.open()}
                 >
-                  <Text style={styles.submitButtonText}>Update</Text>
+                  <Text style={styles.submitButtonText}>Reject</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.submitButton}
-                  onPress={() => successRef.current.open()}
+                  onPress={() => assignRef.current.open()}
                 >
-                  <Text style={styles.submitButtonText}>Send</Text>
+                  <Text style={styles.submitButtonText}>Accept</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -333,7 +343,7 @@ const IncidentDetails: React.FC = () => {
       {/* CANCEL */}
       <SuccessScreen
         ref={cancelRef}
-        icon={require('../../../assets/cancel1.png')}
+        icon={require('../../assets/cancel1.png')}
         description={'Your report has been successfully cancelled.'}
         height={240}
       />
@@ -343,11 +353,14 @@ const IncidentDetails: React.FC = () => {
         ref={acceptRef}
         onClose={() => console.log('Closed')}
       />
+
+      <RejectReasonSheet ref={rejectRef} data={incidentData} />
+      <AssignResponderSheet ref={assignRef} data={incidentData} />
     </SafeAreaView>
   );
 };
 
-export default IncidentDetails;
+export default ResIncidentDetails;
 
 // ===================== STYLES ======================
 const styles = StyleSheet.create({
