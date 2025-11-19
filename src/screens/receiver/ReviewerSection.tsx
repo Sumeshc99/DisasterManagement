@@ -22,7 +22,7 @@ const ReviewerSection = () => {
       ApiManager.getIncidentDta(user?.id, userToken)
         .then(resp => {
           if (resp?.data?.status) {
-            setdata(resp?.data?.data);
+            setdata(resp?.data?.data || '');
             setVisible(true);
           }
         })
@@ -33,23 +33,33 @@ const ReviewerSection = () => {
     getCurrentIncedent();
   }, []);
 
+  const onAcknowledge = async () => {
+    try {
+      const resp = await ApiManager.acceptIncident(
+        data?.incident_id,
+        user?.id,
+        userToken,
+      );
+      setVisible(false);
+    } catch (err) {
+      console.log('acceptIncident error', err?.response);
+    }
+  };
+
+  const viewDetails = () => {
+    setVisible(false);
+    navigation.navigate('incidentDetails', { data: data?.id });
+  };
+
   return (
     data !== '' && (
       <View>
         <AlertModal
           visible={visible}
-          onAcknowledge={() => {
-            setVisible(false);
-            rejectRef.current.open();
-          }}
-          onViewDetails={() => {
-            setVisible(false);
-            navigation.navigate('incidentDetails', { data: data?.id });
-          }}
+          onAcknowledge={() => onAcknowledge()}
+          onViewDetails={() => viewDetails()}
           onClose={() => setVisible(false)}
         />
-
-        <RejectReasonSheet ref={rejectRef} />
       </View>
     )
   );
