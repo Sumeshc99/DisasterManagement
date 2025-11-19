@@ -11,92 +11,125 @@ import { COLOR } from '../../themes/Colors';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
-import { HEIGHT } from '../../themes/AppConst';
 import { TEXT } from '../../i18n/locales/Text';
-
-interface Incident {
-  id: string;
-  title: string;
-  location: string;
-  date: string;
-  time: string;
-  status: 'Pending Review' | 'Rejected' | 'New' | 'Edit';
-}
-
-const formatDateTime = (isoString: string) => {
-  if (!isoString) return '';
-  const date = new Date(isoString);
-
-  const formattedDate = date.toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  });
-
-  const formattedTime = date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
-
-  return `Date: ${formattedDate}   Time: ${formattedTime}`;
-};
+import { useNavigation } from '@react-navigation/native';
+import { WIDTH } from '../../themes/AppConst';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
-    const { userToken } = useSelector((state: RootState) => state.auth);
+    const navigation = useNavigation();
+    const { user, userToken } = useSelector((state: RootState) => state.auth);
 
-    const [incidentList, setIncidentList] = useState<Incident[]>([]);
+    const [myIncident, setMyIncident] = useState([]);
+    const [assignedIncident, setAssignedIncident] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
 
-    useEffect(() => {
-      const fetchIncidentList = async () => {
-        try {
-          const resp = await ApiManager.incidentList(userToken);
-          if (resp?.data?.success) {
-            setIncidentList(resp?.data?.data?.results);
-          }
-        } catch (err) {
-          console.error('Error fetching incident list:', err);
-        }
-      };
+    const [refreshing, setRefreshing] = useState(false);
 
+    // --- Fetch API ---
+    const fetchIncidentList = async () => {
+      try {
+        const resp = await ApiManager.incidentList(userToken);
+        if (resp?.data?.success) {
+          const results = resp?.data?.data?.results || [];
+
+          setMyIncident(results.filter((i: any) => i.user_id === user?.id));
+          setAssignedIncident(
+            results.filter((i: any) => i.user_id !== user?.id),
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching incident list:', err);
+      }
+    };
+
+    // Initial load
+    useEffect(() => {
       fetchIncidentList();
     }, [userToken]);
 
-    const renderStatus = (status: Incident['status']) => {
-      const bgColor =
-        status === 'Pending Review'
-          ? '#EADCA7'
-          : status === 'Rejected'
-          ? '#FF4930'
-          : status === 'New'
-          ? '#A5F3B9'
-          : status === 'Edit'
-          ? '#105AAA'
-          : '#ddd';
+    // --- Pull to refresh ---
+    const onRefresh = async () => {
+      setRefreshing(true);
+      await fetchIncidentList();
+      setRefreshing(false);
+    };
+
+    const formatDateTime = (isoString: string) => {
+      if (!isoString) return '';
+      const date = new Date(isoString);
 
       return (
-        <View style={[styles.statusBadge, { backgroundColor: bgColor }]}>
+        'Date: ' +
+        date.toLocaleDateString('en-GB', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+        }) +
+        '   Time: ' +
+        date.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+      );
+    };
+
+    const renderStatus = (status: string | undefined) => {
+      const statusColors: Record<string, string> = {
+        'Pending Review': '#EADCA7',
+        Rejected: '#FF4930',
+        New: '#A5F3B9',
+      };
+
+      const bg = statusColors[status ?? ''] || '#ddd';
+
+      return (
+        <View style={[styles.statusBadge, { backgroundColor: bg }]}>
           <Text style={styles.statusText}>{status}</Text>
         </View>
       );
     };
 
     const renderItem = ({ item }: any) => (
-      <View style={styles.card}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          (ref as { current: any } | null)?.current?.close();
+          navigation.navigate('incidentDetails', {
+            data: item.id,
+          });
+        }}
+        style={styles.card}
+      >
         <View style={styles.headerRow}>
           <Text style={styles.incidentId}>
             Incident ID - {item.incident_id}
           </Text>
+
           {renderStatus(item.status)}
         </View>
+
         <Text style={styles.title}>{item.incident_type_name}</Text>
         <Text style={styles.location}>{item.address}</Text>
-        <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+
+          {item.status == 'New' && (
+            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
+              <Text style={[styles.statusText, { color: COLOR.white }]}>
+                Edit
+              </Text>
+            </View>
+          )}
+        </View>
+
         <View style={styles.divider} />
-      </View>
+      </TouchableOpacity>
     );
+
+    const listData = isAssignedTab ? assignedIncident : myIncident;
 
     return (
       <RBSheet
@@ -113,10 +146,13 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
           <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
 
-          {/* Tabs */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
-              style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
+              style={[
+                styles.tabButton,
+                !isAssignedTab && styles.tabActive,
+                { width: WIDTH(43) },
+              ]}
               onPress={() => setIsAssignedTab(false)}
             >
               <Text
@@ -127,7 +163,11 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.tabButton, isAssignedTab && styles.tabActive]}
+              style={[
+                styles.tabButton,
+                isAssignedTab && styles.tabActive,
+                { width: WIDTH(49) },
+              ]}
               onPress={() => setIsAssignedTab(true)}
             >
               <Text
@@ -138,22 +178,18 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             </TouchableOpacity>
           </View>
 
-          {/* Incident List */}
-          {isAssignedTab ? (
-            <FlatList
-              data={incidentList}
-              renderItem={renderItem}
-              contentContainerStyle={{ marginTop: 10 }}
-              keyExtractor={(item, index) =>
-                item.id?.toString() || index.toString()
-              }
-              showsVerticalScrollIndicator={false}
-            />
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No incident records found</Text>
-            </View>
-          )}
+          <FlatList
+            data={listData}
+            renderItem={renderItem}
+            keyExtractor={(item: any, index) =>
+              item?.id?.toString() || index.toString()
+            }
+            contentContainerStyle={{ paddingBottom: 30 }}
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1 }}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
         </View>
       </RBSheet>
     );
@@ -176,7 +212,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: WIDTH(4),
+    flex: 1,
   },
   titleHeader: {
     fontSize: 18,
@@ -204,14 +241,12 @@ const styles = StyleSheet.create({
     color: COLOR.blue,
     fontWeight: '600',
     textAlign: 'center',
-    marginHorizontal: 20,
   },
   tabTextActive: {
     color: '#fff',
   },
-  card: {
-    marginBottom: 10,
-  },
+
+  card: { marginBottom: 10 },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -227,20 +262,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 5,
   },
-  location: {
-    color: '#666',
-    fontSize: 14,
-  },
-  date: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 2,
-  },
+  location: { color: '#666', fontSize: 14 },
+  date: { fontSize: 12, color: '#777', marginTop: 2 },
   divider: {
     height: 1,
     backgroundColor: '#eee',
     marginVertical: 10,
   },
+
   statusBadge: {
     borderRadius: 12,
     paddingHorizontal: 10,
@@ -250,16 +279,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 11,
     fontWeight: '600',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: HEIGHT(26),
-  },
-  emptyText: {
-    color: '#999',
-    fontSize: 16,
-    fontWeight: 500,
   },
 });
 

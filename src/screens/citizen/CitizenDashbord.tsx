@@ -148,7 +148,11 @@ const CitizenDashboard = () => {
             )}
           </View>
           <Text style={styles.text}>
-            {showResponders ? <Text style={styles.text}>{TEXT.maps()}</Text> : <Text style={styles.text}>{TEXT.responders()}</Text>}
+            {showResponders ? (
+              <Text style={styles.text}>{TEXT.maps()}</Text>
+            ) : (
+              <Text style={styles.text}>{TEXT.responders()}</Text>
+            )}
           </Text>
         </TouchableOpacity>
 
@@ -159,8 +163,7 @@ const CitizenDashboard = () => {
           <View style={styles.floatingBtn}>
             <Help width={26} height={26} />
           </View>
-                    <Text style={styles.text}>{TEXT.help()}</Text>
-
+          <Text style={styles.text}>{TEXT.help()}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -170,7 +173,7 @@ const CitizenDashboard = () => {
           <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
-           <Text style={styles.text}>{TEXT.weather()}</Text>
+          <Text style={styles.text}>{TEXT.weather()}</Text>
         </TouchableOpacity>
       </View>
 
