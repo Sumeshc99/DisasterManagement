@@ -124,7 +124,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       >
         <View style={styles.headerRow}>
           <Text style={styles.incidentId}>
-            Incident ID - {item.incident_id}
+            {TEXT.incident_id()} - {item.incident_id}
           </Text>
           {renderStatus(item.status)}
         </View>
