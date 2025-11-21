@@ -11,6 +11,7 @@ import { RootState } from '../../store/RootReducer';
 import { useForm } from 'react-hook-form';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface props {
   ref: any;
@@ -98,7 +99,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>Select reason for rejection</Text>
+        <Text style={styles.title}>{TEXT.select_reason_rejection()}</Text>
 
         {/* Radio Buttons */}
         <View style={styles.radioRow}>
@@ -122,7 +123,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
                 selectedReason === 'duplicate' && { color: COLOR.white },
               ]}
             >
-              Duplicate
+              {TEXT.duplicate()}
             </Text>
           </TouchableOpacity>
 
@@ -172,13 +173,13 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         ) : (
           <>
             <Text style={styles.label}>
-              Reason for cancellation{' '}
+              {TEXT.reason_cancellation()}{' '}
               <Text style={{ color: COLOR.red }}>*</Text>
             </Text>
 
             <TextInput
               mode="outlined"
-              placeholder="Provide reason for cancellation"
+              placeholder={TEXT.provide_reason_cancellation()}
               value={details}
               onChangeText={setDetails}
               outlineColor="#D9D9D9"
@@ -196,7 +197,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         style={styles.saveBtn}
         onPress={handleSubmit(incidentUpdateStatus)}
       >
-        <Text style={styles.saveText}>Save</Text>
+        <Text style={styles.saveText}>{TEXT.save()}</Text>
       </TouchableOpacity>
     </RBSheet>
   );

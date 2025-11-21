@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { FONT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface MediaOptionSheetProps {
   onCamera: () => void;
@@ -23,7 +24,7 @@ const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
-          <Text style={styles.optionText}>Please upload the photo</Text>
+          <Text style={styles.optionText}>{TEXT.please_upload_photo()}</Text>
           <TouchableOpacity
             style={styles.closeIconContainer}
             onPress={() => (ref as any)?.current?.close()}
