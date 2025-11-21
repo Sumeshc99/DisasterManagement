@@ -151,9 +151,44 @@ export const TEXT = {
   description: () => t('description', 'Description'),
   incident_details: () => t('incident_details', 'Incident Details'),
 
+  ///////////////////
+
   incident_id: () => t('incident_id', 'Incident Id'),
 
-  address: () => t('address', 'Address'),
+  please_upload_photo: () => t('please_upload_photo', 'Address'),
 
-  address: () => t('address', 'Address'),
+  enter_your_address: () => t('enter_your_address', 'Enter your address'),
+  other_incident_records: () => t('other_incident_records', 'Address'),
+
+  assign_responders: () =>
+    t('assign_responders', 'Assign responders to the incident report'),
+
+  reach_nearby_services: () =>
+    t(
+      'reach_nearby_services',
+      'Please reach out to nearby services for help till we notify our Responders.',
+    ),
+
+  duplicate: () => t('duplicate', 'Duplicate'),
+
+  reason_cancellation: () =>
+    t('reason_cancellation', 'Reason for cancellation'),
+
+  provide_reason_cancellation: () =>
+    t('provide_reason_cancellation', 'Provide reason for cancellation'),
+
+  select_reason_rejection: () =>
+    t('select_reason_rejection', 'Select reason for rejection'),
+
+  country_required: () => t('country_required', 'country_required'),
+
+  // address: () => t('address', 'address_required'),
+
+  // address: () => t('address', 'Address'),
+
+  // address: () => t('address', 'Address'),
+
+  // address: () => t('address', 'Address'),
+
+  // address: () => t('address', 'Address'),
 };
