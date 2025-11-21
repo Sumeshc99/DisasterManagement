@@ -7,6 +7,7 @@ import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import IncidentRecordsSheet2 from '../bottomSheets/IncidentRecordsSheet2';
+import IncidentRecordsSheet3 from '../bottomSheets/IncidentRecordsSheet3';
 
 interface props {
   drawer: boolean;
@@ -72,8 +73,10 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
 
       {user?.role === 'citizen' ? (
         <IncidentRecordsSheet ref={sheetRef} />
-      ) : (
+      ) : user?.role == 'reviewer' ? (
         <IncidentRecordsSheet2 ref={sheetRef} />
+      ) : (
+        <IncidentRecordsSheet3 ref={sheetRef} />
       )}
     </View>
   );

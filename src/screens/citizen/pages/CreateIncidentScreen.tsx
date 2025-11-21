@@ -86,7 +86,7 @@ const CreateIncidentScreen: React.FC = () => {
           setIncidentTypes(
             (resp?.data?.data?.incident_types || []).map((item: any) => ({
               label: item.name,
-              value: item.name,
+              value: item.id,
             })),
           );
         }
@@ -127,6 +127,7 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('city_id', allAddress?.city || '');
       formData.append('district_id', allAddress?.district_id || '');
       formData.append('city_code', allAddress?.pincode || '');
+      // formData.append('other_incident_type', data?.customIncidentType || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file: any, index) => {
@@ -152,6 +153,7 @@ const CreateIncidentScreen: React.FC = () => {
         );
       }
     } catch (error: any) {
+      console.log('xzzzz', error.response);
       Alert.alert('Error', 'Something went wrong while creating the incident.');
     } finally {
       hideLoader();
@@ -192,7 +194,7 @@ const CreateIncidentScreen: React.FC = () => {
         />
 
         {/* Custom Other Type */}
-        {selectedType === 'Others' && (
+        {selectedType == '43' && (
           <FormTextInput2
             label="Specify Other Type"
             name="customIncidentType"

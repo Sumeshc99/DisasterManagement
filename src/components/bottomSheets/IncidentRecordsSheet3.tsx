@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
 import Filter from '../../assets/filter.svg';
 
-const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
+const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
     const navigation = useNavigation();
 
@@ -50,7 +50,8 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
     const getAssignedIncident = async () => {
       try {
-        const resp = await ApiManager.assignedIncident(user?.id, userToken);
+        const resp = await ApiManager.assignedToResponder(user?.id, userToken);
+        console.log('qwqw', resp?.data?.data);
 
         if (resp?.data?.status) {
           const results = resp?.data?.data || [];
@@ -169,7 +170,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
           <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
 
-          {/* ------------------- TABS ----------------------- */}
+          {/* ------------------- TABS -------------------- */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
@@ -259,7 +260,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   },
 );
 
-export default IncidentRecordsSheet2;
+export default IncidentRecordsSheet3;
 
 const styles = StyleSheet.create({
   sheetContainer: {

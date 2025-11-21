@@ -81,6 +81,7 @@ const requestPath = {
   acceptIncident: 'mobileapis/assignedIncidentAccept',
   getIncidentIds: 'mobileapis/getIncidentIds',
   assignResponders: 'mobileapis/assignedIncidentResponder',
+  assignedToResponder: 'mobileapis/getResponderAssignedIncident',
 };
 
 const ApiManager = {
@@ -110,6 +111,8 @@ const ApiManager = {
     requests.get(`${requestPath.acceptIncident}/${id}/${userId}`, token),
   getIncidentIds: (token: string) =>
     requests.get(`${requestPath.getIncidentIds}`, token),
+  assignedToResponder: (id: any, token: string) =>
+    requests.get(`${requestPath.assignedToResponder}/${id}`, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>

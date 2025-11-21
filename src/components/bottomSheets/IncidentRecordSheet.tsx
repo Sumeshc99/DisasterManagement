@@ -44,12 +44,10 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    // Initial load
     useEffect(() => {
       fetchIncidentList();
     }, [userToken]);
 
-    // --- Pull to refresh ---
     const onRefresh = async () => {
       setRefreshing(true);
       await fetchIncidentList();
@@ -103,7 +101,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         }}
         style={styles.card}
       >
-        <View style={styles.headerRow}>
+        <View style={styles.headerRow1}>
           <Text style={styles.incidentId}>
             {TEXT.incident_id()} - {item.incident_id}
           </Text>
@@ -150,7 +148,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
             <TouchableOpacity
               style={styles.closeBtn}
-              onPress={() => ref.current.close()}
+              onPress={() => (ref as { current: any })?.current?.close()}
             >
               <Image
                 source={require('../../assets/cancel.png')}
@@ -200,7 +198,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             }
             contentContainerStyle={{ paddingBottom: 30 }}
             showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
+            style={{ flex: 1, marginTop: 10 }}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />
@@ -276,10 +274,14 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 10,
   },
+  headerRow1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 
   closeBtn: {
     position: 'absolute',
-    right: 0, // moves cancel button to right end
+    right: 0,
     padding: 5,
   },
   title: {
