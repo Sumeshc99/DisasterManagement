@@ -26,6 +26,7 @@ const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(
     const [openDropdown, setOpenDropdown] = useState(false);
     const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
 
+    // fetch responder types
     useEffect(() => {
       const getIncidentType = async () => {
         try {
@@ -46,6 +47,7 @@ const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(
       getIncidentType();
     }, []);
 
+    // assign API call
     const assignResponders = async () => {
       const ids = selectedResponders.map(item => item.value).join(',');
 
@@ -102,7 +104,6 @@ const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(
               <Text style={styles.dropdownIcon}>▼</Text>
             </TouchableOpacity>
 
-            {/* Scrollable list */}
             {openDropdown && (
               <View style={styles.dropdownListWrapper}>
                 <ScrollView style={styles.dropdownList}>
@@ -159,7 +160,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // Dropdown
   dropdown: {
     borderWidth: 1,
     borderColor: '#ccc',

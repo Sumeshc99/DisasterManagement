@@ -176,10 +176,22 @@ const IncidentDetails: React.FC = () => {
         if (resp.data.status) {
           successRef.current.close();
           acceptRef.current.open();
+          assignToReviewer();
         }
       })
       .catch(err => console.log('err', err.response))
       .finally(() => hideLoader());
+  };
+
+  const assignToReviewer = () => {
+    ApiManager.assignToReviewer(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp.data.status) {
+          console.log('Assigned to reviewer successfully');
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => {});
   };
 
   const onSuccessNo = () => {

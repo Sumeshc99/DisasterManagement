@@ -188,5 +188,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingHorizontal: 4,
   },
-  inputError: { borderColor: 'red' },
 });

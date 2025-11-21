@@ -214,7 +214,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   style={{
                     color: COLOR.textGrey,
                     fontSize: 16,
-                    fontStyle: FONT.R_SBD_600,
+                    fontFamily: FONT.R_SBD_600,
                   }}
                 >
                   No incident recorded by you

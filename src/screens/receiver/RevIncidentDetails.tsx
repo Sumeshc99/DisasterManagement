@@ -26,8 +26,7 @@ import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
-import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
-import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
+import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -300,7 +299,7 @@ const RevIncidentDetails: React.FC = () => {
               </View>
 
               {/* BUTTONS */}
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
@@ -319,9 +318,27 @@ const RevIncidentDetails: React.FC = () => {
 
                 <TouchableOpacity
                   style={styles.submitButton}
-                  onPress={() => assignRef.current.open()}
+                  onPress={() => ''}
                 >
                   <Text style={styles.submitButtonText}>Accept</Text>
+                </TouchableOpacity>
+              </View> */}
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  gap: 20,
+                }}
+              >
+                <TouchableOpacity
+                  style={[
+                    styles.submitButton,
+                    { backgroundColor: COLOR.darkGray },
+                  ]}
+                  onPress={() => ''}
+                >
+                  <Text style={styles.submitButtonText}>Completed</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -354,8 +371,7 @@ const RevIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} />
+      <RejectReasonSheet1 ref={rejectRef} data={incidentData} />
     </SafeAreaView>
   );
 };
