@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { Checkbox } from 'react-native-paper';
 import { COLOR } from '../../themes/Colors'; // your color constants
+import { FONT } from '../../themes/AppConst';
 
 const AssignResponderSheet = forwardRef((props, ref) => {
   const [ambulance, setAmbulance] = useState(false);
@@ -87,8 +88,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
-    color: COLOR.black,
+    fontFamily: FONT.R_MED_500,
+    color: COLOR.textGrey,
     marginBottom: 8,
   },
   checkboxContainer: {

@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
   },
   previewScroll: {
     marginTop: 4,
+    paddingLeft: 10,
   },
   thumbnailWrapper: { position: 'relative', marginRight: 10 },
   previewImage: { width: 90, height: 90, borderRadius: 6 },
