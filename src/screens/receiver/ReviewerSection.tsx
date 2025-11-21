@@ -13,7 +13,6 @@ const ReviewerSection = () => {
 
   const rejectRef = useRef<any>(null);
   const { user, userToken } = useSelector((state: RootState) => state.auth);
-
   const [visible, setVisible] = useState(false);
   const [data, setdata] = useState<any>('');
 

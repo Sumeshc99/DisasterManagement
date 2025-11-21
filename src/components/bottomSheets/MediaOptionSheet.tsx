@@ -9,7 +9,7 @@ interface MediaOptionSheetProps {
   onGallery: () => void;
 }
 
-const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
+const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
   ({ onCamera, onGallery }, ref) => {
     return (
       <RBSheet

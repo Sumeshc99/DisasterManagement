@@ -114,7 +114,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         onPress={() => {
           (ref as { current: any } | null)?.current?.close();
           navigation.navigate(
-            !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
+            !isAssignedTab ? 'incidentDetails' : 'revIncidentDetails',
             {
               data: item.id,
             },
