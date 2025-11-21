@@ -165,7 +165,7 @@ const IncidentAddressSheet = forwardRef<
                 control={control}
                 editable={false}
                 placeholder={TEXT.country_region()}
-                rules={{ required: 'Country is required' }}
+                rules={{ required: TEXT.country_required() }}
                 error={errors.country?.message}
               />
 
