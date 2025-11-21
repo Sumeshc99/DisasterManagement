@@ -196,7 +196,7 @@ const IncidentDetails: React.FC = () => {
       {/* HEADER */}
       <View style={styles.titleBar}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('mainAppSelector')}
           style={styles.backButton}
         >
           <BackArrow />

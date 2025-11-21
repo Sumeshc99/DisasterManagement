@@ -74,6 +74,7 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
               textAlignVertical={multiline ? 'top' : 'center'}
               textAlign={I18nManager.isRTL ? 'right' : 'left'}
               editable={editable}
+              // selection={value ? { start: 0 } : undefined}
               {...textInputProps}
             />
           </View>

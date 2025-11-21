@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
-import { WIDTH } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -203,6 +203,26 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             style={{ flex: 1 }}
             refreshing={refreshing}
             onRefresh={onRefresh}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 50,
+                }}
+              >
+                <Text
+                  style={{
+                    color: COLOR.textGrey,
+                    fontSize: 16,
+                    fontStyle: FONT.R_SBD_600,
+                  }}
+                >
+                  No incident recorded by you
+                </Text>
+              </View>
+            }
           />
         </View>
       </RBSheet>

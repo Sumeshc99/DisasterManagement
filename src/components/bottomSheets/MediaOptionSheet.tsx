@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 20,
-    color: COLOR.black,
+    color: COLOR.textGrey,
     fontFamily: FONT.R_BOLD_700,
   },
   closeIconContainer: {

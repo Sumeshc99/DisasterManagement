@@ -13,15 +13,14 @@ import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 
-interface props {
-  ref: any;
+interface AssignProps {
   data: any;
 }
 
-const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
+const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(({ data }, ref) => {
+  const { userToken } = useSelector((state: RootState) => state.auth);
 
-  const [resourses, setresourses] = useState([]);
+  const [resources, setResources] = useState<any[]>([]);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
 
@@ -29,9 +28,8 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
     const getIncidentType = async () => {
       try {
         const resp = await ApiManager.incidentType(userToken);
-
         if (resp?.data?.success) {
-          setresourses(
+          setResources(
             (resp?.data?.data?.resource_types || []).map((item: any) => ({
               label: item.name,
               value: item.id,
@@ -50,7 +48,7 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
     const ids = selectedResponders.map(item => item.value).join(',');
 
     const body = {
-      incident_id: data?.data?.id,
+      incident_id: data?.id,
       responder_type_id: ids,
     };
 
@@ -60,7 +58,7 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
         (ref as any)?.current?.close();
       }
     } catch (err: any) {
-      console.log('Incident Error:', err.response || err);
+      console.log('Assign Error:', err.response || err);
     }
   };
 
@@ -90,7 +88,7 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
           Assign responders to the incident report
         </Text>
 
-        {/* Multi Select Dropdown */}
+        {/* Dropdown */}
         <View>
           <TouchableOpacity
             style={styles.dropdown}
@@ -101,15 +99,14 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
                 ? selectedResponders.map(i => i.label).join(', ')
                 : 'Select'}
             </Text>
-
             <Text style={styles.dropdownIcon}>▼</Text>
           </TouchableOpacity>
 
-          {/* Scrollable Checkbox List */}
+          {/* Scrollable list */}
           {openDropdown && (
             <View style={styles.dropdownListWrapper}>
               <ScrollView style={styles.dropdownList}>
-                {resourses.map((item: any) => (
+                {resources.map(item => (
                   <TouchableOpacity
                     key={item.value}
                     style={styles.checkboxRow}
@@ -128,6 +125,8 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
           )}
         </View>
       </View>
+
+      {/* Save Button */}
       <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
         <Text style={styles.saveText}>Save</Text>
       </TouchableOpacity>
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // Dropdown button
+  // Dropdown
   dropdown: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -179,7 +178,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 
-  // Scrollable dropdown
   dropdownListWrapper: {
     maxHeight: 150,
     width: WIDTH(90),
@@ -190,12 +188,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'absolute',
     top: 46,
+    backgroundColor: '#fff',
   },
   dropdownList: {
     backgroundColor: '#f9f9f9',
   },
 
-  // Checkbox rows
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -223,7 +221,6 @@ const styles = StyleSheet.create({
     color: COLOR.black,
   },
 
-  // Save button
   saveBtn: {
     marginTop: 25,
     backgroundColor: COLOR.blue,
