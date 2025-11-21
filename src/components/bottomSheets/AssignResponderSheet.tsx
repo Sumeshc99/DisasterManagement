@@ -17,7 +17,7 @@ interface AssignProps {
   data: any;
 }
 
-const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(({ data }, ref) => {
+const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const [resources, setResources] = useState<any[]>([]);
@@ -74,7 +74,7 @@ const AssignResponderSheet = forwardRef<RBSheet, AssignProps>(({ data }, ref) =>
     <RBSheet
       ref={ref}
       height={380}
-      closeOnDragDown={true}
+      // closeOnDragDown={true}
       customStyles={{
         wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
         draggableIcon: { backgroundColor: '#ccc' },
