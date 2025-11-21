@@ -187,7 +187,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                 style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
               >
                 {/* {TEXT.assigned_incident_records()} */}
-                All Incident Records
+                Other Incident Records
               </Text>
             </TouchableOpacity>
           </View>
