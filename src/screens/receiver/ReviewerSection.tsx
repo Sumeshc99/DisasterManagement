@@ -39,7 +39,12 @@ const ReviewerSection = () => {
         user?.id,
         userToken,
       );
-      setVisible(false);
+
+      if (resp?.data?.status) {
+        setVisible(false);
+      } else {
+        console.log('error', resp.data);
+      }
     } catch (err) {
       console.log('acceptIncident error', err?.response);
     }

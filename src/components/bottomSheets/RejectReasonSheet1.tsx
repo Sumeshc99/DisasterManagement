@@ -17,7 +17,7 @@ interface props {
   data: any;
 }
 
-const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
+const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -125,7 +125,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[
               styles.radioBtn,
               selectedReason === 'cancel' && styles.radioBtnActiveBlue,
@@ -147,7 +147,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
             >
               Cancel
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Dynamic Input Based on Condition */}
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   radioBtn: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLOR.gray,
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    width: '48%',
   },
   radioBtnActiveBlue: {
     backgroundColor: COLOR.blue,
@@ -274,4 +275,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RejectReasonSheet;
+export default RejectReasonSheet1;
