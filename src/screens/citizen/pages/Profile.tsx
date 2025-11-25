@@ -134,8 +134,8 @@ const Profile: React.FC = () => {
         .then(resp => {
           if (resp?.data?.success) {
             settahsilList(
-              (resp?.data?.data?.tehsils || []).map((item: any) => ({
-                label: item.Tehsil,
+              (resp?.data?.data?.blocks || []).map((item: any) => ({
+                label: item.Block,
                 value: item.id,
               })),
             );
