@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   onUpdatePress: () => void;
@@ -37,7 +38,7 @@ const PasswordChanged = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             style={styles.avatar}
           />
 
-          <Text style={styles.reminderText}>Profile saved successfully</Text>
+          <Text style={styles.reminderText}>{TEXT.profile_saved()}</Text>
 
           {/* <TouchableOpacity
           style={styles.updateButton}

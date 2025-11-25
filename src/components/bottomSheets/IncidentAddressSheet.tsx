@@ -174,7 +174,7 @@ const IncidentAddressSheet = forwardRef<
                 name="flat"
                 control={control}
                 placeholder={TEXT.flat_house()}
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.flat?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -188,11 +188,11 @@ const IncidentAddressSheet = forwardRef<
               />
               <View style={{ marginTop: -6 }} />
               <FormTextInput2
-                label="Nearby landmark (If applicable)"
+                label={TEXT.nearby_landmark()}
                 name="landmark"
                 control={control}
                 placeholder={TEXT.nearby_landmark()}
-                rules={{ required: 'landmark is required' }}
+                rules={{ required: TEXT.nearby_landmark() }}
                 error={errors.landmark?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -201,7 +201,7 @@ const IncidentAddressSheet = forwardRef<
                 name="city"
                 control={control}
                 placeholder={TEXT.city()}
-                rules={{ required: 'City is required' }}
+                rules={{ required: TEXT.city_required() }}
                 error={errors.city?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -210,7 +210,7 @@ const IncidentAddressSheet = forwardRef<
                 name="division"
                 control={control}
                 placeholder={TEXT.district()}
-                rules={{ required: 'District is required' }}
+                rules={{ required: TEXT.district_required() }}
                 error={errors.division?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -255,9 +255,7 @@ const IncidentAddressSheet = forwardRef<
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>
-                  Show your specific location
-                </Text>
+                <Text style={styles.switchLabel}>{TEXT.show_location()}</Text>
                 <Switch
                   value={showLocation}
                   onValueChange={setShowLocation}

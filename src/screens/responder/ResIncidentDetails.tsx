@@ -231,7 +231,7 @@ const ResIncidentDetails: React.FC = () => {
               </View>
 
               <FormTextInput
-                label="Address"
+                label={TEXT.address()}
                 name="address"
                 control={control}
                 placeholder="Enter address"

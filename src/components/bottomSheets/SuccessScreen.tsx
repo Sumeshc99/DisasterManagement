@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { FONT, WIDTH } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   icon?: any;
@@ -19,7 +20,7 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
   (
     {
       icon = require('../../assets/success.png'),
-      description = 'Your PIN has been reset successfully.',
+      description = TEXT.pin_reset_success(),
       height,
       yesLabel = 'Yes',
       noLabel = 'No',

@@ -180,15 +180,40 @@ export const TEXT = {
   select_reason_rejection: () =>
     t('select_reason_rejection', 'Select reason for rejection'),
 
-  country_required: () => t('country_required', 'country_required'),
+  country_required: () => t('country_required', 'Country is required'),
 
-  // address: () => t('address', 'address_required'),
+  address_required: () => t('address_required', 'Address is required'),
 
-  // address: () => t('address', 'Address'),
+  city_required: () => t('city_required', 'City is required'),
 
-  // address: () => t('address', 'Address'),
+  district_required: () => t('district_required', 'District is required'),
 
-  // address: () => t('address', 'Address'),
+  profile_draft: () =>
+    t('profile_draft', 'Profile saved as draft successfully'),
 
-  // address: () => t('address', 'Address'),
+  profile_saved: () => t('profile_saved', 'Profile saved successfully'),
+
+  current_pin: () => t('current_pin', 'Current PIN'),
+
+  pin_reset_success: () =>
+    t('pin_reset_success', 'Your PIN has been reset successfully'),
+
+  ambulance_service: () => t('ambulance_service', 'Ambulence service'),
+
+  disaster_helpline_numbers: () =>
+    t('disaster_helpline_numbers', 'Disaster Helpline Numbers'),
+
+  pin_verified: () => t('pin_verified', 'PIN Verified'),
+
+  women_helpline: () => t('women_helpline', 'Women Helpline'),
+
+  std_code: () => t('std_code', 'STD Code'),
+  important_numbers: () => t('important_numbers', 'Important Numbers'),
+  police: () => t('police', 'Police'),
+  fire_service: () => t('fire_service', 'Fire Service'),
+  child_helpline: () => t('child_helpline', 'Child Helpline'),
+  sdrf_center: () => t('sdrf_center', 'SDRF Center'),
+  police_stations: () => t('police_stations', 'Police Station'),
+  hospital: () => t('hospital', 'Hospital'),
+  boat: () => t('boat', 'Boat'),
 };

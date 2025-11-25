@@ -185,10 +185,10 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Incident Type */}
         <DropDownInput
-          label="Incident Type"
+          label={TEXT.incident_type()}
           name="incidentType"
           control={control}
-          placeholder="Select Incident Type"
+          placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
           errors={errors}
         />
@@ -208,7 +208,7 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Address */}
         <View style={{ marginBottom: 14 }}>
           <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
-            Address <Text style={{ color: 'red' }}>*</Text>
+            {TEXT.address()} <Text style={{ color: 'red' }}>*</Text>
           </Text>
 
           <TouchableOpacity
@@ -296,7 +296,7 @@ const CreateIncidentScreen: React.FC = () => {
           style={styles.createButton}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.createButtonText}>Create</Text>
+          <Text style={styles.createButtonText}>{TEXT.create()}</Text>
         </TouchableOpacity>
       </ScrollView>
 

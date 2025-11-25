@@ -21,6 +21,7 @@ import Pass from '../assets/svg/pass.svg';
 import Logout from '../assets/svg/logout.svg';
 import { clearUserDraft } from '../store/slices/draftSlice';
 import { TEXT } from '../i18n/locales/Text';
+import { UseSelector } from 'react-redux';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.75;
@@ -109,14 +110,19 @@ const RightDrawer: React.FC<RightDrawerProps> = ({
         </TouchableOpacity>
 
         {/* Profile message */}
-        <Text style={styles.infoText}>
-          {TEXT.profile_incomplete()}
-        </Text>
+        <Text style={styles.infoText}>{TEXT.profile_incomplete()}</Text>
 
         <View style={styles.divider} />
 
         {/* Change PIN */}
-        <TouchableOpacity style={styles.menuItem} onPress={() => changePass()}>
+        <TouchableOpacity
+          style={[
+            styles.menuItem,
+            user?.is_registered === 0 && { opacity: 0.4 },
+          ]}
+          onPress={() => changePass()}
+          disabled={user?.is_registered === 0}
+        >
           <Pass />
           <Text style={styles.menuText}>{TEXT.change_pin()}</Text>
         </TouchableOpacity>
