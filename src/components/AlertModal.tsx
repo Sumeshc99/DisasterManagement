@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Modal,
   View,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import Sound from 'react-native-sound';
 
 interface AlertModalProps {
   visible: boolean;
@@ -25,6 +26,23 @@ const AlertModal: React.FC<AlertModalProps> = ({
   onViewDetails,
   onClose,
 }) => {
+  // useEffect(() => {
+  //   if (visible) {
+  //     const alertSound = new Sound(
+  //       require('../assets/alertSound.mp3'),
+  //       error => {
+  //         if (error) {
+  //           console.log('Failed to load sound', error);
+  //           return;
+  //         }
+  //         alertSound.play(() => {
+  //           alertSound.release();
+  //         });
+  //       },
+  //     );
+  //   }
+  // }, [visible]);
+
   return (
     <Modal
       visible={visible}

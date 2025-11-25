@@ -56,16 +56,16 @@ const ReviewerSection = () => {
   };
 
   return (
-    data !== '' && (
-      <View>
-        <AlertModal
-          visible={visible}
-          onAcknowledge={() => onAcknowledge()}
-          onViewDetails={() => viewDetails()}
-          onClose={() => setVisible(false)}
-        />
-      </View>
-    )
+    // data !== '' && (
+    <View>
+      <AlertModal
+        visible={visible}
+        onAcknowledge={() => onAcknowledge()}
+        onViewDetails={() => viewDetails()}
+        onClose={() => setVisible(false)}
+      />
+    </View>
+    // )
   );
 };
 
