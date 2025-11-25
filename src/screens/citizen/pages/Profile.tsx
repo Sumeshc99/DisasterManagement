@@ -345,7 +345,7 @@ const Profile: React.FC = () => {
 
       <UpdateConfirmation
         ref={draftRef}
-        message={'Profile saved a draft successfully'}
+        message={TEXT.profile_draft()}
         onUpdatePress={() => draftRef.current?.close()}
       />
     </SafeAreaView>

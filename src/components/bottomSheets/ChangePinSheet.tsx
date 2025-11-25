@@ -7,6 +7,7 @@ import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   onUpdatePress: () => void;
@@ -85,11 +86,11 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Change PIN</Text>
+            <Text style={styles.title}>{TEXT.change_pin()}</Text>
 
             <View style={{ gap: 10, marginTop: 30, marginBottom: 10 }}>
               <View>
-                <Text style={styles.txt}>Current PIN</Text>
+                <Text style={styles.txt}>{TEXT.current_pin()}</Text>
                 <OTPInput
                   onChangeOTP={value => {
                     setCurrentPin(value);
@@ -99,7 +100,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               </View>
 
               <View>
-                <Text style={styles.txt}>New PIN</Text>
+                <Text style={styles.txt}>{TEXT.new_pin()}</Text>
                 <OTPInput
                   onChangeOTP={value => {
                     setNewPin(value);
@@ -109,7 +110,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               </View>
 
               <View>
-                <Text style={styles.txt}>Confirm PIN</Text>
+                <Text style={styles.txt}>{TEXT.confirm_pin()}</Text>
                 <OTPInput
                   onChangeOTP={value => {
                     setConfirmPin(value);

@@ -70,11 +70,11 @@ const RespondersList: React.FC<props> = ({ responders }) => {
       >
         <Text style={styles.pageTitle}>{TEXT.on_duty_responders()}</Text>
 
-        {renderSection('Ambulance Service', categorized.Ambulance)}
-        {renderSection('Hospital', categorized.Hospital)}
-        {renderSection('Police Stations', categorized['Police Station'])}
-        {renderSection('SDRF Center', categorized['SDRF Center'])}
-        {renderSection('Boat', categorized['Boat'])}
+        {renderSection(TEXT.ambulance_service(), categorized.Ambulance)}
+        {renderSection(TEXT.hospital(), categorized.Hospital)}
+        {renderSection(TEXT.police_stations(), categorized['Police Station'])}
+        {renderSection(TEXT.sdrf_center(), categorized['SDRF Center'])}
+        {renderSection(TEXT.boat(), categorized['Boat'])}
       </ScrollView>
     </View>
   );

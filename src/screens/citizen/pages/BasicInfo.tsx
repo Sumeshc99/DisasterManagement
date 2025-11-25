@@ -82,7 +82,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         control={control}
         editable={false}
         placeholder="Enter district"
-        rules={{ required: 'District is required' }}
+        rules={{ required: TEXT.district_required() }}
         error={errors.district?.message}
       />
 
@@ -91,7 +91,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="city"
         control={control}
         placeholder="Enter city"
-        rules={{ required: 'City is required' }}
+        rules={{ required: TEXT.city_required() }}
         error={errors.city?.message}
       />
 
@@ -132,7 +132,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       />
 
       <FormTextInput
-        label="Address"
+        label={TEXT.address()}
         name="address"
         control={control}
         placeholder="Enter address"
@@ -150,7 +150,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
 
       <DateInput
         name="dateOfBirth"
-        label="Date of Birth"
+        label={TEXT.date_of_birth()}
         control={control}
         rules={{ required: 'Date of birth is required' }}
         errors={errors}
@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   submitButton: {
-    backgroundColor: COLOR.white,
     borderWidth: 1,
     borderColor: COLOR.blue,
     paddingVertical: 12,
@@ -197,11 +196,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 16,
     width: 140,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
   },
   submitButtonText: {
     color: COLOR.blue,
     fontSize: 16,
     fontWeight: '700',
+    alignContent: 'center',
   },
 });
 
