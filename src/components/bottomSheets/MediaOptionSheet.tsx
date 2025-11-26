@@ -41,13 +41,35 @@ const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
               gap: 40,
             }}
           >
-            <TouchableOpacity style={styles.optionButton} onPress={onCamera}>
-              <Image source={require('../../assets/camera.png')} />
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                gap: 30,
+              }}
+            >
+              {/* Camera */}
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={onCamera}
+                >
+                  <Image source={require('../../assets/camera.png')} />
+                </TouchableOpacity>
+                <Text style={styles.optionLabel}>Take a photo</Text>
+              </View>
 
-            <TouchableOpacity style={styles.optionButton} onPress={onGallery}>
-              <Image source={require('../../assets/galary.png')} />
-            </TouchableOpacity>
+              {/* Gallery */}
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={onGallery}
+                >
+                  <Image source={require('../../assets/galary.png')} />
+                </TouchableOpacity>
+                <Text style={styles.optionLabel}>Select from device</Text>
+              </View>
+            </View>
           </View>
         </View>
       </RBSheet>
@@ -101,5 +123,11 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 30,
     height: 30,
+  },
+  optionLabel: {
+    marginTop: 8,
+    fontSize: 16,
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_REG_400,
   },
 });

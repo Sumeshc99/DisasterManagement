@@ -129,7 +129,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
 
       <View style={styles.searchBox}>
         <TextInput
-          placeholder={TEXT.enter_address()}
+          placeholder={TEXT.enter_your_address()}
           value={location.address}
           onChangeText={text => {
             onChangeLocation({ ...location, address: text });

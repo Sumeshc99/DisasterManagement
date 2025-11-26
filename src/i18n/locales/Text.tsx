@@ -155,7 +155,8 @@ export const TEXT = {
 
   incident_id: () => t('incident_id', 'Incident Id'),
 
-  please_upload_photo: () => t('please_upload_photo', 'Address'),
+  please_upload_photo: () =>
+    t('please_upload_photo', 'Please Upload The Photo'),
 
   enter_your_address: () => t('enter_your_address', 'Enter your address'),
   other_incident_records: () => t('other_incident_records', 'Address'),

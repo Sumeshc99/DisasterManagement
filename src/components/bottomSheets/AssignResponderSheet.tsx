@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -95,7 +96,21 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>{TEXT.assign_responders()}</Text>
+        <View style={styles.headerRow}>
+          <View style={{ paddingHorizontal: 40 }}>
+            <Text style={styles.title}>{TEXT.assign_responders()}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => (ref as any)?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={styles.closeIcon}
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Dropdown */}
         <View>
@@ -161,9 +176,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLOR.blue,
     textAlign: 'center',
-    marginBottom: 20,
-    width: WIDTH(60),
-    alignSelf: 'center',
   },
 
   dropdown: {
@@ -175,6 +187,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
   },
   dropdownText: {
     fontSize: 16,
@@ -242,6 +255,23 @@ const styles = StyleSheet.create({
     color: COLOR.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  closeIconContainer: {
+    // position: 'absolute',
+    //top: 20,
+    right: 20,
+    borderRadius: 20,
+  },
+  closeIcon: {
+    width: 35,
+    height: 35,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10, // gives top + bottom space
+    position: 'relative',
   },
 });
 
