@@ -90,43 +90,49 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       );
     };
 
-    const renderItem = ({ item }: any) => (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          (ref as { current: any } | null)?.current?.close();
-          navigation.navigate('incidentDetails', {
-            data: item.id,
-          });
-        }}
-        style={styles.card}
-      >
-        <View style={styles.headerRow1}>
-          <Text style={styles.incidentId}>
-            {TEXT.incident_id()} - {item.incident_id}
-          </Text>
+    const renderItem = ({ item }: any) => {
+      return (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            (ref as { current: any } | null)?.current?.close();
+            navigation.navigate('incidentDetails', {
+              data: item.id,
+            });
+          }}
+          style={styles.card}
+        >
+          <View style={styles.headerRow1}>
+            <Text style={styles.incidentId}>
+              {TEXT.incident_id()} - {item.incident_id}
+            </Text>
 
-          {renderStatus(item.status)}
-        </View>
+            {renderStatus(item.status)}
+          </View>
 
-        <Text style={styles.title}>{item.incident_type_name}</Text>
-        <Text style={styles.location}>{item.address}</Text>
+          <Text style={styles.title}>{item.incident_type_name}</Text>
+          <Text style={styles.location}>{item.address}</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-          {item.status == 'New' && (
-            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
-              <Text style={[styles.statusText, { color: COLOR.white }]}>
-                Edit
-              </Text>
-            </View>
-          )}
-        </View>
+            {item.status == 'New' && (
+              <View
+                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+              >
+                <Text style={[styles.statusText, { color: COLOR.white }]}>
+                  Edit
+                </Text>
+              </View>
+            )}
+          </View>
 
-        <View style={styles.divider} />
-      </TouchableOpacity>
-    );
+          <View style={styles.divider} />
+        </TouchableOpacity>
+      );
+    };
 
     const listData = isAssignedTab ? assignedIncident : myIncident;
 

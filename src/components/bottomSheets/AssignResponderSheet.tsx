@@ -13,12 +13,14 @@ import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface AssignProps {
   data: any;
 }
 
 const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
+  const navigation = useNavigation();
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const [resources, setResources] = useState<any[]>([]);
@@ -59,6 +61,12 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
       const resp = await ApiManager.assignResponders(body, userToken);
       if (resp?.data?.status) {
         (ref as any)?.current?.close();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'mainAppSelector' }],
+          }),
+        );
       }
     } catch (err: any) {
       console.log('Assign Error:', err.response || err);

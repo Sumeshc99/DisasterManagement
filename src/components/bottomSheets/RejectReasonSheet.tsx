@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { TEXT } from '../../i18n/locales/Text';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface props {
   ref: any;
@@ -19,6 +20,7 @@ interface props {
 }
 
 const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
+  const navigation = useNavigation();
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -76,6 +78,12 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         if (resp.data.status) {
           snackbar(resp?.data?.message, 'success');
           ref?.current?.close();
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'mainAppSelector' }],
+            }),
+          );
         }
       })
       .catch(err => console.log('err', err.response))
