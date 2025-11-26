@@ -41,6 +41,38 @@ interface IncidentDetailsForm {
   dateTime: string;
 }
 
+const ReviewerTable = ({ title, data }: any) => {
+  return (
+    <View style={{ marginTop: 20 }}>
+      <Text style={styles.reviewTitle}>{title}</Text>
+
+      <View style={styles.tableContainer}>
+        {/* Header */}
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          {title === 'Responder' && (
+            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+          )}
+          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+        </View>
+
+        {/* Rows */}
+        {data.map((item: any, index: number) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
+            {title === 'Responder' && (
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.type}</Text>
+            )}
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 const ResIncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -83,32 +115,32 @@ const ResIncidentDetails: React.FC = () => {
 
   // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
-    const getIncidentDetails = () => {
-      setLoading(true);
-      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const inc = resp?.data?.data;
-            setIncidentData(inc);
-
-            reset({
-              incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
-              address: inc?.address,
-              mobileNumber: inc?.mobile_number,
-              description: inc?.description,
-              media: inc?.upload_media,
-              status: inc?.status,
-              dateTime: inc?.date_reporting,
-            });
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => setLoading(false));
-    };
-
     getIncidentDetails();
   }, []);
+
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc?.incident_type_name,
+            address: inc?.address,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.upload_media,
+            status: inc?.status,
+            dateTime: inc?.date_reporting,
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
 
   // ==================== IMAGE UPLOAD ============================
   const handleImageUpload1 = (item: any) => {
@@ -152,7 +184,6 @@ const ResIncidentDetails: React.FC = () => {
       description: formData.description,
       upload_media: formData.media || [],
     };
-    console.log('qwqwqw', body);
 
     showLoader();
     ApiManager.updateIncident(body, userToken)
@@ -166,10 +197,10 @@ const ResIncidentDetails: React.FC = () => {
   };
 
   // ====================== SEND INCIDENT ============================
-  const incidentUpdateStatus = () => {
+  const incidentUpdateStatus = (item: any) => {
     const body = {
       incident_id: data?.incident_auto_id || data,
-      button_type: 'ResponderAccept',
+      button_type: item,
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
@@ -179,6 +210,8 @@ const ResIncidentDetails: React.FC = () => {
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
+          console.log('updated ');
+          getIncidentDetails();
         }
       })
       .catch(err => console.log('err', err.response))
@@ -189,42 +222,6 @@ const ResIncidentDetails: React.FC = () => {
     successRef.current.close();
     cancelRef.current.open();
     cancelRef.current.close();
-  };
-
-  const ReviewerTable = ({ title, data }: any) => {
-    return (
-      <View style={{ marginTop: 20 }}>
-        <Text style={styles.reviewTitle}>{title}</Text>
-
-        <View style={styles.tableContainer}>
-          {/* Header */}
-          <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
-            <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
-            <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
-            {title === 'Responder' && (
-              <Text style={[styles.tableCell, { flex: 2 }]}>
-                Contact Details
-              </Text>
-            )}
-          </View>
-
-          {/* Rows */}
-          {data.map((item: any, index: number) => (
-            <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
-              {title === 'Responder' && (
-                <Text style={[styles.tableCell, { flex: 2 }]}>
-                  Contact Details
-                </Text>
-              )}
-            </View>
-          ))}
-        </View>
-      </View>
-    );
   };
 
   return (
@@ -256,7 +253,6 @@ const ResIncidentDetails: React.FC = () => {
               <View style={styles.disabledBox}>
                 <Text style={styles.disabledText}>{watch('incidentId')}</Text>
               </View>
-
               <View style={{ marginVertical: 10 }}>
                 <Text style={styles.label}>Incident Type</Text>
                 <View style={styles.disabledBox}>
@@ -265,7 +261,6 @@ const ResIncidentDetails: React.FC = () => {
                   </Text>
                 </View>
               </View>
-
               <FormTextInput
                 label={TEXT.address()}
                 name="address"
@@ -276,7 +271,6 @@ const ResIncidentDetails: React.FC = () => {
                 rules={{ required: 'Address is required' }}
                 error={errors.address?.message}
               />
-
               <FormTextInput
                 label="Mobile Number"
                 name="mobileNumber"
@@ -293,7 +287,6 @@ const ResIncidentDetails: React.FC = () => {
                 }}
                 error={errors.mobileNumber?.message}
               />
-
               <FormTextInput
                 label="Description"
                 name="description"
@@ -304,7 +297,6 @@ const ResIncidentDetails: React.FC = () => {
                 rules={{ required: 'Description is required' }}
                 error={errors.description?.message}
               />
-
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
@@ -334,53 +326,72 @@ const ResIncidentDetails: React.FC = () => {
                   </View>
                 </View>
               </View>
-
               {incidentData?.reviewers?.length > 0 && (
                 <ReviewerTable
                   title={'Reviewer'}
                   data={incidentData?.reviewers}
                 />
               )}
-
               {incidentData?.responders?.length > 0 && (
                 <ReviewerTable
                   title={'Responder'}
                   data={incidentData?.responders}
                 />
               )}
-
               {/* BUTTONS */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 20,
-                }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.submitButton,
-                    { backgroundColor: COLOR.darkGray },
-                  ]}
-                  onPress={() => rejectRef.current.open()}
+              {incidentData?.status == 'Pending Response by Responder' && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
                 >
-                  <Text style={styles.submitButtonText}>Reject</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      { backgroundColor: COLOR.darkGray },
+                    ]}
+                    onPress={() => rejectRef.current.open()}
+                  >
+                    <Text style={styles.submitButtonText}>Reject</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={() => incidentUpdateStatus()}
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={() => incidentUpdateStatus('ResponderAccept')}
+                  >
+                    <Text style={styles.submitButtonText}>Accept</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {incidentData?.status === 'Pending closure by Responder' && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
                 >
-                  <Text style={styles.submitButtonText}>Accept</Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      { backgroundColor: COLOR.darkGray },
+                    ]}
+                    onPress={() => incidentUpdateStatus('Complete')}
+                  >
+                    <Text style={styles.submitButtonText}>Completed</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </ScrollView>
         </ScreenStateHandler>
       </View>
 
       {/* SEND CONFIRMATION */}
-      <SuccessScreen
+      {/* <SuccessScreen
         ref={successRef}
         description={
           'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
@@ -388,7 +399,7 @@ const ResIncidentDetails: React.FC = () => {
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}
-      />
+      /> */}
 
       {/* CANCEL */}
       <SuccessScreen

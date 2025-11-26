@@ -41,6 +41,38 @@ interface IncidentDetailsForm {
   dateTime: string;
 }
 
+const ReviewerTable = ({ title, data }: any) => {
+  return (
+    <View style={{ marginTop: 20 }}>
+      <Text style={styles.reviewTitle}>{title}</Text>
+
+      <View style={styles.tableContainer}>
+        {/* Header */}
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          {title === 'Responder' && (
+            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+          )}
+          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+        </View>
+
+        {/* Rows */}
+        {data.map((item: any, index: number) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
+            {title === 'Responder' && (
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+            )}
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.type}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 const RevIncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -299,6 +331,20 @@ const RevIncidentDetails: React.FC = () => {
                 </View>
               </View>
 
+              {incidentData?.reviewers?.length > 0 && (
+                <ReviewerTable
+                  title={'Reviewer'}
+                  data={incidentData?.reviewers}
+                />
+              )}
+
+              {incidentData?.responders?.length > 0 && (
+                <ReviewerTable
+                  title={'Responder'}
+                  data={incidentData?.responders}
+                />
+              )}
+
               {/* BUTTONS */}
               {incidentData?.status === 'Pending Review' ? (
                 <View
@@ -431,5 +477,37 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  // === Reviewer Table Styles ===
+  reviewTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.textGrey,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: '#D3D3D3',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+
+  tableHeader: {
+    backgroundColor: '#F5F5F5',
+  },
+
+  tableCell: {
+    padding: 10,
+    fontSize: 15,
+    textAlign: 'center',
   },
 });
