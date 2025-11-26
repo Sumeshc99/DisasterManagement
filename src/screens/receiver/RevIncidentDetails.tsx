@@ -27,6 +27,8 @@ import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSh
 import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
+import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
+import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -150,7 +152,6 @@ const RevIncidentDetails: React.FC = () => {
       description: formData.description,
       upload_media: formData.media || [],
     };
-    console.log('qwqwqw', body);
 
     showLoader();
     ApiManager.updateIncident(body, userToken)
@@ -299,48 +300,50 @@ const RevIncidentDetails: React.FC = () => {
               </View>
 
               {/* BUTTONS */}
-              {/* <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 20,
-                }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.submitButton,
-                    { backgroundColor: COLOR.darkGray },
-                  ]}
-                  onPress={() => rejectRef.current.open()}
+              {incidentData?.status === 'Pending Review' ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
                 >
-                  <Text style={styles.submitButtonText}>Reject</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      { backgroundColor: COLOR.darkGray },
+                    ]}
+                    onPress={() => rejectRef.current.open()}
+                  >
+                    <Text style={styles.submitButtonText}>Reject</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={() => ''}
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={() => assignRef.current.open()}
+                  >
+                    <Text style={styles.submitButtonText}>Accept</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
                 >
-                  <Text style={styles.submitButtonText}>Accept</Text>
-                </TouchableOpacity>
-              </View> */}
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 20,
-                }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.submitButton,
-                    { backgroundColor: COLOR.darkGray },
-                  ]}
-                  onPress={() => ''}
-                >
-                  <Text style={styles.submitButtonText}>Completed</Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      { backgroundColor: COLOR.darkGray },
+                    ]}
+                    onPress={() => ''}
+                  >
+                    <Text style={styles.submitButtonText}>Completed</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </ScrollView>
         </ScreenStateHandler>
@@ -371,7 +374,8 @@ const RevIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet1 ref={rejectRef} data={incidentData} />
+      <RejectReasonSheet ref={rejectRef} data={incidentData} />
+      <AssignResponderSheet ref={assignRef} data={incidentData} />
     </SafeAreaView>
   );
 };

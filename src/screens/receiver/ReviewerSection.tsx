@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import AlertModal from '../../components/AlertModal';
-import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import ApiManager from '../../apis/ApiManager';
@@ -52,20 +51,20 @@ const ReviewerSection = () => {
 
   const viewDetails = () => {
     setVisible(false);
-    navigation.navigate('incidentDetails', { data: data?.id });
+    navigation.navigate('incidentDetails', { data: data?.incident_id });
   };
 
   return (
-    // data !== '' && (
-    <View>
-      <AlertModal
-        visible={visible}
-        onAcknowledge={() => onAcknowledge()}
-        onViewDetails={() => viewDetails()}
-        onClose={() => setVisible(false)}
-      />
-    </View>
-    // )
+    data !== '' && (
+      <View>
+        <AlertModal
+          visible={visible}
+          onAcknowledge={() => onAcknowledge()}
+          onViewDetails={() => viewDetails()}
+          onClose={() => setVisible(false)}
+        />
+      </View>
+    )
   );
 };
 
