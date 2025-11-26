@@ -4,6 +4,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { FONT, WIDTH } from '../../themes/AppConst';
 import { TEXT } from '../../i18n/locales/Text';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface Props {
   icon?: any;
@@ -14,6 +15,7 @@ interface Props {
   noLabel?: string;
   onYes?: () => void;
   onNo?: () => void;
+  type?: 'success' | 'cancel';
 }
 
 const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
@@ -29,6 +31,7 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
     },
     ref,
   ) => {
+    const navigation = useNavigation();
     const showButtons = onYes || onNo;
 
     return (
@@ -36,6 +39,14 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
         ref={ref}
         closeOnPressMask
         height={height}
+        onClose={() => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'mainAppSelector' }],
+            }),
+          );
+        }}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },

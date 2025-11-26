@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   StatusBar,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -17,7 +17,7 @@ import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
-import { WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -39,6 +39,32 @@ interface IncidentDetailsForm {
   dateTime: string;
 }
 
+const ReviewerTable = ({ title, data }: any) => {
+  return (
+    <View style={{ marginTop: 20 }}>
+      <Text style={styles.reviewTitle}>{title}</Text>
+
+      <View style={styles.tableContainer}>
+        {/* Header */}
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+        </View>
+
+        {/* Rows */}
+        {data.map((item: any, index: number) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -47,13 +73,16 @@ const IncidentDetails: React.FC = () => {
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
-  const { userToken } = useSelector((state: RootState) => state.auth);
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
   const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
+
+  const [tapCount, setTapCount] = useState(0);
+  const tapTimeout = useRef<number | null>(null);
 
   const {
     control,
@@ -148,7 +177,6 @@ const IncidentDetails: React.FC = () => {
       description: formData.description,
       upload_media: formData.media || [],
     };
-    console.log('qwqwqw', body);
 
     showLoader();
     ApiManager.updateIncident(body, userToken)
@@ -190,9 +218,53 @@ const IncidentDetails: React.FC = () => {
           console.log('Assigned to reviewer successfully');
         }
       })
-      .catch(err => console.log('err', err.response))
-      .finally(() => {});
+      .catch(err => console.log('err', err.response));
   };
+
+  const handleTripleTap = () => {
+    setTapCount(prev => {
+      const newCount = prev + 1;
+
+      if (tapTimeout.current) {
+        clearTimeout(tapTimeout.current);
+      }
+
+      // If tapped 3 times
+      if (newCount >= 3) {
+        setTapCount(0);
+        cancelIncident();
+        return 0;
+      }
+
+      // Reset counter if too slow (1.5 sec)
+      tapTimeout.current = setTimeout(() => {
+        setTapCount(0);
+      }, 1500);
+
+      return newCount;
+    });
+  };
+
+  const cancelIncident = async () => {
+    const body = {
+      incident_id: data?.incident_auto_id || data,
+      button_type: 'Cancel',
+      cancel_reason: '',
+      duplicate_incident_id: '',
+      reason_for_cancellation: '',
+    };
+    showLoader();
+    ApiManager.incidentStatusUpdate(body, userToken)
+      .then(resp => {
+        if (resp.data.status) {
+          cancelRef.current.open();
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => hideLoader());
+  };
+
+  const downloadPDF = (item: any) => {};
 
   const onSuccessNo = () => {
     successRef.current.close();
@@ -244,6 +316,10 @@ const IncidentDetails: React.FC = () => {
                 name="address"
                 control={control}
                 placeholder="Enter address"
+                editable={
+                  incidentData.status === 'New' &&
+                  incidentData.user_id == user?.id
+                }
                 multiline
                 rules={{ required: 'Address is required' }}
                 error={errors.address?.message}
@@ -255,6 +331,10 @@ const IncidentDetails: React.FC = () => {
                 control={control}
                 placeholder="Enter mobile number"
                 keyboardType="phone-pad"
+                editable={
+                  incidentData.status === 'New' &&
+                  incidentData.user_id == user?.id
+                }
                 rules={{
                   required: 'Mobile number is required',
                   pattern: {
@@ -271,24 +351,15 @@ const IncidentDetails: React.FC = () => {
                 control={control}
                 placeholder="Enter description"
                 multiline
-                rules={{ required: 'Description is required' }}
+                editable={
+                  incidentData.status === 'New' &&
+                  incidentData.user_id == user?.id
+                }
                 error={errors.description?.message}
               />
 
-              {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
-                <View style={{ width: WIDTH(30) }}>
-                  {/* <FormMediaPicker
-                    label="Images"
-                    name="media"
-                    control={control}
-                    rules={{ required: 'At least one image is required' }}
-                    error={errors.media?.message}
-                    media={media}
-                    onChangeMedia={handleImageUpload}
-                    onRemoveMedia={handleRemoveMedia}
-                  /> */}
-                </View>
+                <View style={{ width: WIDTH(30) }}></View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.label}>Status</Text>
@@ -305,28 +376,81 @@ const IncidentDetails: React.FC = () => {
                 </View>
               </View>
 
-              {/* BUTTONS */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 20,
-                }}
-              >
-                <TouchableOpacity
-                  style={[styles.submitButton]}
-                  onPress={handleSubmit(updateIncedents)}
-                >
-                  <Text style={styles.submitButtonText}>Update</Text>
-                </TouchableOpacity>
+              {incidentData?.reviewers?.length > 0 && (
+                <ReviewerTable
+                  title={'Reviewer'}
+                  data={incidentData?.reviewers}
+                />
+              )}
 
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={() => successRef.current.open()}
+              {incidentData?.responders?.length > 0 && (
+                <ReviewerTable
+                  title={'Responder'}
+                  data={incidentData?.responders}
+                />
+              )}
+
+              {/* BUTTONS */}
+              {incidentData.status === 'New' ? (
+                incidentData.user_id == user?.id && (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        gap: 20,
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={[styles.submitButton]}
+                        onPress={handleSubmit(updateIncedents)}
+                      >
+                        <Text style={styles.submitButtonText}>Update</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.submitButton}
+                        onPress={() => successRef.current.open()}
+                      >
+                        <Text style={styles.submitButtonText}>Send</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={() => handleTripleTap()}
+                      style={{ marginTop: 20, alignSelf: 'center' }}
+                    >
+                      <Image
+                        source={require('../../../assets/cancelBig.png')}
+                      />
+                    </TouchableOpacity>
+
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        fontFamily: FONT.R_MED_500,
+                      }}
+                    >
+                      Tap 3 times to cancel Incident
+                    </Text>
+                  </View>
+                )
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
                 >
-                  <Text style={styles.submitButtonText}>Send</Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={[styles.submitButton1]}
+                    onPress={() => downloadPDF(incidentData?.incident_id)}
+                  >
+                    <Text style={styles.submitButtonText1}>Download PDF</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </ScrollView>
         </ScreenStateHandler>
@@ -341,6 +465,7 @@ const IncidentDetails: React.FC = () => {
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}
+        type="success"
       />
 
       {/* CANCEL */}
@@ -407,9 +532,55 @@ const styles = StyleSheet.create({
     marginTop: 24,
     width: 160,
   },
+  submitButton1: {
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+    width: 160,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+  },
   submitButtonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+  submitButtonText1: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  // === Reviewer Table Styles ===
+  reviewTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.textGrey,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: '#D3D3D3',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+
+  tableHeader: {
+    backgroundColor: '#F5F5F5',
+  },
+
+  tableCell: {
+    padding: 10,
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

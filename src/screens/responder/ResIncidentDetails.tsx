@@ -28,6 +28,7 @@ import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
+import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -168,17 +169,16 @@ const ResIncidentDetails: React.FC = () => {
   const incidentUpdateStatus = () => {
     const body = {
       incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
+      button_type: 'ResponderAccept',
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
     };
+
     showLoader();
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
-          successRef.current.close();
-          acceptRef.current.open();
         }
       })
       .catch(err => console.log('err', err.response))
@@ -189,6 +189,42 @@ const ResIncidentDetails: React.FC = () => {
     successRef.current.close();
     cancelRef.current.open();
     cancelRef.current.close();
+  };
+
+  const ReviewerTable = ({ title, data }: any) => {
+    return (
+      <View style={{ marginTop: 20 }}>
+        <Text style={styles.reviewTitle}>{title}</Text>
+
+        <View style={styles.tableContainer}>
+          {/* Header */}
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+            {title === 'Responder' && (
+              <Text style={[styles.tableCell, { flex: 2 }]}>
+                Contact Details
+              </Text>
+            )}
+          </View>
+
+          {/* Rows */}
+          {data.map((item: any, index: number) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+              {title === 'Responder' && (
+                <Text style={[styles.tableCell, { flex: 2 }]}>
+                  Contact Details
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -299,6 +335,20 @@ const ResIncidentDetails: React.FC = () => {
                 </View>
               </View>
 
+              {incidentData?.reviewers?.length > 0 && (
+                <ReviewerTable
+                  title={'Reviewer'}
+                  data={incidentData?.reviewers}
+                />
+              )}
+
+              {incidentData?.responders?.length > 0 && (
+                <ReviewerTable
+                  title={'Responder'}
+                  data={incidentData?.responders}
+                />
+              )}
+
               {/* BUTTONS */}
               <View
                 style={{
@@ -319,7 +369,7 @@ const ResIncidentDetails: React.FC = () => {
 
                 <TouchableOpacity
                   style={styles.submitButton}
-                  onPress={() => assignRef.current.open()}
+                  onPress={() => incidentUpdateStatus()}
                 >
                   <Text style={styles.submitButtonText}>Accept</Text>
                 </TouchableOpacity>
@@ -354,8 +404,9 @@ const ResIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} />
+      <RejectReasonSheet1 ref={rejectRef} data={incidentData} />
+      {/* <RejectReasonSheet ref={rejectRef} data={incidentData} />
+      <AssignResponderSheet ref={assignRef} data={incidentData} /> */}
     </SafeAreaView>
   );
 };
@@ -411,5 +462,37 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  // === Reviewer Table Styles ===
+  reviewTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.textGrey,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: '#D3D3D3',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+
+  tableHeader: {
+    backgroundColor: '#F5F5F5',
+  },
+
+  tableCell: {
+    padding: 10,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
