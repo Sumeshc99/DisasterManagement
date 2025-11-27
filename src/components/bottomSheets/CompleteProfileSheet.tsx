@@ -88,7 +88,7 @@ const CompleteProfileSheet = forwardRef<
           label={TEXT.full_name()}
           name="emgName"
           control={control}
-          placeholder="Enter full name"
+          placeholder={TEXT.enter_full_name()}
           // rules={{
           //   required: 'Emergency contact name is required',
           // }}

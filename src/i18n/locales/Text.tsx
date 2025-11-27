@@ -151,9 +151,70 @@ export const TEXT = {
   description: () => t('description', 'Description'),
   incident_details: () => t('incident_details', 'Incident Details'),
 
+  ///////////////////
+
   incident_id: () => t('incident_id', 'Incident Id'),
 
-  address: () => t('address', 'Address'),
+  please_upload_photo: () =>
+    t('please_upload_photo', 'Please Upload The Photo'),
 
-  address: () => t('address', 'Address'),
+  enter_your_address: () => t('enter_your_address', 'Enter your address'),
+  other_incident_records: () => t('other_incident_records', 'Address'),
+
+  assign_responders: () =>
+    t('assign_responders', 'Assign responders to the incident report'),
+
+  reach_nearby_services: () =>
+    t(
+      'reach_nearby_services',
+      'Please reach out to nearby services for help till we notify our Responders.',
+    ),
+
+  duplicate: () => t('duplicate', 'Duplicate'),
+
+  reason_cancellation: () =>
+    t('reason_cancellation', 'Reason for cancellation'),
+
+  provide_reason_cancellation: () =>
+    t('provide_reason_cancellation', 'Provide reason for cancellation'),
+
+  select_reason_rejection: () =>
+    t('select_reason_rejection', 'Select reason for rejection'),
+
+  country_required: () => t('country_required', 'Country is required'),
+
+  address_required: () => t('address_required', 'Address is required'),
+
+  city_required: () => t('city_required', 'City is required'),
+
+  district_required: () => t('district_required', 'District is required'),
+
+  profile_draft: () =>
+    t('profile_draft', 'Profile saved as draft successfully'),
+
+  profile_saved: () => t('profile_saved', 'Profile saved successfully'),
+
+  current_pin: () => t('current_pin', 'Current PIN'),
+
+  pin_reset_success: () =>
+    t('pin_reset_success', 'Your PIN has been reset successfully'),
+
+  ambulance_service: () => t('ambulance_service', 'Ambulence service'),
+
+  disaster_helpline_numbers: () =>
+    t('disaster_helpline_numbers', 'Disaster Helpline Numbers'),
+
+  pin_verified: () => t('pin_verified', 'PIN Verified'),
+
+  women_helpline: () => t('women_helpline', 'Women Helpline'),
+
+  std_code: () => t('std_code', 'STD Code'),
+  important_numbers: () => t('important_numbers', 'Important Numbers'),
+  police: () => t('police', 'Police'),
+  fire_service: () => t('fire_service', 'Fire Service'),
+  child_helpline: () => t('child_helpline', 'Child Helpline'),
+  sdrf_center: () => t('sdrf_center', 'SDRF Center'),
+  police_stations: () => t('police_stations', 'Police Station'),
+  hospital: () => t('hospital', 'Hospital'),
+  boat: () => t('boat', 'Boat'),
 };

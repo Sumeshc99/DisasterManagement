@@ -11,16 +11,13 @@ import { RootState } from '../../store/RootReducer';
 import { useForm } from 'react-hook-form';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
-import { TEXT } from '../../i18n/locales/Text';
-import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface props {
   ref: any;
   data: any;
 }
 
-const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
-  const navigation = useNavigation();
+const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -78,12 +75,6 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         if (resp.data.status) {
           snackbar(resp?.data?.message, 'success');
           ref?.current?.close();
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'mainAppSelector' }],
-            }),
-          );
         }
       })
       .catch(err => console.log('err', err.response))
@@ -106,7 +97,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>{TEXT.select_reason_rejection()}</Text>
+        <Text style={styles.title}>Select reason for rejection</Text>
 
         {/* Radio Buttons */}
         <View style={styles.radioRow}>
@@ -130,11 +121,11 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
                 selectedReason === 'duplicate' && { color: COLOR.white },
               ]}
             >
-              {TEXT.duplicate()}
+              Duplicate
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[
               styles.radioBtn,
               selectedReason === 'cancel' && styles.radioBtnActiveBlue,
@@ -156,7 +147,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
             >
               Cancel
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Dynamic Input Based on Condition */}
@@ -180,13 +171,13 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         ) : (
           <>
             <Text style={styles.label}>
-              {TEXT.reason_cancellation()}{' '}
+              Reason for cancellation{' '}
               <Text style={{ color: COLOR.red }}>*</Text>
             </Text>
 
             <TextInput
               mode="outlined"
-              placeholder={TEXT.provide_reason_cancellation()}
+              placeholder="Provide reason for cancellation"
               value={details}
               onChangeText={setDetails}
               outlineColor="#D9D9D9"
@@ -204,7 +195,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         style={styles.saveBtn}
         onPress={handleSubmit(incidentUpdateStatus)}
       >
-        <Text style={styles.saveText}>{TEXT.save()}</Text>
+        <Text style={styles.saveText}>Save</Text>
       </TouchableOpacity>
     </RBSheet>
   );
@@ -238,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   radioBtn: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLOR.gray,
@@ -246,6 +237,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    width: '48%',
   },
   radioBtnActiveBlue: {
     backgroundColor: COLOR.blue,
@@ -283,4 +275,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RejectReasonSheet;
+export default RejectReasonSheet1;

@@ -52,7 +52,7 @@ export default function OTPVerification() {
       ApiManager.verifyPin(body, userData.token)
         .then(resp => {
           if (resp?.data?.status) {
-            showSnackbar('PIN Verified', 'success');
+            showSnackbar(TEXT.pin_verified(), 'success');
             dispatch(
               setUser({
                 id: resp?.data?.data?.id,

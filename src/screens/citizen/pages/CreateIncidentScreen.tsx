@@ -47,6 +47,8 @@ const CreateIncidentScreen: React.FC = () => {
 
   const [incidentTypes, setIncidentTypes] = useState([]);
   const [allAddress, setallAddress] = useState<any>('');
+  const [desc, setdesc] = useState([]);
+  const [showdropDown, setshowdropDown] = useState(false);
 
   const addressRef = useRef<any>(null);
 
@@ -61,7 +63,7 @@ const CreateIncidentScreen: React.FC = () => {
     watch,
   } = useForm<IncidentForm>({
     defaultValues: {
-      incidentType: '1',
+      incidentType: '',
       customIncidentType: '',
       address: '',
       mobileNumber: '',
@@ -86,7 +88,8 @@ const CreateIncidentScreen: React.FC = () => {
           setIncidentTypes(
             (resp?.data?.data?.incident_types || []).map((item: any) => ({
               label: item.name,
-              value: item.name,
+              value: item.id,
+              desc: item.descriptions,
             })),
           );
         }
@@ -127,6 +130,7 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('city_id', allAddress?.city || '');
       formData.append('district_id', allAddress?.district_id || '');
       formData.append('city_code', allAddress?.pincode || '');
+      // formData.append('other_incident_type', data?.customIncidentType || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file: any, index) => {
@@ -152,10 +156,18 @@ const CreateIncidentScreen: React.FC = () => {
         );
       }
     } catch (error: any) {
+      console.log('error', error.response);
       Alert.alert('Error', 'Something went wrong while creating the incident.');
     } finally {
       hideLoader();
     }
+  };
+
+  const handleIncidentTypeChange = (value: string) => {
+    const selected: any = incidentTypes.find(
+      (item: any) => item?.value === value,
+    );
+    setdesc(selected?.desc || []);
   };
 
   return (
@@ -183,21 +195,23 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Incident Type */}
         <DropDownInput
-          label="Incident Type"
+          label={TEXT.incident_type()}
           name="incidentType"
           control={control}
-          placeholder="Select Incident Type"
+          placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
+          rules={{ required: 'Please specify the incident type' }}
           errors={errors}
+          onSelect={value => handleIncidentTypeChange(value)}
         />
 
         {/* Custom Other Type */}
-        {selectedType === 'Others' && (
+        {selectedType == '43' && (
           <FormTextInput2
             label="Specify Other Type"
             name="customIncidentType"
             control={control}
-            placeholder="Enter incident type"
+            placeholder="Enter other incident type"
             rules={{ required: 'Please specify the incident type' }}
             error={errors.customIncidentType?.message}
           />
@@ -206,7 +220,7 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Address */}
         <View style={{ marginBottom: 14 }}>
           <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 8 }}>
-            Address <Text style={{ color: 'red' }}>*</Text>
+            {TEXT.address()} <Text style={{ color: 'red' }}>*</Text>
           </Text>
 
           <TouchableOpacity
@@ -265,17 +279,36 @@ const CreateIncidentScreen: React.FC = () => {
         />
 
         {/* Description */}
-        <FormTextInput
-          label="Description"
-          name="description"
-          control={control}
-          multiline
-          placeholder={TEXT.enter_description()}
-          // rules={{ required: TEXT.description_required() }}
-
-          // rules={{ required: 'Description is required' }}
-          error={errors.description?.message}
-        />
+        <View>
+          <FormTextInput
+            label="Description"
+            name="description"
+            control={control}
+            multiline
+            placeholder={TEXT.enter_description()}
+            error={errors.description?.message}
+            onInputPress={() => {
+              setshowdropDown(!showdropDown);
+            }}
+          />
+          {showdropDown && desc.length > 0 && (
+            <View style={styles.dropdown}>
+              {desc.map((item: any, index: number) => (
+                <TouchableOpacity
+                  style={styles.dropdowntouch}
+                  onPress={() => {
+                    setValue('description', item?.description);
+                    setshowdropDown(false);
+                  }}
+                >
+                  <Text style={{ fontSize: 14, color: COLOR.textGrey }}>
+                    {item?.description}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
         {/* Media Picker */}
         <FormMediaPicker
@@ -294,7 +327,7 @@ const CreateIncidentScreen: React.FC = () => {
           style={styles.createButton}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.createButtonText}>Create</Text>
+          <Text style={styles.createButtonText}>{TEXT.create()}</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -350,9 +383,26 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
+  dropdown: {
+    position: 'absolute',
+    top: 130,
+    left: 0,
+    borderWidth: 1,
+    borderColor: '#bbb',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 6,
+    width: '100%',
+    zIndex: 100,
+  },
   backButton: {
     position: 'absolute',
     left: -8,
+  },
+  dropdowntouch: {
+    borderBottomWidth: 1,
+    borderColor: COLOR.gray,
+    padding: 6,
   },
 
   backIcon: {

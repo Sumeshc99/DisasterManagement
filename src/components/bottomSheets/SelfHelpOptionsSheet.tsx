@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { FONT } from '../../themes/AppConst';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface SelfHelpBottomSheetProps {
   onClose: () => void;
@@ -20,6 +21,8 @@ const SelfHelpBottomSheet = forwardRef<
   React.ComponentRef<typeof RBSheet>,
   SelfHelpBottomSheetProps
 >(({ onClose }, ref) => {
+  const navigation = useNavigation();
+
   const makeCall = async (num: string) => {
     try {
       const cleaned = num.replace(/[^0-9+]/g, '');
@@ -42,6 +45,14 @@ const SelfHelpBottomSheet = forwardRef<
       ref={ref}
       closeOnPressMask
       height={650}
+      onClose={() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'mainAppSelector' }],
+          }),
+        );
+      }}
       customStyles={{
         container: styles.sheetContainer,
         draggableIcon: { backgroundColor: 'transparent' },
@@ -51,7 +62,15 @@ const SelfHelpBottomSheet = forwardRef<
         <View style={styles.dragIndicator} />
         <TouchableOpacity
           style={styles.closeIconContainer}
-          onPress={() => (ref as any)?.current?.close()}
+          onPress={() => {
+            (ref as any)?.current?.close(),
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'mainAppSelector' }],
+                }),
+              );
+          }}
         >
           <Image
             source={require('../../assets/cancel.png')}

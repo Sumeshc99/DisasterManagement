@@ -38,8 +38,8 @@ const LocationManual: React.FC<LocationManualProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
 
   const [region, setRegion] = useState({
-    latitude: location.latitude || 20.5937,
-    longitude: location.longitude || 78.9629,
+    latitude: location.latitude || 21.1458,
+    longitude: location.longitude || 79.0882,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
@@ -129,7 +129,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
 
       <View style={styles.searchBox}>
         <TextInput
-          placeholder={TEXT.enter_address()}
+          placeholder={TEXT.enter_your_address()}
           value={location.address}
           onChangeText={text => {
             onChangeLocation({ ...location, address: text });

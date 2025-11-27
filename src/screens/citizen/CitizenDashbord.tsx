@@ -29,6 +29,7 @@ import Help from '../../assets/svg/help.svg';
 import Dis from '../../assets/svg/dis.svg';
 import { TEXT } from '../../i18n/locales/Text';
 import ReviewerSection from '../receiver/ReviewerSection';
+import ResponderSection from '../responder/ResponderSection';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -197,7 +198,8 @@ const CitizenDashboard = () => {
       />
       <SuccessScreen ref={successRef} height={220} />
 
-      <ReviewerSection />
+      {user?.role === 'reviewer' && <ReviewerSection />}
+      {user?.role === 'responder' && <ResponderSection />}
     </SafeAreaView>
   );
 };

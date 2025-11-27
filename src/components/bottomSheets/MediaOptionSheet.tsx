@@ -3,13 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { FONT } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface MediaOptionSheetProps {
   onCamera: () => void;
   onGallery: () => void;
 }
 
-const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
+const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
   ({ onCamera, onGallery }, ref) => {
     return (
       <RBSheet
@@ -23,7 +24,7 @@ const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
-          <Text style={styles.optionText}>Please upload the photo</Text>
+          <Text style={styles.optionText}>{TEXT.please_upload_photo()}</Text>
           <TouchableOpacity
             style={styles.closeIconContainer}
             onPress={() => (ref as any)?.current?.close()}
@@ -40,13 +41,35 @@ const MediaOptionSheet = forwardRef<RBSheet, MediaOptionSheetProps>(
               gap: 40,
             }}
           >
-            <TouchableOpacity style={styles.optionButton} onPress={onCamera}>
-              <Image source={require('../../assets/camera.png')} />
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                gap: 30,
+              }}
+            >
+              {/* Camera */}
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={onCamera}
+                >
+                  <Image source={require('../../assets/camera.png')} />
+                </TouchableOpacity>
+                <Text style={styles.optionLabel}>Take a photo</Text>
+              </View>
 
-            <TouchableOpacity style={styles.optionButton} onPress={onGallery}>
-              <Image source={require('../../assets/galary.png')} />
-            </TouchableOpacity>
+              {/* Gallery */}
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={onGallery}
+                >
+                  <Image source={require('../../assets/galary.png')} />
+                </TouchableOpacity>
+                <Text style={styles.optionLabel}>Select from device</Text>
+              </View>
+            </View>
           </View>
         </View>
       </RBSheet>
@@ -88,7 +111,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 20,
-    color: COLOR.black,
+    color: COLOR.textGrey,
     fontFamily: FONT.R_BOLD_700,
   },
   closeIconContainer: {
@@ -100,5 +123,11 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 30,
     height: 30,
+  },
+  optionLabel: {
+    marginTop: 8,
+    fontSize: 16,
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_REG_400,
   },
 });

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   onClose?: () => void;
@@ -46,7 +47,7 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
             showsVerticalScrollIndicator={false}
           >
             {/* Title */}
-            <Text style={styles.title}>Disaster Helpline Numbers</Text>
+            <Text style={styles.title}>{TEXT.disaster_helpline_numbers()}</Text>
             <View style={styles.divider} />
 
             {/* Logo */}
@@ -57,7 +58,7 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
             {/* Details */}
             <Text style={styles.text}>
-              <Text style={styles.bold}>Nagpur STD Code:</Text> 0712
+              <Text style={styles.bold}>Nagpur {TEXT.std_code()}:</Text> 0712
             </Text>
             <Text style={styles.text}>
               <Text style={styles.bold}>
@@ -74,18 +75,20 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               011-23978046 or 1075
             </Text>
             <Text style={styles.text}>
-              <Text style={styles.bold}>STD Code:</Text> 022
+              <Text style={styles.bold}>{TEXT.std_code()}:</Text> 022
             </Text>
 
             {/* Important Numbers */}
             <Text style={[styles.bold, { marginTop: 10 }]}>
-              Important Numbers
+              {TEXT.important_numbers()}
             </Text>
-            <Text style={styles.text}>• Police: 100, 112 or 0712-2561222</Text>
-            <Text style={styles.text}>• Fire Service: 101</Text>
-            <Text style={styles.text}>• Ambulance: 102</Text>
-            <Text style={styles.text}>• Women Helpline: 1091</Text>
-            <Text style={styles.text}>• Child Helpline: 1098</Text>
+            <Text style={styles.text}>
+              • {TEXT.police()}: 100, 112 or 0712-2561222
+            </Text>
+            <Text style={styles.text}>• {TEXT.fire_service()}: 101</Text>
+            <Text style={styles.text}>• {TEXT.ambulance_service()}: 102</Text>
+            <Text style={styles.text}>• {TEXT.women_helpline()}: 1091</Text>
+            <Text style={styles.text}>• {TEXT.child_helpline()}: 1098</Text>
           </ScrollView>
         </View>
       </RBSheet>

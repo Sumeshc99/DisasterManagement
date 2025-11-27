@@ -128,7 +128,14 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         name="primaryName"
         control={control}
         placeholder={TEXT.enter_full_name()}
-        rules={{ required: TEXT.enter_full_name() }}
+        rules={{
+          required: TEXT.enter_full_name(),
+          pattern: {
+            value: /^[A-Za-z\s]+$/,
+            message: 'Only alphabets are allowed',
+          },
+        }}
+        keyboardType="default"
         error={errors.primaryName?.message}
       />
 

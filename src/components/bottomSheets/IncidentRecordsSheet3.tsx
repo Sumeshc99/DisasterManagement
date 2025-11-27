@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
 import Filter from '../../assets/filter.svg';
 
-const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
+const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
     const navigation = useNavigation();
 
@@ -50,8 +50,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
     const getAssignedIncident = async () => {
       try {
-        const resp = await ApiManager.assignedIncident(user?.id, userToken);
-
+        const resp = await ApiManager.assignedToResponder(user?.id, userToken);
         if (resp?.data?.status) {
           const results = resp?.data?.data || [];
           setAssignedInc(results);
@@ -115,7 +114,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         onPress={() => {
           (ref as { current: any } | null)?.current?.close();
           navigation.navigate(
-            !isAssignedTab ? 'incidentDetails' : 'revIncidentDetails',
+            !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
             {
               data: item.id,
             },
@@ -170,7 +169,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
           <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
 
-          {/* ------------------- TABS ----------------------- */}
+          {/* ------------------- TABS -------------------- */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
@@ -260,7 +259,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   },
 );
 
-export default IncidentRecordsSheet2;
+export default IncidentRecordsSheet3;
 
 const styles = StyleSheet.create({
   sheetContainer: {
@@ -423,14 +422,14 @@ const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 4,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
 
   statusText: {
     color: '#000',
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: FONT.R_BOLD_700,
   },
 });

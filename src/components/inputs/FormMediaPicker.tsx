@@ -157,8 +157,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 6,
     backgroundColor: COLOR.white,
-    height: 100,
+    height: 120,
     justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   previewScroll: {
     marginTop: 4,
@@ -187,5 +189,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingHorizontal: 4,
   },
-  inputError: { borderColor: 'red' },
 });

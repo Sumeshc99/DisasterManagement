@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
-import { WIDTH } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -44,12 +44,10 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    // Initial load
     useEffect(() => {
       fetchIncidentList();
     }, [userToken]);
 
-    // --- Pull to refresh ---
     const onRefresh = async () => {
       setRefreshing(true);
       await fetchIncidentList();
@@ -92,43 +90,49 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       );
     };
 
-    const renderItem = ({ item }: any) => (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          (ref as { current: any } | null)?.current?.close();
-          navigation.navigate('incidentDetails', {
-            data: item.id,
-          });
-        }}
-        style={styles.card}
-      >
-        <View style={styles.headerRow}>
-          <Text style={styles.incidentId}>
-            {TEXT.incident_id()} - {item.incident_id}
-          </Text>
+    const renderItem = ({ item }: any) => {
+      return (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            (ref as { current: any } | null)?.current?.close();
+            navigation.navigate('incidentDetails', {
+              data: item.id,
+            });
+          }}
+          style={styles.card}
+        >
+          <View style={styles.headerRow1}>
+            <Text style={styles.incidentId}>
+              {TEXT.incident_id()} - {item.incident_id}
+            </Text>
 
-          {renderStatus(item.status)}
-        </View>
+            {renderStatus(item.status)}
+          </View>
 
-        <Text style={styles.title}>{item.incident_type_name}</Text>
-        <Text style={styles.location}>{item.address}</Text>
+          <Text style={styles.title}>{item.incident_type_name}</Text>
+          <Text style={styles.location}>{item.address}</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-          {item.status == 'New' && (
-            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
-              <Text style={[styles.statusText, { color: COLOR.white }]}>
-                Edit
-              </Text>
-            </View>
-          )}
-        </View>
+            {item.status == 'New' && (
+              <View
+                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+              >
+                <Text style={[styles.statusText, { color: COLOR.white }]}>
+                  Edit
+                </Text>
+              </View>
+            )}
+          </View>
 
-        <View style={styles.divider} />
-      </TouchableOpacity>
-    );
+          <View style={styles.divider} />
+        </TouchableOpacity>
+      );
+    };
 
     const listData = isAssignedTab ? assignedIncident : myIncident;
 
@@ -150,7 +154,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
             <TouchableOpacity
               style={styles.closeBtn}
-              onPress={() => ref.current.close()}
+              onPress={() => (ref as { current: any })?.current?.close()}
             >
               <Image
                 source={require('../../assets/cancel.png')}
@@ -187,7 +191,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                 style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
               >
                 {/* {TEXT.assigned_incident_records()} */}
-                Other Incident Records
+                {TEXT.other_incident_records()}
               </Text>
             </TouchableOpacity>
           </View>
@@ -200,9 +204,29 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             }
             contentContainerStyle={{ paddingBottom: 30 }}
             showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
+            style={{ flex: 1, marginTop: 10 }}
             refreshing={refreshing}
             onRefresh={onRefresh}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 50,
+                }}
+              >
+                <Text
+                  style={{
+                    color: COLOR.textGrey,
+                    fontSize: 16,
+                    fontFamily: FONT.R_SBD_600,
+                  }}
+                >
+                  No incident recorded by you
+                </Text>
+              </View>
+            }
           />
         </View>
       </RBSheet>
@@ -276,10 +300,14 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 10,
   },
+  headerRow1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 
   closeBtn: {
     position: 'absolute',
-    right: 0, // moves cancel button to right end
+    right: 0,
     padding: 5,
   },
   title: {

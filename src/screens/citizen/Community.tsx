@@ -6,6 +6,7 @@ import { COLOR } from '../../themes/Colors';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { clearUser } from '../../store/slices/authSlice';
+import BlinkingIcon from '../../components/UI/BlinkingIcon';
 
 const Community = () => {
   const navigation = useNavigation();
@@ -33,6 +34,7 @@ const Community = () => {
           justifyContent: 'center',
         }}
       >
+        <BlinkingIcon size={120} />
         {/* <Button title="Log out" onPress={() => logOut()} /> */}
       </View>
     </SafeAreaView>

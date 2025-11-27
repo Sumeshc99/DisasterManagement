@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -12,26 +13,28 @@ import { WIDTH } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
+import { TEXT } from '../../i18n/locales/Text';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
-interface props {
-  ref: any;
+interface AssignProps {
   data: any;
 }
 
-const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
+const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
+  const navigation = useNavigation();
+  const { userToken } = useSelector((state: RootState) => state.auth);
 
-  const [resourses, setresourses] = useState([]);
+  const [resources, setResources] = useState<any[]>([]);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
 
+  // fetch responder types
   useEffect(() => {
     const getIncidentType = async () => {
       try {
         const resp = await ApiManager.incidentType(userToken);
-
         if (resp?.data?.success) {
-          setresourses(
+          setResources(
             (resp?.data?.data?.resource_types || []).map((item: any) => ({
               label: item.name,
               value: item.id,
@@ -46,11 +49,12 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
     getIncidentType();
   }, []);
 
+  // assign API call
   const assignResponders = async () => {
     const ids = selectedResponders.map(item => item.value).join(',');
 
     const body = {
-      incident_id: data?.data?.id,
+      incident_id: data?.id,
       responder_type_id: ids,
     };
 
@@ -58,9 +62,15 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
       const resp = await ApiManager.assignResponders(body, userToken);
       if (resp?.data?.status) {
         (ref as any)?.current?.close();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'mainAppSelector' }],
+          }),
+        );
       }
     } catch (err: any) {
-      console.log('Incident Error:', err.response || err);
+      console.log('Assign Error:', err.response || err);
     }
   };
 
@@ -76,7 +86,7 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
     <RBSheet
       ref={ref}
       height={380}
-      closeOnDragDown={true}
+      // closeOnDragDown={true}
       customStyles={{
         wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
         draggableIcon: { backgroundColor: '#ccc' },
@@ -86,11 +96,23 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>
-          Assign responders to the incident report
-        </Text>
+        <View style={styles.headerRow}>
+          <View style={{ paddingHorizontal: 40 }}>
+            <Text style={styles.title}>{TEXT.assign_responders()}</Text>
+          </View>
 
-        {/* Multi Select Dropdown */}
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => (ref as any)?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={styles.closeIcon}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Dropdown */}
         <View>
           <TouchableOpacity
             style={styles.dropdown}
@@ -101,15 +123,13 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
                 ? selectedResponders.map(i => i.label).join(', ')
                 : 'Select'}
             </Text>
-
             <Text style={styles.dropdownIcon}>▼</Text>
           </TouchableOpacity>
 
-          {/* Scrollable Checkbox List */}
           {openDropdown && (
             <View style={styles.dropdownListWrapper}>
               <ScrollView style={styles.dropdownList}>
-                {resourses.map((item: any) => (
+                {resources.map(item => (
                   <TouchableOpacity
                     key={item.value}
                     style={styles.checkboxRow}
@@ -128,8 +148,10 @@ const AssignResponderSheet: React.FC<props> = forwardRef((data, ref) => {
           )}
         </View>
       </View>
+
+      {/* Save Button */}
       <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
-        <Text style={styles.saveText}>Save</Text>
+        <Text style={styles.saveText}>{TEXT.save()}</Text>
       </TouchableOpacity>
     </RBSheet>
   );
@@ -154,12 +176,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLOR.blue,
     textAlign: 'center',
-    marginBottom: 20,
-    width: WIDTH(60),
-    alignSelf: 'center',
   },
 
-  // Dropdown button
   dropdown: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -169,6 +187,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
   },
   dropdownText: {
     fontSize: 16,
@@ -179,7 +198,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 
-  // Scrollable dropdown
   dropdownListWrapper: {
     maxHeight: 150,
     width: WIDTH(90),
@@ -190,12 +208,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'absolute',
     top: 46,
+    backgroundColor: '#fff',
   },
   dropdownList: {
     backgroundColor: '#f9f9f9',
   },
 
-  // Checkbox rows
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -223,7 +241,6 @@ const styles = StyleSheet.create({
     color: COLOR.black,
   },
 
-  // Save button
   saveBtn: {
     marginTop: 25,
     backgroundColor: COLOR.blue,
@@ -238,6 +255,23 @@ const styles = StyleSheet.create({
     color: COLOR.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  closeIconContainer: {
+    // position: 'absolute',
+    //top: 20,
+    right: 20,
+    borderRadius: 20,
+  },
+  closeIcon: {
+    width: 35,
+    height: 35,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10, // gives top + bottom space
+    position: 'relative',
   },
 });
 

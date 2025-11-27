@@ -7,6 +7,10 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -26,6 +30,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 import { clearUserDraft, setUserDraft } from '../../../store/slices/draftSlice';
 import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import { setUser } from '../../../store/slices/authSlice';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const formatDate = (inputDate: string | Date): string => {
   const date = new Date(inputDate);
@@ -134,8 +139,8 @@ const Profile: React.FC = () => {
         .then(resp => {
           if (resp?.data?.success) {
             settahsilList(
-              (resp?.data?.data?.tehsils || []).map((item: any) => ({
-                label: item.Tehsil,
+              (resp?.data?.data?.blocks || []).map((item: any) => ({
+                label: item.Block,
                 value: item.id,
               })),
             );
@@ -323,14 +328,30 @@ const Profile: React.FC = () => {
                 onSubmit={changeTab}
               />
             ) : (
-              <EmgContactInfo
-                control={control}
-                errors={errors}
-                handleSubmit={handleSubmit}
-                onSubmit={onSubmit}
-                setValue={setValue}
-                watch={watch}
-              />
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+              >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                  <KeyboardAwareScrollView
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    enableOnAndroid={true}
+                    extraScrollHeight={100}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                  >
+                    <EmgContactInfo
+                      control={control}
+                      errors={errors}
+                      handleSubmit={handleSubmit}
+                      onSubmit={onSubmit}
+                      setValue={setValue}
+                      watch={watch}
+                    />
+                  </KeyboardAwareScrollView>
+                </TouchableWithoutFeedback>
+              </KeyboardAvoidingView>
             )}
             <View style={styles.spacer} />
           </ScrollView>
@@ -345,7 +366,7 @@ const Profile: React.FC = () => {
 
       <UpdateConfirmation
         ref={draftRef}
-        message={'Profile saved a draft successfully'}
+        message={TEXT.profile_draft()}
         onUpdatePress={() => draftRef.current?.close()}
       />
     </SafeAreaView>

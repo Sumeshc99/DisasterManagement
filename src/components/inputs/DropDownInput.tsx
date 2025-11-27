@@ -13,6 +13,7 @@ interface DropDownInputProps {
   items: { label: string; value: string }[];
   placeholder?: string;
   errors?: any;
+  onSelect?: (value: any) => void;
 }
 
 const DropDownInput: React.FC<DropDownInputProps> = ({
@@ -23,6 +24,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   items,
   placeholder,
   errors,
+  onSelect,
 }) => {
   const [open, setOpen] = useState(false);
   const [localItems, setLocalItems] = useState(items);
@@ -34,7 +36,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   const isRequired = !!rules?.required;
 
   const handleOpen = () => {
-    Keyboard.dismiss(); // 👈 Hide keyboard when dropdown opens
+    Keyboard.dismiss();
     setOpen(true);
   };
 
@@ -56,11 +58,6 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             items={localItems}
             setOpen={setOpen}
             onOpen={handleOpen}
-            setValue={callback => {
-              const newValue = callback(value);
-              onChange(newValue);
-              return newValue;
-            }}
             setItems={setLocalItems}
             placeholder={placeholder}
             placeholderStyle={styles.placeholderStyle}
@@ -74,6 +71,12 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             selectedItemLabelStyle={styles.selectedItemLabelStyle}
             listMode="SCROLLVIEW"
             arrowIconStyle={{ tintColor: COLOR.darkGray }}
+            setValue={callback => {
+              const newValue = callback(value);
+              onChange(newValue);
+              if (onSelect) onSelect(newValue);
+              return newValue;
+            }}
           />
         )}
       />

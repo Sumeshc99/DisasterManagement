@@ -20,6 +20,8 @@ import { FONT, WIDTH } from '../../themes/AppConst';
 import ReuseButton from '../UI/ReuseButton';
 
 const { height } = Dimensions.get('window');
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 Geocoder.init('AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw', { language: 'en' });
 
@@ -34,11 +36,25 @@ const IncidentAddressSheet = forwardRef<
   const [tab, settab] = useState(0);
   const [showLocation, setShowLocation] = useState(false);
 
+  const currlocation = useSelector(
+    (state: RootState) => state?.location?.currentLocation,
+  );
+
   const [location, setLocation] = useState<any>({
     address: '',
-    latitude: null,
-    longitude: null,
+    latitude: 0,
+    longitude: 0,
   });
+
+  useEffect(() => {
+    if (currlocation) {
+      setLocation({
+        address: currlocation.address || '',
+        latitude: Number(currlocation.latitude) || 0,
+        longitude: Number(currlocation.longitude) || 0,
+      });
+    }
+  }, [currlocation]);
 
   const {
     control,
@@ -165,7 +181,7 @@ const IncidentAddressSheet = forwardRef<
                 control={control}
                 editable={false}
                 placeholder={TEXT.country_region()}
-                rules={{ required: 'Country is required' }}
+                rules={{ required: TEXT.country_required() }}
                 error={errors.country?.message}
               />
 
@@ -174,7 +190,7 @@ const IncidentAddressSheet = forwardRef<
                 name="flat"
                 control={control}
                 placeholder={TEXT.flat_house()}
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.flat?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -183,14 +199,16 @@ const IncidentAddressSheet = forwardRef<
                 name="street"
                 control={control}
                 placeholder={TEXT.street_address()}
+                rules={{ required: 'Street is required' }}
                 error={errors.street?.message}
               />
               <View style={{ marginTop: -6 }} />
               <FormTextInput2
-                label="Nearby landmark (If applicable)"
+                label={TEXT.nearby_landmark()}
                 name="landmark"
                 control={control}
                 placeholder={TEXT.nearby_landmark()}
+                rules={{ required: TEXT.nearby_landmark() }}
                 error={errors.landmark?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -199,14 +217,16 @@ const IncidentAddressSheet = forwardRef<
                 name="city"
                 control={control}
                 placeholder={TEXT.city()}
+                rules={{ required: TEXT.city_required() }}
                 error={errors.city?.message}
               />
               <View style={{ marginTop: -6 }} />
               <FormTextInput2
-                label="Division"
+                label={TEXT.district()}
                 name="division"
                 control={control}
-                placeholder={TEXT.division()}
+                placeholder={TEXT.district()}
+                rules={{ required: TEXT.district_required() }}
                 error={errors.division?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -215,6 +235,7 @@ const IncidentAddressSheet = forwardRef<
                 name="state"
                 control={control}
                 placeholder={TEXT.state()}
+                rules={{ required: 'State is required' }}
                 error={errors.state?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -234,6 +255,8 @@ const IncidentAddressSheet = forwardRef<
                     label="Latitude"
                     name="latitude"
                     control={control}
+                    error={errors.latitude?.message}
+                    rules={{ required: 'Latitude is required' }}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -241,14 +264,14 @@ const IncidentAddressSheet = forwardRef<
                     label="Longitude"
                     name="longitude"
                     control={control}
+                    error={errors.longitude?.message}
+                    rules={{ required: 'Longitude is required' }}
                   />
                 </View>
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>
-                  Show your specific location
-                </Text>
+                <Text style={styles.switchLabel}>{TEXT.show_location()}</Text>
                 <Switch
                   value={showLocation}
                   onValueChange={setShowLocation}
@@ -257,12 +280,18 @@ const IncidentAddressSheet = forwardRef<
                 />
               </View>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.button}
                 onPress={handleSubmit(handleFormSubmit)}
               >
                 <Text style={styles.buttonText}>{TEXT.confirm()}</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+
+              <ReuseButton
+                text={TEXT.confirm()}
+                onPress={handleSubmit(handleFormSubmit)}
+                style={{ width: WIDTH(50), alignSelf: 'center' }}
+              />
             </ScrollView>
           )}
         </View>
