@@ -28,6 +28,7 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
       noLabel = 'No',
       onYes,
       onNo,
+      type,
     },
     ref,
   ) => {
@@ -40,12 +41,13 @@ const SuccessScreen = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
         closeOnPressMask
         height={height}
         onClose={() => {
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'mainAppSelector' }],
-            }),
-          );
+          type === 'cancel' &&
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'mainAppSelector' }],
+              }),
+            );
         }}
         customStyles={{
           container: styles.sheetContainer,

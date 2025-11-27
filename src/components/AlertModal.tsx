@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -21,34 +21,57 @@ interface AlertModalProps {
 const AlertModal: React.FC<AlertModalProps> = ({
   visible,
   title = 'IMPORTANT ALERT',
-  message = 'Your decision is needed on pending incident request(s). Take action now',
+  message = 'Your decision is needed on pending incident requests. Take action now',
   onAcknowledge,
   onViewDetails,
   onClose,
 }) => {
-  // useEffect(() => {
-  //   if (visible) {
-  //     const alertSound = new Sound(
-  //       require('../assets/alertSound.mp3'),
-  //       error => {
-  //         if (error) {
-  //           console.log('Failed to load sound', error);
-  //           return;
-  //         }
-  //         alertSound.play(() => {
-  //           alertSound.release();
-  //         });
-  //       },
-  //     );
-  //   }
-  // }, [visible]);
+  const soundRef = useRef<Sound | null>(null);
+
+  useEffect(() => {
+    if (visible) {
+      Sound.setCategory('Playback', true);
+
+      const s = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {
+        if (error) {
+          console.log('Failed to load sound', error);
+          return;
+        }
+
+        soundRef.current = s;
+
+        s.play(() => {
+          s.release();
+          soundRef.current = null;
+        });
+      });
+    } else {
+      // Stop sound when modal closes
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.release();
+        soundRef.current = null;
+      }
+    }
+  }, [visible]);
+
+  const stopSound = () => {
+    if (soundRef.current) {
+      soundRef.current.stop();
+      soundRef.current.release();
+      soundRef.current = null;
+    }
+  };
 
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        stopSound();
+        onClose && onClose();
+      }}
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
@@ -67,7 +90,10 @@ const AlertModal: React.FC<AlertModalProps> = ({
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={[styles.button, styles.outlinedButton]}
-                onPress={onAcknowledge}
+                onPress={() => {
+                  stopSound();
+                  onAcknowledge && onAcknowledge();
+                }}
                 activeOpacity={0.8}
               >
                 <Text style={[styles.buttonText, styles.outlinedText]}>
@@ -77,7 +103,10 @@ const AlertModal: React.FC<AlertModalProps> = ({
 
               <TouchableOpacity
                 style={[styles.button, styles.outlinedButton]}
-                onPress={onViewDetails}
+                onPress={() => {
+                  stopSound();
+                  onViewDetails && onViewDetails();
+                }}
                 activeOpacity={0.8}
               >
                 <Text style={[styles.buttonText, styles.outlinedText]}>

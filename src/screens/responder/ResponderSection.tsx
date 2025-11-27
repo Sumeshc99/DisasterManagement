@@ -9,7 +9,7 @@ import { RootState } from '../../store/RootReducer';
 
 const POLLING_INTERVAL = 2000;
 
-const ReviewerSection = () => {
+const ResponderSection = () => {
   const navigation = useNavigation<AppStackNavigationProp<'incidentDetails'>>();
   const { user, userToken }: any = useSelector(
     (state: RootState) => state.auth,
@@ -79,6 +79,6 @@ const ReviewerSection = () => {
   );
 };
 
-export default ReviewerSection;
+export default ResponderSection;
 
 const styles = StyleSheet.create({});
