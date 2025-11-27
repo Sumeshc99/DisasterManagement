@@ -51,8 +51,6 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const getAssignedIncident = async () => {
       try {
         const resp = await ApiManager.assignedToResponder(user?.id, userToken);
-        console.log('qwqw', resp?.data?.data);
-
         if (resp?.data?.status) {
           const results = resp?.data?.data || [];
           setAssignedInc(results);
@@ -70,6 +68,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const onRefresh = async () => {
       setRefreshing(true);
       await fetchIncidentList();
+      await getAssignedIncident();
       setRefreshing(false);
     };
 
