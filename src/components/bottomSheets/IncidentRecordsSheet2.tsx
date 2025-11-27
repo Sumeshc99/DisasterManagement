@@ -69,6 +69,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const onRefresh = async () => {
       setRefreshing(true);
       await fetchIncidentList();
+      await getAssignedIncident();
       setRefreshing(false);
     };
 

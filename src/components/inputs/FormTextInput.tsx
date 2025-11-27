@@ -20,6 +20,7 @@ interface FormTextInputProps extends TextInputProps {
   multiline?: boolean;
   numberOfLines?: number;
   onRightIconPress?: () => void;
+  onInputPress?: () => void; // 👈 ADDED
 }
 
 const FormTextInput: React.FC<FormTextInputProps> = ({
@@ -33,6 +34,7 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
   numberOfLines = 1,
   onRightIconPress,
   editable = true,
+  onInputPress, // 👈 ADDED
   ...textInputProps
 }) => {
   const isRequired = !!rules?.required;
@@ -74,7 +76,9 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
               textAlignVertical={multiline ? 'top' : 'center'}
               textAlign={I18nManager.isRTL ? 'right' : 'left'}
               editable={editable}
-              // selection={value ? { start: 0 } : undefined}
+              // 👇 ACTION FIRES WHEN INPUT IS CLICKED
+              onPressIn={() => onInputPress && onInputPress()}
+              onFocus={() => onInputPress && onInputPress()}
               {...textInputProps}
             />
           </View>

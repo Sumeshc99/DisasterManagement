@@ -49,6 +49,9 @@ const ReviewerTable = ({ title, data }: any) => {
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
           <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          {title === 'Responder' && (
+            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+          )}
           <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
         </View>
 
@@ -57,7 +60,10 @@ const ReviewerTable = ({ title, data }: any) => {
           <View key={index} style={styles.tableRow}>
             <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
             <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
-            <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+            {title === 'Responder' && (
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+            )}
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.type}</Text>
           </View>
         ))}
       </View>
