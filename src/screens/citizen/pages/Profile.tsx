@@ -53,7 +53,7 @@ const Profile: React.FC = () => {
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const draft = useSelector((state: RootState) => state?.draft?.user);
 
-  const [tahsilList, settahsilList] = useState([]);
+  const [blockList, setBlockList] = useState([]);
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
   const [userData, setUserData] = useState<any>({});
   const [loading, setloading] = useState(false);
@@ -138,7 +138,7 @@ const Profile: React.FC = () => {
       ApiManager.tahsilList()
         .then(resp => {
           if (resp?.data?.success) {
-            settahsilList(
+            setBlockList(
               (resp?.data?.data?.blocks || []).map((item: any) => ({
                 label: item.Block,
                 value: item.id,
@@ -322,7 +322,7 @@ const Profile: React.FC = () => {
               <BasicInfo
                 control={control}
                 errors={errors}
-                tahsilList={tahsilList}
+                blockList={blockList}
                 saveInDraft={saveInDraft}
                 handleSubmit={handleSubmit}
                 onSubmit={changeTab}

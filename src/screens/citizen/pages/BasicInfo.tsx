@@ -15,7 +15,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 interface BasicInfoProps {
   control: Control<any>;
   errors: FieldErrors;
-  tahsilList: any;
+  blockList: any;
   saveInDraft: Function;
   handleSubmit: UseFormHandleSubmit<any>;
   onSubmit: (data: any) => void;
@@ -24,7 +24,7 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({
   control,
   errors,
-  tahsilList,
+  blockList,
   saveInDraft,
   handleSubmit,
   onSubmit,
@@ -110,7 +110,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="block"
         control={control}
         placeholder="Select block"
-        items={tahsilList}
+        items={blockList}
         rules={{ required: TEXT.block_required() }}
         errors={errors}
       />
