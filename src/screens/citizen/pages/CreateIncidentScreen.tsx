@@ -210,7 +210,7 @@ const CreateIncidentScreen: React.FC = () => {
             label="Specify Other Type"
             name="customIncidentType"
             control={control}
-            placeholder="Enter incident type"
+            placeholder="Incident Type Name"
             rules={{ required: 'Please specify the incident type' }}
             error={errors.customIncidentType?.message}
           />

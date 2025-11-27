@@ -20,6 +20,8 @@ import { FONT, WIDTH } from '../../themes/AppConst';
 import ReuseButton from '../UI/ReuseButton';
 
 const { height } = Dimensions.get('window');
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 Geocoder.init('AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw', { language: 'en' });
 
@@ -34,11 +36,25 @@ const IncidentAddressSheet = forwardRef<
   const [tab, settab] = useState(0);
   const [showLocation, setShowLocation] = useState(false);
 
+  const currlocation = useSelector(
+    (state: RootState) => state?.location?.currentLocation,
+  );
+
   const [location, setLocation] = useState<any>({
     address: '',
-    latitude: null,
-    longitude: null,
+    latitude: 0,
+    longitude: 0,
   });
+
+  useEffect(() => {
+    if (currlocation) {
+      setLocation({
+        address: currlocation.address || '',
+        latitude: Number(currlocation.latitude) || 0,
+        longitude: Number(currlocation.longitude) || 0,
+      });
+    }
+  }, [currlocation]);
 
   const {
     control,

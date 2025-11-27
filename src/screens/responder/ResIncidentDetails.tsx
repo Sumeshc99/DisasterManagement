@@ -111,10 +111,53 @@ const ResIncidentDetails: React.FC = () => {
     },
   });
 
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    if (hours === 0) hours = 12;
+    else if (hours > 12) hours = hours - 12;
+
+    return `${day}/${month}/${year}, ${hours}.${minutes} ${ampm}`;
+  };
+
   const media = watch('media');
 
   // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
+    const getIncidentDetails = () => {
+      setLoading(true);
+      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+        .then(resp => {
+          if (resp?.data?.status) {
+            const inc = resp?.data?.data;
+            setIncidentData(inc);
+
+            reset({
+              incidentId: inc?.incident_id,
+              incidentType: inc?.incident_type_name,
+              address: inc?.address,
+              mobileNumber: inc?.mobile_number,
+              description: inc?.description,
+              media: inc?.upload_media,
+              status: inc?.status,
+              dateTime: formatDateTime(inc?.date_reporting),
+            });
+          }
+        })
+        .catch(err => console.log('err', err.response))
+        .finally(() => setLoading(false));
+    };
+
     getIncidentDetails();
   }, []);
 
