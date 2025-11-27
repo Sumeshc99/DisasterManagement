@@ -63,7 +63,7 @@ const CreateIncidentScreen: React.FC = () => {
     watch,
   } = useForm<IncidentForm>({
     defaultValues: {
-      incidentType: '1',
+      incidentType: '',
       customIncidentType: '',
       address: '',
       mobileNumber: '',
@@ -200,6 +200,7 @@ const CreateIncidentScreen: React.FC = () => {
           control={control}
           placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
+          rules={{ required: 'Please specify the incident type' }}
           errors={errors}
           onSelect={value => handleIncidentTypeChange(value)}
         />
@@ -210,7 +211,7 @@ const CreateIncidentScreen: React.FC = () => {
             label="Specify Other Type"
             name="customIncidentType"
             control={control}
-            placeholder="Enter incident type"
+            placeholder="Enter other incident type"
             rules={{ required: 'Please specify the incident type' }}
             error={errors.customIncidentType?.message}
           />

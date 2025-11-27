@@ -61,9 +61,9 @@ const ReviewerTable = ({ title, data }: any) => {
             <Text style={[styles.tableCell, { flex: 1 }]}>{index + 1}</Text>
             <Text style={[styles.tableCell, { flex: 2 }]}>{item.name}</Text>
             {title === 'Responder' && (
-              <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{item.type}</Text>
             )}
-            <Text style={[styles.tableCell, { flex: 2 }]}>{item.type}</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{item.number}</Text>
           </View>
         ))}
       </View>

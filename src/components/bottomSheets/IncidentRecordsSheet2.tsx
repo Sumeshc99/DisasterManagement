@@ -423,14 +423,14 @@ const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 4,
   },
 
   statusText: {
     color: '#000',
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: FONT.R_BOLD_700,
   },
 });

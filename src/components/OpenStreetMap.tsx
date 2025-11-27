@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
@@ -6,7 +6,7 @@ import { WIDTH } from '../themes/AppConst';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/RootReducer';
 import { TEXT } from '../i18n/locales/Text';
-import Incident from '../assets/svg/incident.svg';
+import BlinkingIcon from './UI/BlinkingIcon';
 
 interface Props {
   responders: any;
@@ -29,10 +29,8 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
 
   const CurrentLocation = useMemo(
     () => ({
-      latitude: 21.1458 || 0,
-      longitude: 79.0882 || 0,
-      // latitude: Number(location?.latitude) || 0,
-      // longitude: Number(location?.longitude) || 0,
+      latitude: 21.1458,
+      longitude: 79.0882,
       latitudeDelta: 0.03,
       longitudeDelta: 0.03,
     }),
@@ -54,54 +52,61 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
     }
   }, []);
 
+  const [tracksChanges, setTracksChanges] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTracksChanges(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [incidents]);
+
   const renderMarker = useCallback(
-    (item: ResourceItem) => {
-      return (
-        <Marker
-          key={item.id}
-          coordinate={{
-            latitude: parseFloat(item.latitude),
-            longitude: parseFloat(item.longitude),
-          }}
-          title={item.full_name}
-          description={item.tehsil_name}
-        >
-          <Image
-            source={getMarkerIcon(item.resource_type)}
-            style={styles.markerIcon}
-            resizeMode="contain"
-          />
-        </Marker>
-      );
-    },
+    (item: ResourceItem) => (
+      <Marker
+        key={item.id}
+        coordinate={{
+          latitude: parseFloat(item.latitude),
+          longitude: parseFloat(item.longitude),
+        }}
+        title={item.full_name}
+        description={item.tehsil_name}
+      >
+        <Image
+          source={getMarkerIcon(item.resource_type)}
+          style={styles.markerIcon}
+          resizeMode="contain"
+        />
+      </Marker>
+    ),
     [getMarkerIcon],
   );
 
   const renderIncident = useCallback(
-    (item: any) => {
-      return (
-        <Marker
-          key={item.id}
-          coordinate={{
-            latitude: parseFloat(item.latitude),
-            longitude: parseFloat(item.longitude),
-          }}
-        >
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={styles.infoBox}>
-              <Text style={styles.incidentTitle} numberOfLines={1}>
-                {item?.incident_type_name}
-              </Text>
-              <Text style={styles.incidentSeverity} numberOfLines={1}>
-                Severity: {item.severity || 'Medium'}
-              </Text>
-            </TouchableOpacity>
-            <Incident width={60} height={60} />
-          </View>
-        </Marker>
-      );
-    },
-    [incidents],
+    (item: any) => (
+      <Marker
+        key={item.id}
+        coordinate={{
+          latitude: parseFloat(item.latitude),
+          longitude: parseFloat(item.longitude),
+        }}
+        tracksViewChanges={true}
+      >
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity style={styles.infoBox}>
+            <Text style={styles.incidentTitle} numberOfLines={1}>
+              {item?.incident_type_name}
+            </Text>
+            <Text style={styles.incidentSeverity} numberOfLines={1}>
+              Severity: {item.severity || 'Medium'}
+            </Text>
+          </TouchableOpacity>
+
+          <BlinkingIcon size={50} />
+        </View>
+      </Marker>
+    ),
+    [tracksChanges],
   );
 
   return (
@@ -115,44 +120,37 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
       >
         <Text>{TEXT.default_view_incidents()}</Text>
       </View>
+
       {CurrentLocation && (
         <MapView
           style={{ flex: 1 }}
           initialRegion={CurrentLocation}
-          zoomEnabled={true}
-          scrollEnabled={true}
-          pitchEnabled={true}
-          rotateEnabled={true}
           showsUserLocation={true}
-          showsCompass={true}
-          showsScale={true}
+          zoomEnabled
+          scrollEnabled
         >
           <UrlTile
             urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             maximumZ={19}
-            flipY={false}
           />
 
-          {/* ✅ 2 KM Radius Circle */}
           <Circle
             center={{
               latitude: CurrentLocation.latitude,
               longitude: CurrentLocation.longitude,
             }}
-            radius={2000} // 2 km
+            radius={2000}
             strokeWidth={2}
             strokeColor="rgba(0, 122, 255, 0.8)"
             fillColor="rgba(0, 122, 255, 0.1)"
           />
 
-          {/* ✅ User Marker */}
           <Marker
             coordinate={{
               latitude: CurrentLocation.latitude,
               longitude: CurrentLocation.longitude,
             }}
             title="Your Location"
-            description="This is your current position"
           >
             <Image
               source={require('../assets/markers/marker.png')}
@@ -161,8 +159,8 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
             />
           </Marker>
 
-          {responders.map((item: any) => renderMarker(item))}
-          {incidents.map((item: any) => renderIncident(item))}
+          {responders.map(renderMarker)}
+          {incidents.map(renderIncident)}
         </MapView>
       )}
 
@@ -173,7 +171,7 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
             style={{ width: WIDTH(10), height: WIDTH(10) }}
           />
           <Text style={{ fontSize: 30, color: COLOR.white }}>
-            <Text>{incidents.length.toString().padStart(3, '0')}</Text>
+            {incidents.length.toString().padStart(3, '0')}
           </Text>
         </View>
         <Text style={{ fontSize: 16, marginTop: 10, color: COLOR.white }}>
@@ -199,31 +197,15 @@ const styles = StyleSheet.create({
     top: 26,
   },
 
-  markers: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    minWidth: 160,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 4,
-    marginBottom: 5,
-    flexDirection: 'row',
-  },
   markerIcon: { width: 30, height: 30 },
+
   infoBox: {
-    flex: 1,
     maxWidth: 150,
     minWidth: 120,
     backgroundColor: COLOR.white,
     borderRadius: 8,
     alignItems: 'center',
     elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
     paddingVertical: 4,
   },
   incidentTitle: {
@@ -236,5 +218,4 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 2,
   },
-  incidentIcon: { width: 50, height: 50 },
 });
