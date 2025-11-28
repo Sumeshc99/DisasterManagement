@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -168,7 +169,19 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
 
-          <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => (ref as { current: any })?.current?.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={{ width: WIDTH(8), height: WIDTH(8) }}
+              />
+            </TouchableOpacity>
+          </View>
 
           {/* ------------------- TABS ----------------------- */}
           <View style={styles.tabContainer}>
@@ -286,10 +299,12 @@ const styles = StyleSheet.create({
 
   titleHeader: {
     fontSize: 18,
-    fontFamily: FONT.R_BOLD_700,
+    fontWeight: '700',
     color: COLOR.blue,
+    position: 'absolute', // keeps text in center
+    left: 0,
+    right: 0,
     textAlign: 'center',
-    marginBottom: 16,
   },
 
   // Tabs
@@ -384,7 +399,10 @@ const styles = StyleSheet.create({
 
   headerRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 30,
+    marginTop: 10,
   },
 
   incidentId: {
@@ -426,6 +444,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 4,
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    padding: 5,
   },
 
   statusText: {
