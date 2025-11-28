@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { RadioButton, TextInput } from 'react-native-paper';
 import { COLOR } from '../../themes/Colors';
@@ -11,6 +11,7 @@ import { RootState } from '../../store/RootReducer';
 import { useForm } from 'react-hook-form';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface props {
   ref: any;
@@ -97,8 +98,21 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>Select reason for rejection</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.titleHeader}>
+            {TEXT.select_reason_rejection()}
+          </Text>
 
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => (ref as { current: any })?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={{ width: WIDTH(8), height: WIDTH(8) }}
+            />
+          </TouchableOpacity>
+        </View>
         {/* Radio Buttons */}
         <View style={styles.radioRow}>
           <TouchableOpacity
@@ -162,9 +176,9 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
               label="Incident Id"
               name="insId"
               control={control}
-              placeholder="Select block"
+              placeholder="Select Incident Id"
               items={idList || []}
-              rules={{ required: 'Block is required' }}
+              rules={{ required: 'Incident Id required' }}
               errors={errors}
             />
           </>
@@ -272,6 +286,27 @@ const styles = StyleSheet.create({
     color: COLOR.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 50,
+    marginTop: 10,
+  },
+  titleHeader: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.blue,
+    position: 'absolute', // keeps text in center
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    padding: 5,
   },
 });
 
