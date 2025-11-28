@@ -8,6 +8,8 @@ import {
   Image,
 } from 'react-native';
 import Sound from 'react-native-sound';
+import { COLOR } from '../themes/Colors';
+import { FONT } from '../themes/AppConst';
 
 interface AlertModalProps {
   visible: boolean;
@@ -152,13 +154,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '700',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_BOLD_700,
     marginBottom: 10,
   },
   message: {
     fontSize: 14,
-    color: '#666',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_SBD_600,
     textAlign: 'center',
     marginBottom: 20,
     lineHeight: 20,
