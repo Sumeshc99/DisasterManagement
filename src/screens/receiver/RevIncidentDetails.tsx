@@ -26,9 +26,9 @@ import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
-import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
+import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
 
 interface IncidentDetailsForm {
@@ -145,7 +145,7 @@ const RevIncidentDetails: React.FC = () => {
 
             reset({
               incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
+              incidentType: inc.other_incident_type || inc?.incident_type_name,
               address: inc?.address,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
@@ -334,6 +334,7 @@ const RevIncidentDetails: React.FC = () => {
                     onChangeMedia={handleImageUpload}
                     onRemoveMedia={handleRemoveMedia}
                   /> */}
+                  {media?.length && <ImageContainer data={media} />}
                 </View>
 
                 <View style={{ flex: 1 }}>

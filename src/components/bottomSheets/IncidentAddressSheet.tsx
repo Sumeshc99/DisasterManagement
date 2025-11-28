@@ -127,7 +127,7 @@ const IncidentAddressSheet = forwardRef<
     if (onSubmit) {
       onSubmit(finalData);
     }
-    (ref as any)?.current?.close?.();
+    settab(0), (ref as any)?.current?.close?.();
   };
 
   return (
@@ -150,7 +150,9 @@ const IncidentAddressSheet = forwardRef<
           </View>
           <TouchableOpacity
             style={styles.sideBox}
-            onPress={() => (ref as any)?.current?.close?.()}
+            onPress={() => {
+              setLocation(''), settab(0), (ref as any)?.current?.close?.();
+            }}
           >
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>

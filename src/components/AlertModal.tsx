@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import Sound from 'react-native-sound';
+import SystemSetting from 'react-native-system-setting';
 import { COLOR } from '../themes/Colors';
 import { FONT } from '../themes/AppConst';
 
@@ -32,6 +33,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      SystemSetting.setVolume(1.0);
       Sound.setCategory('Playback', true);
 
       const s = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {

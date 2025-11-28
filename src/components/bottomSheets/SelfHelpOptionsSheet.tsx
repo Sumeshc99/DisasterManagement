@@ -100,7 +100,7 @@ const SelfHelpBottomSheet = forwardRef<
           <Text style={styles.primaryButtonText}>112</Text>
         </TouchableOpacity>
 
-        <Text style={styles.alternateLabel}>Alternate call</Text>
+        <Text style={styles.alternateLabel}>Emergency</Text>
 
         <View style={styles.alternateRow}>
           <TouchableOpacity
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     borderRadius: 25,
-    marginBottom: 12,
+    marginBottom: 6,
     width: 130,
     gap: 10,
   },

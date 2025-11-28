@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     marginTop: 8,
-    fontSize: 16,
+    // fontSize: 16,
     color: COLOR.textGrey,
     fontFamily: FONT.R_REG_400,
   },
