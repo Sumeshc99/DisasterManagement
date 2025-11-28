@@ -24,6 +24,7 @@ import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import IncidentAddressSheet from '../../../components/bottomSheets/IncidentAddressSheet';
 import FormTextInput2 from '../../../components/inputs/FormTextInput2';
 import { useNavigation } from '@react-navigation/native';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface MediaAsset {
   uri?: string;
@@ -44,6 +45,7 @@ const CreateIncidentScreen: React.FC = () => {
   const navigation = useNavigation();
   const { showLoader, hideLoader } = useGlobalLoader();
   const { user, userToken } = useSelector((state: RootState) => state.auth);
+  const snackbar = useSnackbar();
 
   const [incidentTypes, setIncidentTypes] = useState([]);
   const [allAddress, setallAddress] = useState<any>('');
@@ -130,12 +132,12 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('city_id', allAddress?.city || '');
       formData.append('district_id', allAddress?.district_id || '');
       formData.append('city_code', allAddress?.pincode || '');
-      // formData.append('other_incident_type', data?.customIncidentType || '');
+      formData.append('other_incident_type', data?.customIncidentType || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file: any, index) => {
           formData.append('upload_media[]', {
-            uri: file[0]?.uri,
+            uri: file?.uri,
             type: file.type || 'image/jpeg',
             name: file.fileName || `media_${index}.jpg`,
           });
@@ -150,14 +152,18 @@ const CreateIncidentScreen: React.FC = () => {
         });
         reset();
       } else {
-        Alert.alert(
-          'Error',
+        snackbar(
           response?.data?.message || 'Failed to create incident.',
+          'error',
         );
       }
     } catch (error: any) {
       console.log('error', error.response);
-      Alert.alert('Error', 'Something went wrong while creating the incident.');
+      snackbar(
+        error?.response?.data?.message ||
+          'Something went wrong while creating the incident.',
+        'error',
+      );
     } finally {
       hideLoader();
     }

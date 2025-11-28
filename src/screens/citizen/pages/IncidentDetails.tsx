@@ -8,6 +8,7 @@ import {
   StatusBar,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -27,6 +28,9 @@ import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOption
 import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import BackArrow from '../../../assets/svg/backArrow.svg';
+import ImageContainer from '../../../components/ImageContainer';
+import RNBlobUtil from 'react-native-blob-util';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -93,6 +97,7 @@ const formatDateTime = (dateString: string) => {
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const snackbar = useSnackbar();
 
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
@@ -131,7 +136,6 @@ const IncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
     const getIncidentDetails = () => {
       setLoading(true);
@@ -143,11 +147,11 @@ const IncidentDetails: React.FC = () => {
 
             reset({
               incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
+              incidentType: inc.other_incident_type || inc?.incident_type_name,
               address: inc?.address,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
-              media: inc?.upload_media,
+              media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
             });
@@ -289,7 +293,38 @@ const IncidentDetails: React.FC = () => {
       .finally(() => hideLoader());
   };
 
-  const downloadPDF = (item: any) => {};
+  const downloadPDF = (item: any) => {
+    const pdfUrl = item;
+    if (!pdfUrl) {
+      snackbar('PDF URL is not available', 'error');
+      return;
+    }
+    const { dirs } = RNBlobUtil.fs;
+    const downloadPath =
+      Platform.OS === 'android'
+        ? `${dirs.DownloadDir}/myfile_${Date.now()}.pdf`
+        : `${dirs.DocumentDir}/myfile_${Date.now()}.pdf`;
+
+    RNBlobUtil.config({
+      fileCache: true,
+      appendExt: 'pdf',
+      path: downloadPath,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        title: 'Downloading PDF',
+        description: 'Downloading PDF...',
+        path: downloadPath,
+        mime: 'application/pdf',
+        mediaScannable: true,
+      },
+    })
+      .fetch('GET', pdfUrl)
+      .then(res => {
+        console.log('Saved to:', downloadPath);
+      })
+      .catch(err => console.log(err));
+  };
 
   const onSuccessNo = () => {
     successRef.current.close();
@@ -384,7 +419,19 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
-                <View style={{ width: WIDTH(30) }}></View>
+                <View style={{ width: WIDTH(30) }}>
+                  {/* <FormMediaPicker
+                    label="Images"
+                    name="media"
+                    control={control}
+                    rules={{ required: 'At least one image is required' }}
+                    error={errors.media?.message}
+                    media={media}
+                    onChangeMedia={handleImageUpload}
+                    onRemoveMedia={handleRemoveMedia}
+                  /> */}
+                  {media?.length && <ImageContainer data={media} />}
+                </View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.label}>Status</Text>
@@ -435,7 +482,7 @@ const IncidentDetails: React.FC = () => {
 
                       <TouchableOpacity
                         style={styles.submitButton}
-                        onPress={() => successRef.current.open()}
+                        onPress={handleSubmit(() => successRef.current.open())}
                       >
                         <Text style={styles.submitButtonText}>Send</Text>
                       </TouchableOpacity>
@@ -470,7 +517,7 @@ const IncidentDetails: React.FC = () => {
                 >
                   <TouchableOpacity
                     style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_id)}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
                     <Text style={styles.submitButtonText1}>Download PDF</Text>
                   </TouchableOpacity>

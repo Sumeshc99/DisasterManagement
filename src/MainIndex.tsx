@@ -2,12 +2,10 @@ import { StyleSheet } from 'react-native';
 import React from 'react';
 import AppNavigation from './navigation/AppNavigation';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
-import GetCurrentLocation from './config/GetCurrentLocation';
 import { GlobalLoaderProvider } from './hooks/GlobalLoaderContext';
 import { SnackbarProvider } from './hooks/SnackbarProvider';
 import GlobalLoader from './components/GlobalLoader';
 import { I18nProvider } from './i18n/i18n';
-import GetCameraPermission from './config/GetCameraPermission';
 
 const MainIndex = () => {
   const theme = {
@@ -24,9 +22,6 @@ const MainIndex = () => {
       <I18nProvider>
         <GlobalLoaderProvider>
           <SnackbarProvider>
-            <GetCurrentLocation />
-            <GetCameraPermission />
-            {/* <GetMediaPermission /> */}
             <AppNavigation />
             <GlobalLoader />
           </SnackbarProvider>
