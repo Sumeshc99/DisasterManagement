@@ -124,7 +124,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         }}
         style={styles.card}
       >
-        <View style={styles.headerRow}>
+        <View style={styles.headerRow1}>
           <Text style={styles.incidentId}>
             {TEXT.incident_id()} - {item.incident_id}
           </Text>
@@ -403,6 +403,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 30,
     marginTop: 10,
+  },
+  headerRow1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
   incidentId: {

@@ -431,11 +431,7 @@ const RevIncidentDetails: React.FC = () => {
       />
 
       <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet
-        ref={assignRef}
-        data={incidentData}
-        successRef={successRef}
-      />
+      <AssignResponderSheet ref={assignRef} data={incidentData} />
       <SuccessSheet
         ref={successRef}
         message="Resp onders Assigned Successfully"
