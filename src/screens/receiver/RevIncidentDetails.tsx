@@ -28,6 +28,7 @@ import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import ImageContainer from '../../components/ImageContainer';
+import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -430,7 +431,15 @@ const RevIncidentDetails: React.FC = () => {
       />
 
       <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} />
+      <AssignResponderSheet
+        ref={assignRef}
+        data={incidentData}
+        successRef={successRef}
+      />
+      <SuccessSheet
+        ref={successRef}
+        message="Resp onders Assigned Successfully"
+      />
     </SafeAreaView>
   );
 };
