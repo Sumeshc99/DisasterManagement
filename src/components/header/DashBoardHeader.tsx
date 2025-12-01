@@ -44,9 +44,7 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate('incidentRecordsScreen')}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('notification')}>
           <Image
             source={require('../../assets/bell.png')}
             style={styles.iconSmall1}
