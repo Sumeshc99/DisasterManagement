@@ -136,32 +136,32 @@ const IncidentDetails: React.FC = () => {
   const media = watch('media');
 
   useEffect(() => {
-    const getIncidentDetails = () => {
-      setLoading(true);
-      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const inc = resp?.data?.data;
-            setIncidentData(inc);
-
-            reset({
-              incidentId: inc?.incident_id,
-              incidentType: inc.other_incident_type || inc?.incident_type_name,
-              address: inc?.address,
-              mobileNumber: inc?.mobile_number,
-              description: inc?.description,
-              media: inc?.media,
-              status: inc?.status,
-              dateTime: formatDateTime(inc?.date_reporting),
-            });
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => setLoading(false));
-    };
-
     getIncidentDetails();
   }, []);
+
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            dateTime: formatDateTime(inc?.date_reporting),
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
 
   // ==================== IMAGE UPLOAD ============================
   const handleImageUpload1 = (item: any) => {
@@ -286,6 +286,7 @@ const IncidentDetails: React.FC = () => {
       .then(resp => {
         if (resp.data.status) {
           cancelRef.current.open();
+          getIncidentDetails();
         }
       })
       .catch(err => console.log('err', err.response))
