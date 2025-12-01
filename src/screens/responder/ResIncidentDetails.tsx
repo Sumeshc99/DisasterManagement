@@ -15,7 +15,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import FormTextInput from '../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
@@ -29,6 +28,7 @@ import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
+import ImageContainer from '../../components/ImageContainer';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -171,7 +171,7 @@ const ResIncidentDetails: React.FC = () => {
 
           reset({
             incidentId: inc?.incident_id,
-            incidentType: inc?.incident_type_name,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
             address: inc?.address,
             mobileNumber: inc?.mobile_number,
             description: inc?.description,
@@ -331,7 +331,7 @@ const ResIncidentDetails: React.FC = () => {
                 error={errors.mobileNumber?.message}
               />
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
                 placeholder="Enter description"
@@ -343,16 +343,7 @@ const ResIncidentDetails: React.FC = () => {
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {/* <FormMediaPicker
-                    label="Images"
-                    name="media"
-                    control={control}
-                    rules={{ required: 'At least one image is required' }}
-                    error={errors.media?.message}
-                    media={media}
-                    onChangeMedia={handleImageUpload}
-                    onRemoveMedia={handleRemoveMedia}
-                  /> */}
+                  {media?.length && <ImageContainer data={media} />}
                 </View>
 
                 <View style={{ flex: 1 }}>

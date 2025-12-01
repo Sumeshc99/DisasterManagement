@@ -34,7 +34,7 @@ const FormTextInput: React.FC<FormTextInputProps> = ({
   numberOfLines = 1,
   onRightIconPress,
   editable = true,
-  onInputPress, // 👈 ADDED
+  onInputPress,
   ...textInputProps
 }) => {
   const isRequired = !!rules?.required;

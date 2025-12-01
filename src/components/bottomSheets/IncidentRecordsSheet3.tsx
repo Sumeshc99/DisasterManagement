@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -122,7 +123,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         }}
         style={styles.card}
       >
-        <View style={styles.headerRow}>
+        <View style={styles.headerRow1}>
           <Text style={styles.incidentId}>
             {TEXT.incident_id()} - {item.incident_id}
           </Text>
@@ -167,7 +168,19 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
 
-          <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => (ref as { current: any })?.current?.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={{ width: WIDTH(8), height: WIDTH(8) }}
+              />
+            </TouchableOpacity>
+          </View>
 
           {/* ------------------- TABS -------------------- */}
           <View style={styles.tabContainer}>
@@ -285,10 +298,12 @@ const styles = StyleSheet.create({
 
   titleHeader: {
     fontSize: 18,
-    fontFamily: FONT.R_BOLD_700,
+    fontWeight: '700',
     color: COLOR.blue,
+    position: 'absolute', // keeps text in center
+    left: 0,
+    right: 0,
     textAlign: 'center',
-    marginBottom: 16,
   },
 
   // Tabs
@@ -383,9 +398,15 @@ const styles = StyleSheet.create({
 
   headerRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+    marginTop: 10,
+  },
+  headerRow1: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   incidentId: {
     fontSize: 13,
     color: '#555',
@@ -431,5 +452,10 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 11,
     fontFamily: FONT.R_BOLD_700,
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    padding: 5,
   },
 });

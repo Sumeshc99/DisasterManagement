@@ -10,8 +10,12 @@ import {
   Platform,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { FONT } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import HospitalSvg from '../../assets/svg/Hospital (2).svg';
+import PoliceSvg from '../../assets/svg/Police.svg';
+import AmbulanceSvg from '../../assets/svg/Ambulance.svg';
+import FireBrigadesSvg from '../../assets/svg/FireBrigades.svg';
 
 interface SelfHelpBottomSheetProps {
   onClose: () => void;
@@ -96,7 +100,7 @@ const SelfHelpBottomSheet = forwardRef<
           <Text style={styles.primaryButtonText}>112</Text>
         </TouchableOpacity>
 
-        <Text style={styles.alternateLabel}>Alternate call</Text>
+        <Text style={styles.alternateLabel}>Emergency</Text>
 
         <View style={styles.alternateRow}>
           <TouchableOpacity
@@ -140,44 +144,29 @@ const SelfHelpBottomSheet = forwardRef<
             onPress={() => getResponders('clinic')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/hospi.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
+            <HospitalSvg height={WIDTH(20)} width={WIDTH(20)} />
+
             <Text style={styles.serviceCardText}>Clinic/Hospital</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('police')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/police.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
+            <PoliceSvg height={WIDTH(20)} width={WIDTH(20)} />
             <Text style={styles.serviceCardText}>Police Station</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('ambulance')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/amb.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
+            <AmbulanceSvg height={WIDTH(20)} width={WIDTH(20)} />
             <Text style={styles.serviceCardText}>Ambulance</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('fire')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/firev.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
+            <FireBrigadesSvg height={WIDTH(20)} width={WIDTH(20)} />
             <Text style={styles.serviceCardText}>Fire Brigades</Text>
           </TouchableOpacity>
         </View>
@@ -239,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     borderRadius: 25,
-    marginBottom: 12,
+    marginBottom: 6,
     width: 130,
     gap: 10,
   },
@@ -266,7 +255,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   alternateButton: {
-    flex: 1,
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
     borderColor: '#0D5FB3',

@@ -8,6 +8,7 @@ import {
   StatusBar,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -15,7 +16,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
 import { FONT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
@@ -27,6 +27,9 @@ import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOption
 import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import BackArrow from '../../../assets/svg/backArrow.svg';
+import ImageContainer from '../../../components/ImageContainer';
+// import RNBlobUtil from 'react-native-blob-util';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -93,6 +96,7 @@ const formatDateTime = (dateString: string) => {
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const snackbar = useSnackbar();
 
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
@@ -131,34 +135,33 @@ const IncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
-    const getIncidentDetails = () => {
-      setLoading(true);
-      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const inc = resp?.data?.data;
-            setIncidentData(inc);
-
-            reset({
-              incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
-              address: inc?.address,
-              mobileNumber: inc?.mobile_number,
-              description: inc?.description,
-              media: inc?.upload_media,
-              status: inc?.status,
-              dateTime: formatDateTime(inc?.date_reporting),
-            });
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => setLoading(false));
-    };
-
     getIncidentDetails();
   }, []);
+
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            dateTime: formatDateTime(inc?.date_reporting),
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
 
   // ==================== IMAGE UPLOAD ============================
   const handleImageUpload1 = (item: any) => {
@@ -283,13 +286,45 @@ const IncidentDetails: React.FC = () => {
       .then(resp => {
         if (resp.data.status) {
           cancelRef.current.open();
+          getIncidentDetails();
         }
       })
       .catch(err => console.log('err', err.response))
       .finally(() => hideLoader());
   };
 
-  const downloadPDF = (item: any) => {};
+  const downloadPDF = (item: any) => {
+    const pdfUrl = item;
+    if (!pdfUrl) {
+      snackbar('PDF URL is not available', 'error');
+      return;
+    }
+    const { dirs } = RNBlobUtil.fs;
+    const downloadPath =
+      Platform.OS === 'android'
+        ? `${dirs.DownloadDir}/myfile_${Date.now()}.pdf`
+        : `${dirs.DocumentDir}/myfile_${Date.now()}.pdf`;
+
+    RNBlobUtil.config({
+      fileCache: true,
+      appendExt: 'pdf',
+      path: downloadPath,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        title: 'Downloading PDF',
+        description: 'Downloading PDF...',
+        path: downloadPath,
+        mime: 'application/pdf',
+        mediaScannable: true,
+      },
+    })
+      .fetch('GET', pdfUrl)
+      .then(res => {
+        console.log('Saved to:', downloadPath);
+      })
+      .catch(err => console.log(err));
+  };
 
   const onSuccessNo = () => {
     successRef.current.close();
@@ -371,7 +406,7 @@ const IncidentDetails: React.FC = () => {
               />
 
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
                 placeholder="Enter description"
@@ -384,7 +419,9 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
-                <View style={{ width: WIDTH(30) }}></View>
+                <View style={{ width: WIDTH(30) }}>
+                  {media?.length && <ImageContainer data={media} />}
+                </View>
 
                 <View style={{ flex: 1 }}>
                   <Text style={styles.label}>Status</Text>
@@ -435,7 +472,7 @@ const IncidentDetails: React.FC = () => {
 
                       <TouchableOpacity
                         style={styles.submitButton}
-                        onPress={() => successRef.current.open()}
+                        onPress={handleSubmit(() => successRef.current.open())}
                       >
                         <Text style={styles.submitButtonText}>Send</Text>
                       </TouchableOpacity>
@@ -470,7 +507,7 @@ const IncidentDetails: React.FC = () => {
                 >
                   <TouchableOpacity
                     style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_id)}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
                     <Text style={styles.submitButtonText1}>Download PDF</Text>
                   </TouchableOpacity>
@@ -605,7 +642,7 @@ const styles = StyleSheet.create({
 
   tableCell: {
     padding: 10,
-    fontSize: 15,
+    fontSize: 12,
     textAlign: 'center',
   },
 });

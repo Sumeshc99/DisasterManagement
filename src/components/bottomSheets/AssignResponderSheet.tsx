@@ -27,6 +27,7 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
   const [resources, setResources] = useState<any[]>([]);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
+  const [error, setError] = useState('');
 
   // fetch responder types
   useEffect(() => {
@@ -45,12 +46,18 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
         console.log('Incident Error:', err.response || err);
       }
     };
-
     getIncidentType();
   }, []);
 
-  // assign API call
+  // Assign responder API
   const assignResponders = async () => {
+    if (selectedResponders.length === 0) {
+      setError('Please select at least one responder type.');
+      return;
+    }
+
+    setError('');
+
     const ids = selectedResponders.map(item => item.value).join(',');
 
     const body = {
@@ -80,6 +87,7 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
     } else {
       setSelectedResponders(prev => [...prev, item]);
     }
+    setError('');
   };
 
   return (
@@ -115,7 +123,7 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
         {/* Dropdown */}
         <View>
           <TouchableOpacity
-            style={styles.dropdown}
+            style={[styles.dropdown, error ? { borderColor: 'red' } : {}]}
             onPress={() => setOpenDropdown(!openDropdown)}
           >
             <Text style={styles.dropdownText}>
@@ -125,6 +133,9 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
             </Text>
             <Text style={styles.dropdownIcon}>▼</Text>
           </TouchableOpacity>
+
+          {/* Error message */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           {openDropdown && (
             <View style={styles.dropdownListWrapper}>
@@ -241,6 +252,13 @@ const styles = StyleSheet.create({
     color: COLOR.black,
   },
 
+  errorText: {
+    color: 'red',
+    marginTop: 5,
+    marginLeft: 5,
+    fontSize: 13,
+  },
+
   saveBtn: {
     marginTop: 25,
     backgroundColor: COLOR.blue,
@@ -257,8 +275,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   closeIconContainer: {
-    // position: 'absolute',
-    //top: 20,
     right: 20,
     borderRadius: 20,
   },
@@ -270,7 +286,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10, // gives top + bottom space
+    paddingVertical: 10,
     position: 'relative',
   },
 });

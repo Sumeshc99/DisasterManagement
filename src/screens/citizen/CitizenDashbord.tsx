@@ -62,6 +62,14 @@ const CitizenDashboard = () => {
     return () => clearTimeout(timer);
   }, [user]);
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     GetCurrentLocation();
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
   const fetchIncidentsAndResponders = useCallback(async () => {
     try {
       const [incidentsResp, respondersResp] = await Promise.all([

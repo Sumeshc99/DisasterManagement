@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   Image,
   StatusBar,
   ImageBackground,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -48,6 +50,32 @@ const SelectLanguage = () => {
       icon1: require('../assets/m1.png'),
     },
   ];
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      if (Platform.OS === 'android') {
+        // 1️⃣ Ask Location first
+        const locationGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+
+        if (locationGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location Granted');
+
+          // 2️⃣ Only after location → ask Camera
+          const cameraGranted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+          );
+
+          if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Camera Granted');
+          }
+        }
+      }
+    };
+
+    requestPermissions();
+  }, []);
 
   const handleNext = () => {
     navigation.navigate('loginScreen');
@@ -186,7 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.blue,
   },
   languageText: {
-   fontFamily: FONT.R_SBD_600,
+    fontFamily: FONT.R_SBD_600,
     color: COLOR.textGrey,
     fontSize: 16,
   },

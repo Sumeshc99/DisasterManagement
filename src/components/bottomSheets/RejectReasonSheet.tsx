@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { RadioButton, TextInput } from 'react-native-paper';
 import { COLOR } from '../../themes/Colors';
@@ -44,20 +44,23 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
   });
 
   useEffect(() => {
-    const getIncidentIds = () => {
-      ApiManager.getIncidentIds(userToken)
-        .then(resp => {
-          if (resp.data.status) {
-            setidList(
-              (resp?.data?.data || []).map((item: any) => ({
-                label: item.incident_id,
-                value: item.id,
-              })),
-            );
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => '');
+    const getIncidentIds = async () => {
+      try {
+        const resp = await ApiManager.getIncidentIds(userToken);
+
+        if (resp?.data?.status) {
+          const list = (resp?.data?.data || [])
+            .map((item: any) => ({
+              label: item.incident_id,
+              value: item.id,
+            }))
+            .filter((it: any) => it.label !== data?.data?.incident_id);
+
+          setidList(list);
+        }
+      } catch (err: any) {
+        console.log('Incident IDs Error:', err.response || err);
+      }
     };
 
     getIncidentIds();
@@ -106,7 +109,21 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
       <View style={styles.container}>
         <View style={styles.dragIndicator} />
 
-        <Text style={styles.title}>{TEXT.select_reason_rejection()}</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.titleHeader}>
+            {TEXT.select_reason_rejection()}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => (ref as { current: any })?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={{ width: WIDTH(8), height: WIDTH(8) }}
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Radio Buttons */}
         <View style={styles.radioRow}>
@@ -162,18 +179,19 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         {/* Dynamic Input Based on Condition */}
         {selectedReason === 'duplicate' ? (
           <>
+            <Text style={styles.label}>Select duplicate incident Id </Text>
             <Text style={styles.label}>
               Select duplicate incident Id{' '}
-              <Text style={{ color: COLOR.red }}>*</Text>
+              {/* <Text style={{ color: COLOR.red }}>*</Text> */}
             </Text>
 
             <DropDownInput
               label="Incident Id"
               name="insId"
               control={control}
-              placeholder="Select block"
+              placeholder="Select Incident Id"
               items={idList || []}
-              rules={{ required: 'Block is required' }}
+              rules={{ required: 'Incident Id required' }}
               errors={errors}
             />
           </>
@@ -280,6 +298,27 @@ const styles = StyleSheet.create({
     color: COLOR.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 50,
+    marginTop: 10,
+  },
+  titleHeader: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.blue,
+    position: 'absolute', // keeps text in center
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    padding: 5,
   },
 });
 
