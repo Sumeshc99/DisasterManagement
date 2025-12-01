@@ -217,4 +217,18 @@ export const TEXT = {
   police_stations: () => t('police_stations', 'Police Station'),
   hospital: () => t('hospital', 'Hospital'),
   boat: () => t('boat', 'Boat'),
+
+  // monday
+
+  upload_image: () => t('upload_image', 'Upload Image'),
+
+  capture_or_upload: () =>
+    t('capture_or_upload', 'Capture or upload incident images and videos'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
+  boat: () => t('boat', 'Boat'),
 };

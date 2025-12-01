@@ -311,7 +311,7 @@ const RevIncidentDetails: React.FC = () => {
               />
 
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
                 placeholder="Enter description"

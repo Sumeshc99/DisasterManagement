@@ -287,7 +287,7 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Description */}
         <View>
           <FormTextInput
-            label="Description"
+            label={TEXT.description()}
             name="description"
             control={control}
             multiline
@@ -318,7 +318,7 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Media Picker */}
         <FormMediaPicker
-          label="Upload Image"
+          label={TEXT.upload_image()}
           name="media"
           control={control}
           // rules={{ required: 'At least one media file is required' }}

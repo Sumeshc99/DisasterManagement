@@ -332,7 +332,7 @@ const ResIncidentDetails: React.FC = () => {
                 error={errors.mobileNumber?.message}
               />
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
                 placeholder="Enter description"
