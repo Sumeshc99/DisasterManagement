@@ -432,5 +432,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 12,
     fontFamily: FONT.R_BOLD_700,
+    maxWidth: 150,
   },
 });

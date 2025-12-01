@@ -15,7 +15,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import FormTextInput from '../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
@@ -323,16 +322,6 @@ const RevIncidentDetails: React.FC = () => {
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {/* <FormMediaPicker
-                    label="Images"
-                    name="media"
-                    control={control}
-                    rules={{ required: 'At least one image is required' }}
-                    error={errors.media?.message}
-                    media={media}
-                    onChangeMedia={handleImageUpload}
-                    onRemoveMedia={handleRemoveMedia}
-                  /> */}
                   {media?.length && <ImageContainer data={media} />}
                 </View>
 
@@ -527,7 +516,7 @@ const styles = StyleSheet.create({
 
   tableCell: {
     padding: 10,
-    fontSize: 15,
+    fontSize: 12,
     textAlign: 'center',
   },
 });
