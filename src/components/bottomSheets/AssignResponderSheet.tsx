@@ -18,177 +18,155 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface AssignProps {
   data: any;
-  successRef: any;
 }
 
-const AssignResponderSheet = forwardRef<any, AssignProps>(
-  ({ data, successRef }, ref) => {
-    const navigation = useNavigation();
-    const { userToken } = useSelector((state: RootState) => state.auth);
+const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
+  const navigation = useNavigation();
+  const { userToken } = useSelector((state: RootState) => state.auth);
 
-    const [resources, setResources] = useState<any[]>([]);
-    const [openDropdown, setOpenDropdown] = useState(false);
-    const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
-    const [showError, setShowError] = useState(false);
+  const [resources, setResources] = useState<any[]>([]);
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
+  const [error, setError] = useState('');
 
-    // fetch responder types
-    useEffect(() => {
-      const getIncidentType = async () => {
-        try {
-          const resp = await ApiManager.incidentType(userToken);
-          if (resp?.data?.success) {
-            setResources(
-              (resp?.data?.data?.resource_types || []).map((item: any) => ({
-                label: item.name,
-                value: item.id,
-              })),
-            );
-          }
-        } catch (err: any) {
-          console.log('Incident Error:', err.response || err);
-        }
-      };
-
-      getIncidentType();
-    }, []);
-
-    // assign API call
-    const assignResponders = async () => {
-      if (selectedResponders.length === 0) {
-        setShowError(true);
-        return;
-      }
-      setShowError(false);
-      const ids = selectedResponders.map(item => item.value).join(',');
-
-      const body = {
-        incident_id: data?.id,
-        responder_type_id: ids,
-      };
-
+  // fetch responder types
+  useEffect(() => {
+    const getIncidentType = async () => {
       try {
-        const resp = await ApiManager.assignResponders(body, userToken);
-        if (resp?.data?.status) {
-          (ref as any)?.current?.close();
-          // Open success sheet after closing animation
-          setTimeout(() => {
-            successRef?.current?.open();
-          }, 350);
-          // navigation.dispatch(
-          //   CommonActions.reset({
-          //     index: 0,
-          //     routes: [{ name: 'mainAppSelector' }],
-          //   }),
-          // );
+        const resp = await ApiManager.incidentType(userToken);
+        if (resp?.data?.success) {
+          setResources(
+            (resp?.data?.data?.resource_types || []).map((item: any) => ({
+              label: item.name,
+              value: item.id,
+            })),
+          );
         }
       } catch (err: any) {
-        console.log('Assign Error:', err.response || err);
+        console.log('Incident Error:', err.response || err);
       }
     };
+    getIncidentType();
+  }, []);
 
-    const toggleSelect = (item: any) => {
-      if (selectedResponders.some(r => r.value === item.value)) {
-        setSelectedResponders(prev => prev.filter(r => r.value !== item.value));
-      } else {
-        setSelectedResponders(prev => [...prev, item]);
-      }
+  // Assign responder API
+  const assignResponders = async () => {
+    if (selectedResponders.length === 0) {
+      setError('Please select at least one responder type.');
+      return;
+    }
+
+    setError('');
+
+    const ids = selectedResponders.map(item => item.value).join(',');
+
+    const body = {
+      incident_id: data?.id,
+      responder_type_id: ids,
     };
 
-    return (
-      <RBSheet
-        ref={ref}
-        height={450}
-        // closeOnDragDown={true}
-        customStyles={{
-          wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
-          draggableIcon: { backgroundColor: '#ccc' },
-          container: { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
-        }}
-      >
-        <View style={styles.container}>
-          <View style={styles.dragIndicator} />
+    try {
+      const resp = await ApiManager.assignResponders(body, userToken);
+      if (resp?.data?.status) {
+        (ref as any)?.current?.close();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'mainAppSelector' }],
+          }),
+        );
+      }
+    } catch (err: any) {
+      console.log('Assign Error:', err.response || err);
+    }
+  };
 
-          <View style={styles.headerRow}>
-            <View style={{ paddingHorizontal: 40 }}>
-              <Text style={styles.title}>{TEXT.assign_responders()}</Text>
-            </View>
+  const toggleSelect = (item: any) => {
+    if (selectedResponders.some(r => r.value === item.value)) {
+      setSelectedResponders(prev => prev.filter(r => r.value !== item.value));
+    } else {
+      setSelectedResponders(prev => [...prev, item]);
+    }
+    setError('');
+  };
 
-            <TouchableOpacity
-              style={styles.closeIconContainer}
-              onPress={() => (ref as any)?.current?.close()}
-            >
-              <Image
-                source={require('../../assets/cancel.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
+  return (
+    <RBSheet
+      ref={ref}
+      height={380}
+      // closeOnDragDown={true}
+      customStyles={{
+        wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
+        draggableIcon: { backgroundColor: '#ccc' },
+        container: { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+      }}
+    >
+      <View style={styles.container}>
+        <View style={styles.dragIndicator} />
+
+        <View style={styles.headerRow}>
+          <View style={{ paddingHorizontal: 40 }}>
+            <Text style={styles.title}>{TEXT.assign_responders()}</Text>
           </View>
 
-          {/* Dropdown */}
-          <View>
-            <Text style={{ fontSize: 14, fontWeight: '600' }}>
-              Responders <Text style={{ color: 'red' }}>*</Text>
-            </Text>
-
-            <TouchableOpacity
-              style={[
-                styles.dropdown,
-                {
-                  borderColor: showError ? 'red' : '#a5a5a5',
-                  marginBottom: openDropdown ? 1 : 2,
-                },
-              ]}
-              onPress={() => {
-                setOpenDropdown(!openDropdown);
-                setShowError(false);
-              }}
-            >
-              <Text style={styles.dropdownText}>
-                {selectedResponders.length > 0
-                  ? selectedResponders.map(i => i.label).join(', ')
-                  : 'Select'}
-              </Text>
-              <Text style={styles.dropdownIcon}>▼</Text>
-            </TouchableOpacity>
-
-            {/* Error Message */}
-            {showError && (
-              <Text style={{ color: 'red', fontSize: 12 }}>
-                Select responders first
-              </Text>
-            )}
-
-            {openDropdown && (
-              <View style={styles.dropdownListWrapper}>
-                <ScrollView style={styles.dropdownList}>
-                  {resources.map(item => (
-                    <TouchableOpacity
-                      key={item.value}
-                      style={styles.checkboxRow}
-                      onPress={() => toggleSelect(item)}
-                    >
-                      <View style={styles.checkboxBox}>
-                        {selectedResponders.some(
-                          r => r.value === item.value,
-                        ) && <View style={styles.checkboxTick} />}
-                      </View>
-                      <Text style={styles.checkboxLabel}>{item.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-          </View>
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => (ref as any)?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={styles.closeIcon}
+            />
+          </TouchableOpacity>
         </View>
 
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
-          <Text style={styles.saveText}>{TEXT.save()}</Text>
-        </TouchableOpacity>
-      </RBSheet>
-    );
-  },
-);
+        {/* Dropdown */}
+        <View>
+          <TouchableOpacity
+            style={[styles.dropdown, error ? { borderColor: 'red' } : {}]}
+            onPress={() => setOpenDropdown(!openDropdown)}
+          >
+            <Text style={styles.dropdownText}>
+              {selectedResponders.length > 0
+                ? selectedResponders.map(i => i.label).join(', ')
+                : 'Select'}
+            </Text>
+            <Text style={styles.dropdownIcon}>▼</Text>
+          </TouchableOpacity>
+
+          {/* Error message */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          {openDropdown && (
+            <View style={styles.dropdownListWrapper}>
+              <ScrollView style={styles.dropdownList}>
+                {resources.map(item => (
+                  <TouchableOpacity
+                    key={item.value}
+                    style={styles.checkboxRow}
+                    onPress={() => toggleSelect(item)}
+                  >
+                    <View style={styles.checkboxBox}>
+                      {selectedResponders.some(r => r.value === item.value) && (
+                        <View style={styles.checkboxTick} />
+                      )}
+                    </View>
+                    <Text style={styles.checkboxLabel}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+      </View>
+
+      {/* Save Button */}
+      <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
+        <Text style={styles.saveText}>{TEXT.save()}</Text>
+      </TouchableOpacity>
+    </RBSheet>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -220,16 +198,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 6,
-    //marginBottom: 10,
+    marginTop: 10,
   },
   dropdownText: {
     fontSize: 16,
-    color: COLOR.textGrey,
+    color: COLOR.black,
   },
   dropdownIcon: {
     fontSize: 16,
-    color: COLOR.textGrey,
+    color: '#888',
   },
 
   dropdownListWrapper: {
@@ -238,10 +215,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    // marginTop: 45,
-    //overflow: 'hidden',
-    //position: 'absolute',
-    //top: 46,
+    marginTop: 8,
+    overflow: 'hidden',
+    position: 'absolute',
+    top: 46,
     backgroundColor: '#fff',
   },
   dropdownList: {
@@ -272,7 +249,14 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 15,
-    color: COLOR.textGrey,
+    color: COLOR.black,
+  },
+
+  errorText: {
+    color: 'red',
+    marginTop: 5,
+    marginLeft: 5,
+    fontSize: 13,
   },
 
   saveBtn: {
@@ -291,8 +275,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   closeIconContainer: {
-    // position: 'absolute',
-    //top: 20,
     right: 20,
     borderRadius: 20,
   },
@@ -304,7 +286,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10, // gives top + bottom space
+    paddingVertical: 10,
     position: 'relative',
   },
 });
