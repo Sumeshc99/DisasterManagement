@@ -16,7 +16,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
 import { FONT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
@@ -137,32 +136,32 @@ const IncidentDetails: React.FC = () => {
   const media = watch('media');
 
   useEffect(() => {
-    const getIncidentDetails = () => {
-      setLoading(true);
-      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const inc = resp?.data?.data;
-            setIncidentData(inc);
-
-            reset({
-              incidentId: inc?.incident_id,
-              incidentType: inc.other_incident_type || inc?.incident_type_name,
-              address: inc?.address,
-              mobileNumber: inc?.mobile_number,
-              description: inc?.description,
-              media: inc?.media,
-              status: inc?.status,
-              dateTime: formatDateTime(inc?.date_reporting),
-            });
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => setLoading(false));
-    };
-
     getIncidentDetails();
   }, []);
+
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            dateTime: formatDateTime(inc?.date_reporting),
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
 
   // ==================== IMAGE UPLOAD ============================
   const handleImageUpload1 = (item: any) => {
@@ -287,6 +286,7 @@ const IncidentDetails: React.FC = () => {
       .then(resp => {
         if (resp.data.status) {
           cancelRef.current.open();
+          getIncidentDetails();
         }
       })
       .catch(err => console.log('err', err.response))
@@ -420,16 +420,6 @@ const IncidentDetails: React.FC = () => {
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {/* <FormMediaPicker
-                    label="Images"
-                    name="media"
-                    control={control}
-                    rules={{ required: 'At least one image is required' }}
-                    error={errors.media?.message}
-                    media={media}
-                    onChangeMedia={handleImageUpload}
-                    onRemoveMedia={handleRemoveMedia}
-                  /> */}
                   {media?.length && <ImageContainer data={media} />}
                 </View>
 
@@ -652,7 +642,7 @@ const styles = StyleSheet.create({
 
   tableCell: {
     padding: 10,
-    fontSize: 15,
+    fontSize: 12,
     textAlign: 'center',
   },
 });

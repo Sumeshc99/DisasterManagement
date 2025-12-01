@@ -100,11 +100,11 @@ const GetCurrentLocation = () => {
             [{ text: 'Retry', onPress: () => getLocation() }],
           );
         } else if (error.code === 'TIMEOUT') {
-          Alert.alert(
-            'Timeout',
-            'Fetching location took too long. Try again.',
-            [{ text: 'Retry', onPress: () => getLocation() }],
-          );
+          // Alert.alert(
+          //   'Timeout',
+          //   'Fetching location took too long. Try again.',
+          //   [{ text: 'Retry', onPress: () => getLocation() }],
+          // );
         } else {
           // Alert.alert('Error', 'Unable to fetch location.', [
           //   { text: 'Retry', onPress: () => getLocation() },

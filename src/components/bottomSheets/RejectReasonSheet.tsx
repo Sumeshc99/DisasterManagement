@@ -44,20 +44,23 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
   });
 
   useEffect(() => {
-    const getIncidentIds = () => {
-      ApiManager.getIncidentIds(userToken)
-        .then(resp => {
-          if (resp.data.status) {
-            setidList(
-              (resp?.data?.data || []).map((item: any) => ({
-                label: item.incident_id,
-                value: item.id,
-              })),
-            );
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => '');
+    const getIncidentIds = async () => {
+      try {
+        const resp = await ApiManager.getIncidentIds(userToken);
+
+        if (resp?.data?.status) {
+          const list = (resp?.data?.data || [])
+            .map((item: any) => ({
+              label: item.incident_id,
+              value: item.id,
+            }))
+            .filter((it: any) => it.label !== data?.data?.incident_id);
+
+          setidList(list);
+        }
+      } catch (err: any) {
+        console.log('Incident IDs Error:', err.response || err);
+      }
     };
 
     getIncidentIds();
@@ -176,6 +179,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         {/* Dynamic Input Based on Condition */}
         {selectedReason === 'duplicate' ? (
           <>
+            <Text style={styles.label}>Select duplicate incident Id </Text>
             <Text style={styles.label}>
               Select duplicate incident Id{' '}
               {/* <Text style={{ color: COLOR.red }}>*</Text> */}
