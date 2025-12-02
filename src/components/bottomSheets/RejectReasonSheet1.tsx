@@ -168,30 +168,30 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
         {selectedReason === 'duplicate' ? (
           <>
             <Text style={styles.label}>
-              Select duplicate incident Id{' '}
+              {TEXT.select_duplicate_incident_id()}{' '}
               <Text style={{ color: COLOR.red }}>*</Text>
             </Text>
 
             <DropDownInput
-              label="Incident Id"
+              label={TEXT.incident_id()}
               name="insId"
               control={control}
-              placeholder="Select Incident Id"
+              placeholder={TEXT.select_incident_id()}
               items={idList || []}
-              rules={{ required: 'Incident Id required' }}
+              rules={{ required: TEXT.incident_id_required() }}
               errors={errors}
             />
           </>
         ) : (
           <>
             <Text style={styles.label}>
-              Reason for cancellation{' '}
+              {TEXT.reason_cancellation()}{' '}
               <Text style={{ color: COLOR.red }}>*</Text>
             </Text>
 
             <TextInput
               mode="outlined"
-              placeholder="Provide reason for cancellation"
+              placeholder={TEXT.provide_reason_cancellation()}
               value={details}
               onChangeText={setDetails}
               outlineColor="#D9D9D9"
@@ -209,7 +209,7 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
         style={styles.saveBtn}
         onPress={handleSubmit(incidentUpdateStatus)}
       >
-        <Text style={styles.saveText}>Save</Text>
+        <Text style={styles.saveText}>{TEXT.save()}</Text>
       </TouchableOpacity>
     </RBSheet>
   );

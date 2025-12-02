@@ -37,10 +37,11 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
           setError('');
           onUpdatePress();
         } else {
-          setError(resp?.data?.error || 'Unable to change PIN');
+          setError(resp?.data?.error || TEXT.unable_change_pin());
         }
       } catch (error: any) {
-        const apiError = error?.response?.data?.error || 'Something went wrong';
+        const apiError =
+          error?.response?.data?.error || TEXT.somethingwent_whrong();
         console.log('Error changing pin:', apiError);
 
         setError(apiError);
@@ -50,11 +51,11 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
     const handleSendOtp = () => {
       if (!currentPin || !newPin || !confirmPin) {
-        setError('All fields are required');
+        setError(TEXT.all_fields_required());
         return;
       }
       if (newPin !== confirmPin) {
-        setError('New PIN and Confirm PIN do not match');
+        setError(TEXT.new_confirm_not_match());
         return;
       }
 
@@ -127,7 +128,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               onPress={handleSendOtp}
               activeOpacity={0.8}
             >
-              <Text style={styles.updateButtonText}>Send OTP</Text>
+              <Text style={styles.updateButtonText}>{TEXT.send_otp()}</Text>
             </TouchableOpacity>
           </View>
         </RBSheet>

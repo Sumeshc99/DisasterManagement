@@ -75,7 +75,7 @@ const CompleteProfileSheet = forwardRef<
           control={control}
           placeholder={TEXT.enter_full_name()}
           rules={{
-            required: 'Full name is required',
+            required: TEXT.full_name_is_required(),
           }}
           error={errors.name?.message as string}
         />

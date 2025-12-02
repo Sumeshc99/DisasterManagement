@@ -49,12 +49,17 @@ const ReviewerTable = ({ title, data }: any) => {
       <View style={styles.tableContainer}>
         {/* Header */}
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
-          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          <Text style={[styles.tableCell, { flex: 1 }]}>{TEXT.sr_no()}</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.full_name()}
+          </Text>
           {title === 'Responder' && (
-            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{TEXT.type()}</Text>
           )}
-          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {' '}
+            {TEXT.contact_details()}
+          </Text>
         </View>
 
         {/* Rows */}
@@ -219,7 +224,7 @@ const RevIncidentDetails: React.FC = () => {
   const incidentUpdateStatus = () => {
     const body = {
       incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
+      button_type: TEXT.yes(),
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
@@ -255,7 +260,7 @@ const RevIncidentDetails: React.FC = () => {
         >
           <Image source={require('../../assets/backArrow.png')} />
         </TouchableOpacity>
-        <Text style={styles.title}>Incident Details</Text>
+        <Text style={styles.title}>{TEXT.incident_details()}</Text>
         <View style={styles.backButton} />
       </View>
 
@@ -273,7 +278,7 @@ const RevIncidentDetails: React.FC = () => {
               </View>
 
               <View style={{ marginVertical: 10 }}>
-                <Text style={styles.label}>Incident Type</Text>
+                <Text style={styles.label}>{TEXT.incident_type()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>
                     {watch('incidentType')}
@@ -288,12 +293,12 @@ const RevIncidentDetails: React.FC = () => {
                 placeholder="Enter address"
                 multiline
                 editable={false}
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
 
               <FormTextInput
-                label="Mobile Number"
+                label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
                 placeholder="Enter mobile number"
@@ -316,7 +321,7 @@ const RevIncidentDetails: React.FC = () => {
                 placeholder="Enter description"
                 editable={false}
                 multiline
-                rules={{ required: 'Description is required' }}
+                rules={{ required: TEXT.description_required() }}
                 error={errors.description?.message}
               />
 
@@ -327,13 +332,13 @@ const RevIncidentDetails: React.FC = () => {
                 </View>
 
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.label}>Status</Text>
+                  <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
                   </View>
 
                   <Text style={[styles.label, { marginTop: 6 }]}>
-                    Date & Time of Reporting
+                    {TEXT.date_time_reporting()}
                   </Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('dateTime')}</Text>
@@ -343,7 +348,7 @@ const RevIncidentDetails: React.FC = () => {
 
               {incidentData?.reviewers?.length > 0 && (
                 <ReviewerTable
-                  title={'Reviewer'}
+                  title={TEXT.reviewer()}
                   data={incidentData?.reviewers}
                 />
               )}
@@ -371,14 +376,14 @@ const RevIncidentDetails: React.FC = () => {
                     ]}
                     onPress={() => rejectRef.current.open()}
                   >
-                    <Text style={styles.submitButtonText}>Reject</Text>
+                    <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.submitButton}
                     onPress={() => assignRef.current.open()}
                   >
-                    <Text style={styles.submitButtonText}>Accept</Text>
+                    <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -396,7 +401,9 @@ const RevIncidentDetails: React.FC = () => {
                     ]}
                     onPress={() => ''}
                   >
-                    <Text style={styles.submitButtonText}>Completed</Text>
+                    <Text style={styles.submitButtonText}>
+                      {TEXT.completed()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -408,9 +415,7 @@ const RevIncidentDetails: React.FC = () => {
       {/* SEND CONFIRMATION */}
       <SuccessScreen
         ref={successRef}
-        description={
-          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
-        }
+        description={TEXT.confirm_submission()}
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}
