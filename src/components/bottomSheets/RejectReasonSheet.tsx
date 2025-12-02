@@ -69,8 +69,8 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
   const incidentUpdateStatus = (item: any) => {
     const body = {
       incident_id: data.data.id,
-      button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
-      cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
+      button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
+      cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
       duplicate_incident_id: selectedReason === 'duplicate' ? item?.insId : '',
       reason_for_cancellation: selectedReason === 'cancel' ? details : '',
     };
