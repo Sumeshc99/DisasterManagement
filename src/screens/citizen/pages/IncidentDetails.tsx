@@ -28,7 +28,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import BackArrow from '../../../assets/svg/backArrow.svg';
 import ImageContainer from '../../../components/ImageContainer';
-import RNBlobUtil from 'react-native-blob-util';
+// import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface IncidentDetailsForm {
@@ -50,12 +50,16 @@ const ReviewerTable = ({ title, data }: any) => {
       <View style={styles.tableContainer}>
         {/* Header */}
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
-          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          <Text style={[styles.tableCell, { flex: 1 }]}>{TEXT.sr_no()}</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.full_name()}
+          </Text>
           {title === 'Responder' && (
-            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{TEXT.type()}</Text>
           )}
-          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.contact_details()}
+          </Text>
         </View>
 
         {/* Rows */}
@@ -221,7 +225,7 @@ const IncidentDetails: React.FC = () => {
   const incidentUpdateStatus = () => {
     const body = {
       incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
+      button_type: TEXT.yes(),
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
@@ -381,12 +385,12 @@ const IncidentDetails: React.FC = () => {
                   incidentData.user_id == user?.id
                 }
                 multiline
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
 
               <FormTextInput
-                label="Mobile Number"
+                label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
                 placeholder="Enter mobile number"
@@ -406,7 +410,7 @@ const IncidentDetails: React.FC = () => {
               />
 
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
                 placeholder="Enter description"
@@ -424,13 +428,13 @@ const IncidentDetails: React.FC = () => {
                 </View>
 
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.label}>Status</Text>
+                  <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
                   </View>
 
                   <Text style={[styles.label, { marginTop: 6 }]}>
-                    Date & Time of Reporting
+                    {TEXT.date_time_reporting()}
                   </Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('dateTime')}</Text>
@@ -440,14 +444,14 @@ const IncidentDetails: React.FC = () => {
 
               {incidentData?.reviewers?.length > 0 && (
                 <ReviewerTable
-                  title={'Reviewer'}
+                  title={TEXT.reviewer()}
                   data={incidentData?.reviewers}
                 />
               )}
 
               {incidentData?.responders?.length > 0 && (
                 <ReviewerTable
-                  title={'Responder'}
+                  title={TEXT.responders()}
                   data={incidentData?.responders}
                 />
               )}
@@ -467,14 +471,18 @@ const IncidentDetails: React.FC = () => {
                         style={[styles.submitButton]}
                         onPress={handleSubmit(updateIncedents)}
                       >
-                        <Text style={styles.submitButtonText}>Update</Text>
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.update()}
+                        </Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         style={styles.submitButton}
                         onPress={handleSubmit(() => successRef.current.open())}
                       >
-                        <Text style={styles.submitButtonText}>Send</Text>
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.send()}
+                        </Text>
                       </TouchableOpacity>
                     </View>
 
@@ -493,7 +501,7 @@ const IncidentDetails: React.FC = () => {
                         fontFamily: FONT.R_MED_500,
                       }}
                     >
-                      Tap 3 times to cancel Incident
+                      {TEXT.tap_to_cancel()}
                     </Text>
                   </View>
                 )
@@ -521,9 +529,7 @@ const IncidentDetails: React.FC = () => {
       {/* SEND CONFIRMATION */}
       <SuccessScreen
         ref={successRef}
-        description={
-          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
-        }
+        description={TEXT.confirm_submission()}
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}

@@ -78,7 +78,7 @@ const CreateIncidentScreen: React.FC = () => {
   const selectedType = watch('incidentType');
 
   useEffect(() => {
-    register('address', { required: 'Address is required' });
+    register('address', { required: TEXT.address_required() });
   }, [register]);
 
   useEffect(() => {
@@ -153,15 +153,14 @@ const CreateIncidentScreen: React.FC = () => {
         reset();
       } else {
         snackbar(
-          response?.data?.message || 'Failed to create incident.',
+          response?.data?.message || TEXT.failed_creating_incident(),
           'error',
         );
       }
     } catch (error: any) {
       console.log('error', error.response);
       snackbar(
-        error?.response?.data?.message ||
-          'Something went wrong while creating the incident.',
+        error?.response?.data?.message || TEXT.while_creating_incident(),
         'error',
       );
     } finally {
@@ -196,7 +195,7 @@ const CreateIncidentScreen: React.FC = () => {
             />
           </TouchableOpacity>
 
-          <Text style={styles.header}>Create Incident</Text>
+          <Text style={styles.header}>{TEXT.create_incident()}</Text>
         </View>
 
         {/* Incident Type */}
@@ -206,7 +205,7 @@ const CreateIncidentScreen: React.FC = () => {
           control={control}
           placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
-          rules={{ required: 'Please specify the incident type' }}
+          rules={{ required: TEXT.please_specify() }}
           errors={errors}
           onSelect={value => handleIncidentTypeChange(value)}
         />
@@ -214,11 +213,11 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Custom Other Type */}
         {selectedType == '43' && (
           <FormTextInput2
-            label="Specify Other Type"
+            label={TEXT.specify_another_type()}
             name="customIncidentType"
             control={control}
-            placeholder="Enter other incident type"
-            rules={{ required: 'Please specify the incident type' }}
+            placeholder={TEXT.other_incident_type()}
+            rules={{ required: TEXT.please_specify() }}
             error={errors.customIncidentType?.message}
           />
         )}
@@ -287,7 +286,7 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Description */}
         <View>
           <FormTextInput
-            label="Description"
+            label={TEXT.description()}
             name="description"
             control={control}
             multiline
@@ -318,7 +317,7 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Media Picker */}
         <FormMediaPicker
-          label="Upload Image"
+          label={TEXT.upload_image()}
           name="media"
           control={control}
           // rules={{ required: 'At least one media file is required' }}

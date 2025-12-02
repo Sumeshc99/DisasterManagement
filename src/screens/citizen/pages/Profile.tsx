@@ -360,7 +360,7 @@ const Profile: React.FC = () => {
 
       <UpdateConfirmation
         ref={statusRef}
-        message={'Profile saved successfully'}
+        message={TEXT.profile_saved()}
         onUpdatePress={() => statusRef.current?.close()}
       />
 

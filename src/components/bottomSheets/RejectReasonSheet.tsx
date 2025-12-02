@@ -179,19 +179,22 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         {/* Dynamic Input Based on Condition */}
         {selectedReason === 'duplicate' ? (
           <>
-            <Text style={styles.label}>Select duplicate incident Id </Text>
             <Text style={styles.label}>
-              Select duplicate incident Id{' '}
+              {' '}
+              {TEXT.select_duplicate_incident_id()}{' '}
+            </Text>
+            <Text style={styles.label}>
+              {TEXT.select_duplicate_incident_id()}{' '}
               {/* <Text style={{ color: COLOR.red }}>*</Text> */}
             </Text>
 
             <DropDownInput
-              label="Incident Id"
+              label={TEXT.incident_id()}
               name="insId"
               control={control}
-              placeholder="Select Incident Id"
+              placeholder={TEXT.select_incident_id()}
               items={idList || []}
-              rules={{ required: 'Incident Id required' }}
+              rules={{ required: TEXT.incident_id_required() }}
               errors={errors}
             />
           </>

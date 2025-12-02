@@ -105,7 +105,7 @@ export default function OTPVerification() {
       })
       .catch(err => {
         console.log('error', err.response);
-        showSnackbar('Something went wrong', 'error');
+        showSnackbar(TEXT.somethingwent_whrong(), 'error');
       })
       .finally(() => {
         setIsResending(false);

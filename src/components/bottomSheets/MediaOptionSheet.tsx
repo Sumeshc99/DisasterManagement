@@ -56,7 +56,7 @@ const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
                 >
                   <Image source={require('../../assets/camera.png')} />
                 </TouchableOpacity>
-                <Text style={styles.optionLabel}>Take a photo</Text>
+                <Text style={styles.optionLabel}>{TEXT.take_photo()}</Text>
               </View>
 
               {/* Gallery */}
@@ -67,7 +67,9 @@ const MediaOptionSheet = forwardRef<any, MediaOptionSheetProps>(
                 >
                   <Image source={require('../../assets/galary.png')} />
                 </TouchableOpacity>
-                <Text style={styles.optionLabel}>Select from device</Text>
+                <Text style={styles.optionLabel}>
+                  {TEXT.select_from_device()}
+                </Text>
               </View>
             </View>
           </View>

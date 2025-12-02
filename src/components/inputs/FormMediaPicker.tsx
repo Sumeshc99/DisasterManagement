@@ -11,6 +11,7 @@ import { Controller, Control, RegisterOptions } from 'react-hook-form';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLOR } from '../../themes/Colors';
 import MediaOptionSheet from '../bottomSheets/MediaOptionSheet';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface MediaAsset {
   uri?: string;
@@ -112,7 +113,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
                 </ScrollView>
               ) : (
                 <Text style={styles.placeholderText}>
-                  Capture or upload images
+                  {TEXT.capture_or_upload()}
                 </Text>
               )}
             </TouchableOpacity>

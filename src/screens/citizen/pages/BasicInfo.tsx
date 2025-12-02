@@ -122,7 +122,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         placeholder="Enter pin code"
         keyboardType="phone-pad"
         rules={{
-          required: 'Pin code is required',
+          required: TEXT.pin_code_required(),
           pattern: {
             value: /^[0-9]{6}$/,
             message: 'Enter valid 6-digit pin code',
@@ -136,7 +136,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="address"
         control={control}
         placeholder="Enter address"
-        rules={{ required: 'Address is required' }}
+        rules={{ required: TEXT.address_required() }}
         error={errors.address?.message}
       />
 
