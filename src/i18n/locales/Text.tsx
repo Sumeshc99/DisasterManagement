@@ -351,11 +351,12 @@ export const TEXT = {
   pending_closure_by_responder: () =>
     t('pending_closure_by_responder', 'Pending closure by Responder'),
 
-  type: () => t('type', 'Type'),
+  download_pdf: () => t('download_pdf', 'Download PDF'),
 
-  type: () => t('type', 'Type'),
+  report_cancelled: () =>
+    t('report_cancelled', 'Your report has been successfully cancelled.'),
 
-  type: () => t('type', 'Type'),
+  image: () => t('image', 'Image'),
 
   type: () => t('type', 'Type'),
 

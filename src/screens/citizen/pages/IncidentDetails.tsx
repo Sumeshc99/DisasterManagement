@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH, HEIGHT } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -413,7 +413,7 @@ const IncidentDetails: React.FC = () => {
                 label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 multiline
                 editable={
                   incidentData.status === 'New' &&
@@ -427,7 +427,7 @@ const IncidentDetails: React.FC = () => {
                   {media?.length && <ImageContainer data={media} />}
                 </View>
 
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, justifyContent: 'space-between' }}>
                   <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
@@ -517,7 +517,9 @@ const IncidentDetails: React.FC = () => {
                     style={[styles.submitButton1]}
                     onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
-                    <Text style={styles.submitButtonText1}>Download PDF</Text>
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -540,7 +542,7 @@ const IncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 

@@ -406,7 +406,7 @@ const ResIncidentDetails: React.FC = () => {
                 </View>
               )}
 
-              {incidentData?.status === TEXT.pending_closure_by_responder() && (
+              {incidentData?.status === 'Pending closure by Responder' && (
                 <View
                   style={{
                     flexDirection: 'row',
@@ -447,7 +447,7 @@ const ResIncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 
