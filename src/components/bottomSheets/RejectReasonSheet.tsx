@@ -180,10 +180,6 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
         {selectedReason === 'duplicate' ? (
           <>
             <Text style={styles.label}>
-              {' '}
-              {TEXT.select_duplicate_incident_id()}{' '}
-            </Text>
-            <Text style={styles.label}>
               {TEXT.select_duplicate_incident_id()}{' '}
               {/* <Text style={{ color: COLOR.red }}>*</Text> */}
             </Text>

@@ -238,7 +238,7 @@ const ResIncidentDetails: React.FC = () => {
     ApiManager.updateIncident(body, userToken)
       .then(resp => {
         if (resp.data.status) {
-          Alert.alert('Success', 'Incident updated successfully.');
+          Alert.alert(TEXT.success(), TEXT.incident_update());
         }
       })
       .catch(err => console.log('err', err.response))
@@ -314,7 +314,7 @@ const ResIncidentDetails: React.FC = () => {
                 label={TEXT.address()}
                 name="address"
                 control={control}
-                placeholder="Enter address"
+                placeholder={TEXT.enter_address()}
                 multiline
                 editable={false}
                 rules={{ required: TEXT.address_required() }}
@@ -324,11 +324,11 @@ const ResIncidentDetails: React.FC = () => {
                 label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
-                placeholder="Enter mobile number"
+                placeholder={TEXT.enter_mobile_number()}
                 keyboardType="phone-pad"
                 editable={false}
                 rules={{
-                  required: 'Mobile number is required',
+                  required: TEXT.mobile_required(),
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: TEXT.enter_valid_10_digit_number(),

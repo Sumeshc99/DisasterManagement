@@ -29,6 +29,7 @@ import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
+import { downloadPDF } from '../../Utils/downloadPDF';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -213,7 +214,7 @@ const RevIncidentDetails: React.FC = () => {
     ApiManager.updateIncident(body, userToken)
       .then(resp => {
         if (resp.data.status) {
-          Alert.alert('Success', 'Incident updated successfully.');
+          Alert.alert(TEXT.success(), TEXT.incident_update());
         }
       })
       .catch(err => console.log('err', err.response))
@@ -290,7 +291,7 @@ const RevIncidentDetails: React.FC = () => {
                 label={TEXT.address()}
                 name="address"
                 control={control}
-                placeholder="Enter address"
+                placeholder={TEXT.enter_address()}
                 multiline
                 editable={false}
                 rules={{ required: TEXT.address_required() }}
@@ -305,7 +306,7 @@ const RevIncidentDetails: React.FC = () => {
                 keyboardType="phone-pad"
                 editable={false}
                 rules={{
-                  required: 'Mobile number is required',
+                  required: TEXT.mobile_required(),
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: TEXT.enter_valid_10_digit_number(),
@@ -361,6 +362,7 @@ const RevIncidentDetails: React.FC = () => {
               )}
 
               {/* BUTTONS */}
+              {/* BUTTONS */}
               {incidentData?.status === 'Pending Review' ? (
                 <View
                   style={{
@@ -384,6 +386,24 @@ const RevIncidentDetails: React.FC = () => {
                     onPress={() => assignRef.current.open()}
                   >
                     <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : incidentData?.status === 'Reviewer Duplicate' ||
+                incidentData?.status === 'Reviewer Canceled' ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 20,
+                  }}
+                >
+                  <TouchableOpacity
+                    style={[styles.submitButton1]}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+                  >
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -439,7 +459,7 @@ const RevIncidentDetails: React.FC = () => {
       <AssignResponderSheet ref={assignRef} data={incidentData} />
       <SuccessSheet
         ref={successRef}
-        message="Resp onders Assigned Successfully"
+        message="Responders Assigned Successfully"
       />
     </SafeAreaView>
   );
@@ -528,5 +548,19 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
     textAlign: 'center',
+  },
+  submitButton1: {
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+    width: 160,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+  },
+  submitButtonText1: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

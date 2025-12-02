@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
+import { TEXT } from '../../i18n/locales/Text';
 
 const SuccessSheet = forwardRef((props: any, ref) => {
   const {
@@ -52,7 +53,7 @@ const SuccessSheet = forwardRef((props: any, ref) => {
           }}
         >
           <Text style={{ fontSize: 16, color: '#fff', fontWeight: '600' }}>
-            OK
+            {TEXT.ok()}
           </Text>
         </TouchableOpacity>
       </View>
