@@ -272,7 +272,7 @@ const RevIncidentDetails: React.FC = () => {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.form}>
-              <Text style={styles.label}>Incident ID</Text>
+              <Text style={styles.label}>{TEXT.incident_id()}</Text>
               <View style={styles.disabledBox}>
                 <Text style={styles.disabledText}>{watch('incidentId')}</Text>
               </View>
@@ -301,7 +301,7 @@ const RevIncidentDetails: React.FC = () => {
                 label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
-                placeholder="Enter mobile number"
+                placeholder={TEXT.enter_mobile_number()}
                 keyboardType="phone-pad"
                 editable={false}
                 rules={{

@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH, HEIGHT } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -427,7 +427,7 @@ const IncidentDetails: React.FC = () => {
                   {media?.length && <ImageContainer data={media} />}
                 </View>
 
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, justifyContent: 'space-between' }}>
                   <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
