@@ -11,6 +11,7 @@ import {
 import React, { useState } from 'react';
 import { FONT } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
+import { TEXT } from '../i18n/locales/Text';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,7 +24,7 @@ const ImageContainer = ({ data }: any) => {
 
   return (
     <View>
-      <Text style={styles.title}>Image and Video</Text>
+      <Text style={styles.title}>{TEXT.image_and_video()}</Text>
 
       <TouchableOpacity onPress={openGallery} style={styles.thumbnailWrapper}>
         <Image

@@ -211,7 +211,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
           {!isAssignedTab && (
             <View style={styles.filterRow}>
               <Filter />
-              <Text style={styles.filterTitle}>Filter :</Text>
+              <Text style={styles.filterTitle}>{TEXT.filter()} :</Text>
 
               <View>
                 <TouchableOpacity
@@ -220,7 +220,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   style={styles.filterDropdownButton}
                 >
                   <Text style={styles.filterDropdownText}>
-                    {incType === 0 ? 'My incident' : 'Other incident'}
+                    {incType === 0 ? TEXT.my_records() : TEXT.other_records()}
                   </Text>
 
                   <Text style={styles.dropdownArrow}>
@@ -238,7 +238,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
                       }}
                       style={styles.dropdownItem}
                     >
-                      My incident
+                      {TEXT.my_incident()}
                     </Text>
 
                     <Text
@@ -248,7 +248,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
                       }}
                       style={styles.dropdownItem}
                     >
-                      Other incident
+                      {TEXT.other_incident()}
                     </Text>
                   </View>
                 )}

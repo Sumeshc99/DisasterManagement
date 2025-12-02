@@ -69,7 +69,7 @@ export default function OTPVerifyForPin() {
           showSnackbar('Invalid OTP', 'error');
         }
       })
-      .catch(err => showSnackbar('Something went wrong', 'error'))
+      .catch(err => showSnackbar(TEXT.somethingwent_whrong(), 'error'))
       .finally(() => hideLoader());
   };
 
