@@ -396,7 +396,12 @@ const RevIncidentDetails: React.FC = () => {
                     ]}
                     onPress={() => ''}
                   >
-                    <Text style={styles.submitButtonText}>Completed</Text>
+                    <Text style={styles.submitButtonText}>
+                      {incidentData?.status == 'Reviewer Cancelled' ||
+                      incidentData?.status == 'Reviewer Duplicate'
+                        ? 'Cancelled'
+                        : 'Completed'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
