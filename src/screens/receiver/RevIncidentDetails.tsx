@@ -425,7 +425,7 @@ const RevIncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 

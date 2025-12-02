@@ -413,7 +413,7 @@ const IncidentDetails: React.FC = () => {
                 label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 multiline
                 editable={
                   incidentData.status === 'New' &&
@@ -517,7 +517,9 @@ const IncidentDetails: React.FC = () => {
                     style={[styles.submitButton1]}
                     onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
-                    <Text style={styles.submitButtonText1}>Download PDF</Text>
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -540,7 +542,7 @@ const IncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 

@@ -33,7 +33,9 @@ const ImageContainer = ({ data }: any) => {
         />
 
         {data.length > 1 && (
-          <Text style={styles.imageCountText}>Image + {data.length - 1}</Text>
+          <Text style={styles.imageCountText}>
+            {TEXT.image()} + {data.length - 1}
+          </Text>
         )}
       </TouchableOpacity>
 
