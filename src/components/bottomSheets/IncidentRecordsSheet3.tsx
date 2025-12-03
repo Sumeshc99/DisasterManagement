@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontSize: 11,
     fontFamily: FONT.R_BOLD_700,
-    maxWidth: 150,
+    maxWidth: 120,
   },
   closeBtn: {
     position: 'absolute',

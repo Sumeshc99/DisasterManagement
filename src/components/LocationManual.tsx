@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   TextInput,
@@ -7,13 +7,16 @@ import {
   Text,
   StyleSheet,
   Keyboard,
-  ActivityIndicator,
 } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import Geocoder from 'react-native-geocoding';
+import MapView, { Marker } from 'react-native-maps';
 import { COLOR } from '../themes/Colors';
 import { FONT } from '../themes/AppConst';
 import { TEXT } from '../i18n/locales/Text';
 import SearchIcon from '../assets/svg/searchIcon.svg';
+
+const GOOGLE_API_KEY = 'AIzaSyBx9ZKDGqCuGIlboDZ-KTZcsPkOazI9l6Y';
+Geocoder.init(GOOGLE_API_KEY);
 
 interface Location {
   address: string;
@@ -31,11 +34,8 @@ const LocationManual: React.FC<LocationManualProps> = ({
   onChangeLocation,
 }) => {
   const [places, setPlaces] = useState<any[]>([]);
+  const [debouncedValue, setDebouncedValue] = useState(location.address);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [loading, setLoading] = useState(false); // loader for search + reverse geo
-  const [searching, setSearching] = useState(false); // only searchbox loader
-
-  const lastRequestId = useRef(0); // ignore slow responses
 
   const [region, setRegion] = useState({
     latitude: location.latitude || 21.1458,
@@ -44,48 +44,26 @@ const LocationManual: React.FC<LocationManualProps> = ({
     longitudeDelta: 0.05,
   });
 
-  const [debouncedValue, setDebouncedValue] = useState(location.address);
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(location.address), 800);
+    const handler = setTimeout(() => setDebouncedValue(location.address), 400);
     return () => clearTimeout(handler);
   }, [location.address]);
 
   const fetchPlaces = useCallback(async () => {
-    const query = debouncedValue.trim();
-
-    if (query.length < 3) {
+    if (debouncedValue.trim().length < 2) {
       setPlaces([]);
       setShowDropdown(false);
       return;
     }
-
-    const currentRequest = ++lastRequestId.current;
-
-    setSearching(true);
-
     try {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query,
-      )}&format=json&addressdetails=1&limit=5`;
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_API_KEY}&input=${debouncedValue}&components=country:in`,
+      );
+      const json = await response.json();
 
-      const response = await Promise.race([
-        fetch(url, {
-          headers: { 'User-Agent': 'ReactNativeApp (developer@example.com)' },
-        }),
-        new Promise((_, reject) => setTimeout(() => reject('timeout'), 6000)),
-      ]);
-
-      if (currentRequest !== lastRequestId.current) return; // ignore old result
-
-      const json = await response?.json();
-      setPlaces(json || []);
-      setShowDropdown(true);
+      setPlaces(json.predictions || []);
     } catch (error) {
-      console.error('OSM search error:', error);
-    } finally {
-      if (currentRequest === lastRequestId.current) {
-        setSearching(false);
-      }
+      console.error('Error fetching places:', error);
     }
   }, [debouncedValue]);
 
@@ -93,48 +71,46 @@ const LocationManual: React.FC<LocationManualProps> = ({
     fetchPlaces();
   }, [fetchPlaces]);
 
-  const handleSelectPlace = (place: any) => {
+  const handleSelectPlace = async (place: any) => {
     Keyboard.dismiss();
-
-    const lat = parseFloat(place.lat);
-    const lon = parseFloat(place.lon);
-
-    onChangeLocation({
-      address: place.display_name,
-      latitude: lat,
-      longitude: lon,
-    });
-
     setPlaces([]);
     setShowDropdown(false);
 
-    setRegion({
-      latitude: lat,
-      longitude: lon,
-      latitudeDelta: 0.02,
-      longitudeDelta: 0.02,
-    });
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&key=${GOOGLE_API_KEY}`,
+      );
+      const json = await response.json();
+      const loc = json.result.geometry.location;
+
+      const updated = {
+        address: place.description,
+        latitude: loc.lat,
+        longitude: loc.lng,
+      };
+
+      onChangeLocation(updated);
+      setRegion({
+        latitude: loc.lat,
+        longitude: loc.lng,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      });
+    } catch (error) {
+      console.error('Error fetching place details:', error);
+    }
   };
 
   const handleMapPress = async (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
 
-    setLoading(true);
-
     try {
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+      const json = await Geocoder.from(latitude, longitude);
+      const addr = json.results[0]?.formatted_address || '';
 
-      const response = await Promise.race([
-        fetch(url, {
-          headers: { 'User-Agent': 'ReactNativeApp (developer@example.com)' },
-        }),
-        new Promise((_, reject) => setTimeout(() => reject('timeout'), 7000)),
-      ]);
-
-      const json = await response?.json();
-      const address = json.display_name || '';
-
-      onChangeLocation({ address, latitude, longitude });
+      const updated = { address: addr, latitude, longitude };
+      onChangeLocation(updated);
+      setShowDropdown(false);
 
       setRegion({
         latitude,
@@ -143,9 +119,7 @@ const LocationManual: React.FC<LocationManualProps> = ({
         longitudeDelta: 0.02,
       });
     } catch (error) {
-      console.warn('Reverse OSM error:', error);
-    } finally {
-      setLoading(false);
+      console.warn('Geocoding error:', error);
     }
   };
 
@@ -159,33 +133,30 @@ const LocationManual: React.FC<LocationManualProps> = ({
           value={location.address}
           onChangeText={text => {
             onChangeLocation({ ...location, address: text });
+            setShowDropdown(text.trim().length > 0);
           }}
           style={styles.input}
         />
-
-        {/* Loader inside search box */}
-        {searching ? (
-          <ActivityIndicator size="small" />
-        ) : (
-          <View style={styles.iconWrapper}>
-            <SearchIcon width={18} height={18} />
-          </View>
-        )}
+        <View style={styles.iconWrapper}>
+          <SearchIcon width={18} height={18} />
+        </View>
       </View>
 
-      {/* Results Dropdown */}
       {showDropdown && places.length > 0 && (
         <FlatList
           data={places}
-          keyExtractor={item =>
-            item.place_id?.toString() || Math.random().toString()
-          }
+          keyExtractor={item => item.place_id}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => handleSelectPlace(item)}
               style={styles.resultItem}
             >
-              <Text style={styles.placeName}>{item.display_name}</Text>
+              <Text style={styles.placeName}>
+                {item?.structured_formatting.main_text}
+              </Text>
+              <Text style={styles.placeAddress}>
+                {item?.structured_formatting.secondary_text}
+              </Text>
             </TouchableOpacity>
           )}
           keyboardShouldPersistTaps="handled"
@@ -193,22 +164,10 @@ const LocationManual: React.FC<LocationManualProps> = ({
         />
       )}
 
-      {/* MAP */}
       <View style={styles.mapContainer}>
         <MapView style={styles.map} region={region} onPress={handleMapPress}>
-          <UrlTile
-            urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maximumZ={19}
-          />
           <Marker coordinate={region} />
         </MapView>
-
-        {/* Map Loader */}
-        {loading && (
-          <View style={styles.mapLoader}>
-            <ActivityIndicator size="large" />
-          </View>
-        )}
       </View>
     </View>
   );
@@ -226,14 +185,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     paddingHorizontal: 12,
-    flexDirection: 'row',
+    flexDirection: 'row', // ← important
     alignItems: 'center',
   },
-  input: { flex: 1, height: 45, fontSize: 16, color: COLOR.textGrey },
-  iconWrapper: {
-    paddingLeft: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+
+  input: {
+    flex: 1, // input takes full remaining width
+    height: 45,
+    fontSize: 16,
+    color: COLOR.textGrey,
   },
   resultList: {
     marginTop: 5,
@@ -243,8 +203,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 20,
     top: 80,
-    left: 0,
-    right: 0,
+    marginHorizontal: 2,
+    width: '100%',
   },
   resultItem: {
     paddingVertical: 12,
@@ -252,22 +212,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  placeName: { fontWeight: '600', fontSize: 14, color: '#333' },
+  placeName: { fontWeight: '600', fontSize: 15, color: '#333' },
+  placeAddress: { fontSize: 13, color: '#888' },
   mapContainer: {
     flex: 1,
     marginTop: 10,
     borderRadius: 10,
     overflow: 'hidden',
   },
-  map: { flex: 1 },
-  mapLoader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  iconWrapper: {
+    paddingLeft: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.5)',
   },
+
+  searchIcon: {
+    fontSize: 20,
+    color: COLOR.darkGray,
+  },
+  map: { flex: 1 },
 });
