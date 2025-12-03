@@ -199,7 +199,7 @@ const ResIncidentDetails: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
           return;
         }
 
