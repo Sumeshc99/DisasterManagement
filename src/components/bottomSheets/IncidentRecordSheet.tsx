@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontSize: 11,
     fontWeight: '600',
-    maxWidth: 150,
+    maxWidth: 120,
   },
 });
 

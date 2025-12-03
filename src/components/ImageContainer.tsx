@@ -76,7 +76,7 @@ export default ImageContainer;
 
 const styles = StyleSheet.create({
   title: {
-    fontFamily: FONT.R_REG_400,
+    fontFamily: FONT.R_SBD_600,
     fontSize: 16,
     color: COLOR.textGrey,
   },

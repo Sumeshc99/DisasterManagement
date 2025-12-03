@@ -49,7 +49,7 @@ const IncidentAddressSheet = forwardRef<
   useEffect(() => {
     if (currlocation) {
       setLocation({
-        address: currlocation.address || '',
+        address: currlocation?.address || '',
         latitude: Number(currlocation.latitude) || 0,
         longitude: Number(currlocation.longitude) || 0,
       });
@@ -81,29 +81,40 @@ const IncidentAddressSheet = forwardRef<
     if (location.latitude && location.longitude) {
       (async () => {
         try {
-          const geo = await Geocoder.from(
-            location.latitude,
-            location.longitude,
-          );
-          const addrComp = geo.results[0]?.address_components || [];
+          const url = `https://nominatim.openstreetmap.org/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json&addressdetails=1`;
 
-          const get = (type: string) =>
-            addrComp.find((c: any) => c.types.includes(type))?.long_name || '';
+          const response = await fetch(url, {
+            headers: {
+              'User-Agent': 'YourAppName/1.0 (your-email@example.com)',
+              'Accept-Language': 'en',
+              Referer: 'https://yourapp.com/',
+            },
+          });
+          console.log('asas', response);
 
-          setValue('country', get('country'));
-          setValue('state', get('administrative_area_level_1'));
+          const geo = await response.json();
+          const addr = geo.address || {};
+
+          setValue('country', addr.country || '');
+          setValue('state', addr.state || addr.region || '');
           setValue(
             'city',
-            get('locality') || get('administrative_area_level_2'),
+            addr.city || addr.town || addr.village || addr.county || '',
           );
-          setValue('division', get('sublocality') || get('neighborhood'));
-          setValue('pincode', get('postal_code'));
-          setValue('street', get('route'));
+          setValue(
+            'division',
+            addr.suburb || addr.neighbourhood || addr.hamlet || '',
+          );
+          setValue('pincode', addr.postcode || '');
+          setValue(
+            'street',
+            addr.road || addr.residential || addr.pedestrian || '',
+          );
           setValue('flat', location.address || '');
           setValue('latitude', String(location.latitude));
           setValue('longitude', String(location.longitude));
         } catch (err) {
-          console.warn('Geocode parse failed:', err);
+          console.warn('OSM reverse geocode failed:', err);
         }
       })();
     } else {
