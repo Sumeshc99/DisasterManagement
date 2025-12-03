@@ -174,7 +174,7 @@ const RevIncidentDetails: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
           return;
         }
 
@@ -319,7 +319,7 @@ const RevIncidentDetails: React.FC = () => {
                 label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 editable={false}
                 multiline
                 rules={{ required: TEXT.description_required() }}
@@ -459,7 +459,7 @@ const RevIncidentDetails: React.FC = () => {
       <AssignResponderSheet ref={assignRef} data={incidentData} />
       <SuccessSheet
         ref={successRef}
-        message="Responders Assigned Successfully"
+        message={TEXT.responder_assigned_success()}
       />
     </SafeAreaView>
   );

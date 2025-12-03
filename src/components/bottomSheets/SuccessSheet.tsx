@@ -7,7 +7,7 @@ import { TEXT } from '../../i18n/locales/Text';
 
 const SuccessSheet = forwardRef((props: any, ref) => {
   const {
-    message = 'Responders Assigned Successfully',
+    message = TEXT.responder_assigned_success(),
     onClose,
     delay = 2000,
   } = props;

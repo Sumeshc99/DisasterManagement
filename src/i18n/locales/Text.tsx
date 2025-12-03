@@ -382,22 +382,25 @@ export const TEXT = {
 
   valid_email: () => t('valid_email', 'Enter valid email address'),
 
-  type: () => t('type', 'Type'),
+  responder_assigned_success: () =>
+    t('responder_assigned_success', 'Responders Assigned Successfully'),
 
-  type: () => t('type', 'Type'),
+  failed_to_pick: () => t('failed_to_pick', 'Failed to pick image'),
 
-  type: () => t('type', 'Type'),
+  enter_city: () => t('enter_city', 'Enter city'),
 
-  type: () => t('type', 'Type'),
+  enter_tehsil: () => t('enter_tehsil', 'Enter tehsil'),
 
-  type: () => t('type', 'Type'),
+  select_block: () => t('select_block', 'Select block'),
 
-  type: () => t('type', 'Type'),
-  type: () => t('type', 'Type'),
+  pdf_url_notavailable: () =>
+    t('pdf_url_notavailable', 'PDF URL is not available'),
+  assigned_reviewer_success: () =>
+    t('assigned_reviewer_success', 'Assigned to reviewer successfully'),
 
-  type: () => t('type', 'Type'),
+  required_latitude: () => t('required_latitude', 'Latitude is required'),
 
-  type: () => t('type', 'Type'),
+  required_longitude: () => t('required_longitude', 'Longitude is required'),
 
   type: () => t('type', 'Type'),
 

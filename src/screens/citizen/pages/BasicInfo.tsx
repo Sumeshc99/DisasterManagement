@@ -90,7 +90,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.city()}
         name="city"
         control={control}
-        placeholder="Enter city"
+        placeholder={TEXT.enter_city()}
         rules={{ required: TEXT.city_required() }}
         error={errors.city?.message}
       />
@@ -100,7 +100,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="tehsil"
         control={control}
         editable={false}
-        placeholder="Enter tehsil"
+        placeholder={TEXT.enter_tehsil()}
         rules={{ required: TEXT.tehsil_is_required() }}
         error={errors.tehsil?.message}
       />
@@ -109,7 +109,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.block()}
         name="block"
         control={control}
-        placeholder="Select block"
+        placeholder={TEXT.select_block()}
         items={blockList}
         rules={{ required: TEXT.block_required() }}
         errors={errors}
