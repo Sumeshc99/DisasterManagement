@@ -28,7 +28,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import BackArrow from '../../../assets/svg/backArrow.svg';
 import ImageContainer from '../../../components/ImageContainer';
-// import RNBlobUtil from 'react-native-blob-util';
+import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface IncidentDetailsForm {

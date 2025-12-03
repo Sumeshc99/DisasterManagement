@@ -447,11 +447,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
-
   statusText: {
     color: '#000',
     fontSize: 11,
     fontFamily: FONT.R_BOLD_700,
+    maxWidth: 150,
   },
   closeBtn: {
     position: 'absolute',
