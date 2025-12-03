@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 11,
     fontWeight: '600',
+    maxWidth: 150,
   },
 });
 

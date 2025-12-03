@@ -406,7 +406,7 @@ const ResIncidentDetails: React.FC = () => {
                 </View>
               )}
 
-              {incidentData?.status === TEXT.pending_closure_by_responder() && (
+              {incidentData?.status === 'Pending closure by Responder' && (
                 <View
                   style={{
                     flexDirection: 'row',

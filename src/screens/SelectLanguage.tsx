@@ -77,14 +77,18 @@ const SelectLanguage = () => {
     requestPermissions();
   }, []);
 
-  const handleNext = () => {
-    navigation.navigate('loginScreen');
-  };
+  useEffect(() => {
+    SelectLanguage(languages[0]);
+  }, []);
 
   const SelectLanguage = (item: any) => {
     setSelectedLanguage(item.name);
     i18n.changeLanguage(item.code);
     dispatch(setLanguage(item.code));
+  };
+
+  const handleNext = () => {
+    navigation.navigate('loginScreen');
   };
 
   return (
