@@ -154,7 +154,7 @@ const RevIncidentDetails: React.FC = () => {
               address: inc?.address,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
-              media: inc?.upload_media,
+              media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
             });
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   form: { paddingHorizontal: 16, paddingBottom: 16 },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     fontWeight: '500',
     marginBottom: 4,
   },

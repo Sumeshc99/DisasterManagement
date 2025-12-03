@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   statusText: {
-    color: '#000',
+    color: COLOR.textGrey,
     fontSize: 11,
     fontWeight: '600',
     maxWidth: 150,

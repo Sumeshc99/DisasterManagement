@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   },
 
   statusText: {
-    color: '#000',
+    color: COLOR.textGrey,
     fontSize: 12,
     fontFamily: FONT.R_BOLD_700,
     maxWidth: 150,

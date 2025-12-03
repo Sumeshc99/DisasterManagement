@@ -29,6 +29,7 @@ import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import ImageContainer from '../../components/ImageContainer';
+import { downloadPDF } from '../../Utils/downloadPDF';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -181,7 +182,7 @@ const ResIncidentDetails: React.FC = () => {
             address: inc?.address,
             mobileNumber: inc?.mobile_number,
             description: inc?.description,
-            media: inc?.upload_media,
+            media: inc?.media,
             status: inc?.status,
             dateTime: inc?.date_reporting,
           });
@@ -406,7 +407,7 @@ const ResIncidentDetails: React.FC = () => {
                 </View>
               )}
 
-              {incidentData?.status === 'Pending closure by Responder' && (
+              {incidentData?.status === 'Pending closure by Responder' ? (
                 <View
                   style={{
                     flexDirection: 'row',
@@ -422,10 +423,34 @@ const ResIncidentDetails: React.FC = () => {
                     onPress={() => incidentUpdateStatus('Complete')}
                   >
                     <Text style={styles.submitButtonText}>
-                      {TEXT.completed()}
+                      {TEXT.complete()}
                     </Text>
                   </TouchableOpacity>
                 </View>
+              ) : (
+                (incidentData?.status === 'Pending closure by Admin' ||
+                  incidentData?.status === 'Closed' ||
+                  incidentData?.status === 'Admin Canceled' ||
+                  incidentData?.status === 'Reviewer Duplicate') && (
+                  <View
+                    style={{
+                      marginTop: 0,
+                      alignItems: 'center',
+                    }}
+                  >
+                    {/* 🔽 Download PDF button here 🔽 */}
+                    <TouchableOpacity
+                      style={[styles.submitButton1]}
+                      onPress={() =>
+                        downloadPDF(incidentData?.incident_blob_pdf)
+                      }
+                    >
+                      <Text style={styles.submitButtonText1}>
+                        {TEXT.download_pdf()}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )
               )}
             </View>
           </ScrollView>
@@ -457,7 +482,11 @@ const ResIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet1 ref={rejectRef} data={incidentData} />
+      <RejectReasonSheet1
+        ref={rejectRef}
+        data={incidentData}
+        getIncidentDetails={getIncidentDetails}
+      />
       {/* <RejectReasonSheet ref={rejectRef} data={incidentData} />
       <AssignResponderSheet ref={assignRef} data={incidentData} /> */}
     </SafeAreaView>
@@ -491,7 +520,7 @@ const styles = StyleSheet.create({
   form: { paddingHorizontal: 16, paddingBottom: 16 },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     fontWeight: '500',
     marginBottom: 4,
   },
@@ -547,5 +576,19 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
     textAlign: 'center',
+  },
+  submitButton1: {
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+    width: 160,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+  },
+  submitButtonText1: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

@@ -149,6 +149,6 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: '700',
-    color: '#000',
+    color: COLOR.textGrey,
   },
 });

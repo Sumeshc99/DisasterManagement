@@ -8,6 +8,7 @@ import {
   I18nManager,
 } from 'react-native';
 import { Controller, Control, RegisterOptions } from 'react-hook-form';
+import { COLOR } from '../../themes/Colors';
 
 interface FormTextInputProps extends TextInputProps {
   label: string;
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     paddingVertical: 12,
   },
   disabledInput: {

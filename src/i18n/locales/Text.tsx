@@ -374,13 +374,13 @@ export const TEXT = {
 
   email_required: () => t('email_required', 'Email is required'),
 
-  type: () => t('type', 'Type'),
+  complete: () => t('complete', 'Complete'),
 
-  type: () => t('type', 'Type'),
+  select_blood_group: () => t('select_blood_group', 'Select blood group'),
 
-  type: () => t('type', 'Type'),
+  dob_required: () => t('dob_required', 'Date of birth is required'),
 
-  type: () => t('type', 'Type'),
+  valid_email: () => t('valid_email', 'Enter valid email address'),
 
   type: () => t('type', 'Type'),
 
