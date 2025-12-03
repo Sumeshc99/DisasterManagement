@@ -201,7 +201,7 @@ const IncidentAddressSheet = forwardRef<
                 name="street"
                 control={control}
                 placeholder={TEXT.street_address()}
-                rules={{ required: 'Street is required' }}
+                rules={{ required: TEXT.street_required() }}
                 error={errors.street?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -237,7 +237,7 @@ const IncidentAddressSheet = forwardRef<
                 name="state"
                 control={control}
                 placeholder={TEXT.state()}
-                rules={{ required: 'State is required' }}
+                rules={{ required: TEXT.state_required() }}
                 error={errors.state?.message}
               />
               <View style={{ marginTop: -6 }} />

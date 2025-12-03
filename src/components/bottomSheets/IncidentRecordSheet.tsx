@@ -223,7 +223,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                     fontFamily: FONT.R_SBD_600,
                   }}
                 >
-                  No incident recorded by you
+                  {TEXT.no_incident_records()}
                 </Text>
               </View>
             }

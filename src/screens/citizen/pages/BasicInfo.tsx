@@ -67,7 +67,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         placeholder={TEXT.enter_email_id()}
         keyboardType="email-address"
         rules={{
-          required: 'Email is required',
+          required: TEXT.email_required(),
           pattern: {
             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
             message: 'Enter valid email address',
@@ -119,13 +119,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.pincode()}
         name="pincode"
         control={control}
-        placeholder="Enter pin code"
+        placeholder={TEXT.enter_pin_code()}
         keyboardType="phone-pad"
         rules={{
           required: TEXT.pin_code_required(),
           pattern: {
             value: /^[0-9]{6}$/,
-            message: 'Enter valid 6-digit pin code',
+            message: TEXT.valid_pin_code(),
           },
         }}
         error={errors.pincode?.message}
@@ -135,7 +135,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.address()}
         name="address"
         control={control}
-        placeholder="Enter address"
+        placeholder={TEXT.enter_address()}
         rules={{ required: TEXT.address_required() }}
         error={errors.address?.message}
       />

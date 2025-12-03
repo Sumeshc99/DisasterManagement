@@ -128,7 +128,7 @@ const ChangePinSheet = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
               onPress={handleSendOtp}
               activeOpacity={0.8}
             >
-              <Text style={styles.updateButtonText}>{TEXT.send_otp()}</Text>
+              <Text style={styles.updateButtonText}>{TEXT.change_pin()}</Text>
             </TouchableOpacity>
           </View>
         </RBSheet>

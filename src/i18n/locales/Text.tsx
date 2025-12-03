@@ -358,10 +358,41 @@ export const TEXT = {
 
   image: () => t('image', 'Image'),
 
+  mobile_required: () => t('mobile_required', 'Mobile number is required'),
+
+  state_required: () => t('state_required', 'State is required'),
+
+  street_required: () => t('street_required', 'Street is required'),
+
+  success: () => t('success', 'Success'),
+
+  incident_update: () => t('incident_update', 'Incident updated successfully.'),
+
+  ok: () => t('ok', 'OK'),
+
+  valid_pin_code: () => t('valid_pin_code', 'Enter valid 6-digit pin code'),
+
+  email_required: () => t('email_required', 'Email is required'),
+
+  type: () => t('type', 'Type'),
+
   type: () => t('type', 'Type'),
 
   type: () => t('type', 'Type'),
 
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
+
+  type: () => t('type', 'Type'),
   type: () => t('type', 'Type'),
 
   type: () => t('type', 'Type'),
