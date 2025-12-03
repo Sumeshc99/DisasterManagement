@@ -70,7 +70,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
           required: TEXT.email_required(),
           pattern: {
             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Enter valid email address',
+            message: TEXT.valid_email(),
           },
         }}
         error={errors.email?.message}
@@ -101,7 +101,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         control={control}
         editable={false}
         placeholder="Enter tehsil"
-        rules={{ required: 'Tehsil is required' }}
+        rules={{ required: TEXT.tehsil_is_required() }}
         error={errors.tehsil?.message}
       />
 
@@ -144,7 +144,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.blood_group()}
         name="bloodGroup"
         control={control}
-        placeholder="Select blood group"
+        placeholder={TEXT.select_blood_group()}
         items={bloodGroups}
       />
 
@@ -152,7 +152,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="dateOfBirth"
         label={TEXT.date_of_birth()}
         control={control}
-        rules={{ required: 'Date of birth is required' }}
+        rules={{ required: TEXT.dob_required() }}
         errors={errors}
       />
 

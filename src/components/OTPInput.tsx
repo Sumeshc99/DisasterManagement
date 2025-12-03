@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import OtpInputs from 'react-native-otp-inputs';
 import { WIDTH } from '../themes/AppConst';
+import { COLOR } from '../themes/Colors';
 
 interface OTPInputProps {
   length?: number;
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     textAlign: 'center',
     fontSize: 18,
-    color: '#000',
+    color: COLOR.textGrey,
     marginHorizontal: 8,
   },
 });

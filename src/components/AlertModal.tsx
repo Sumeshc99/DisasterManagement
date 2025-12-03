@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   outlinedText: {
-    color: '#000',
+    color: COLOR.textGrey,
   },
 });
 

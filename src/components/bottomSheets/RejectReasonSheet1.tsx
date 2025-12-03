@@ -16,6 +16,7 @@ import { TEXT } from '../../i18n/locales/Text';
 interface props {
   ref: any;
   data: any;
+  getIncidentDetails?: () => void;
 }
 
 const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
@@ -75,6 +76,8 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
       .then(resp => {
         if (resp.data.status) {
           snackbar(resp?.data?.message, 'success');
+          // 🔥 Refresh parent screen after Reject
+          data.getIncidentDetails && data.getIncidentDetails();
           ref?.current?.close();
         }
       })
@@ -135,7 +138,7 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
                 selectedReason === 'duplicate' && { color: COLOR.white },
               ]}
             >
-              Duplicate
+              {TEXT.duplicate()}
             </Text>
           </TouchableOpacity>
 
