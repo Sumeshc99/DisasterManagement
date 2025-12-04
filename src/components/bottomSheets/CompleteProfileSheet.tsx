@@ -83,6 +83,7 @@ const CompleteProfileSheet = forwardRef<
         <Text style={styles.sectionTitle}>
           {TEXT.emergency_contact_details()}
         </Text>
+
         {/* Emergency Contact Name */}
         <FormTextInput
           label={TEXT.full_name()}

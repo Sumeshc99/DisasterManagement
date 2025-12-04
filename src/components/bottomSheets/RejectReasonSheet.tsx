@@ -8,7 +8,7 @@ import DropDownInput from '../inputs/DropDownInput';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { TEXT } from '../../i18n/locales/Text';
@@ -30,7 +30,6 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
     'duplicate',
   );
   const [idList, setidList] = useState([]);
-  const [details, setDetails] = useState('');
 
   const {
     control,
@@ -66,13 +65,15 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
     getIncidentIds();
   }, []);
 
-  const incidentUpdateStatus = (item: any) => {
+  const incidentUpdateStatus = (formValues: any) => {
     const body = {
       incident_id: data.data.id,
       button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
       cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
-      duplicate_incident_id: selectedReason === 'duplicate' ? item?.insId : '',
-      reason_for_cancellation: selectedReason === 'cancel' ? details : '',
+      duplicate_incident_id:
+        selectedReason === 'duplicate' ? formValues?.insId : '',
+      reason_for_cancellation:
+        selectedReason === 'cancel' ? formValues?.reason : '',
     };
 
     showLoader();
@@ -176,12 +177,11 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
           </TouchableOpacity>
         </View>
 
-        {/* Dynamic Input Based on Condition */}
+        {/* CONDITIONAL INPUT */}
         {selectedReason === 'duplicate' ? (
           <>
             <Text style={styles.label}>
-              {TEXT.select_duplicate_incident_id()}{' '}
-              {/* <Text style={{ color: COLOR.red }}>*</Text> */}
+              {TEXT.select_duplicate_incident_id()}
             </Text>
 
             <DropDownInput
@@ -201,22 +201,40 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
               <Text style={{ color: COLOR.red }}>*</Text>
             </Text>
 
-            <TextInput
-              mode="outlined"
-              placeholder={TEXT.provide_reason_cancellation()}
-              value={details}
-              onChangeText={setDetails}
-              outlineColor="#D9D9D9"
-              activeOutlineColor={COLOR.blue}
-              multiline
-              numberOfLines={3}
-              style={styles.textInput}
+            <Controller
+              control={control}
+              name="reason"
+              rules={{
+                required: 'Reason is required',
+              }}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  mode="outlined"
+                  placeholder={TEXT.provide_reason_cancellation()}
+                  value={value}
+                  onChangeText={onChange}
+                  multiline
+                  numberOfLines={3}
+                  outlineColor={errors?.reason ? COLOR.red : '#D9D9D9'}
+                  activeOutlineColor={errors?.reason ? COLOR.red : COLOR.blue}
+                  style={[
+                    styles.textInput,
+                    errors?.reason && {
+                      borderColor: COLOR.red,
+                    },
+                  ]}
+                />
+              )}
             />
+
+            {errors?.reason && (
+              <Text style={styles.errorText}>{errors.reason.message}</Text>
+            )}
           </>
         )}
-
-        {/* Save Button */}
       </View>
+
+      {/* Save Button */}
       <TouchableOpacity
         style={styles.saveBtn}
         onPress={handleSubmit(incidentUpdateStatus)}
@@ -280,9 +298,15 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: COLOR.white,
-    marginBottom: 20,
+    marginBottom: 5,
     paddingVertical: 12,
     fontSize: 16,
+  },
+  errorText: {
+    color: COLOR.red,
+    marginBottom: 10,
+    fontSize: 13,
+    marginTop: -5,
   },
   saveBtn: {
     margin: WIDTH(4),
@@ -309,7 +333,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: COLOR.blue,
-    position: 'absolute', // keeps text in center
+    position: 'absolute',
     left: 0,
     right: 0,
     textAlign: 'center',
