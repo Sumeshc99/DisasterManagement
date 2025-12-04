@@ -14,7 +14,7 @@ const Notification = () => {
       ApiManager.notifications(user?.id, userToken)
         .then(resp => {
           if (resp?.data?.status) {
-            console.log('Notification Data', resp.data.data);
+            // console.log('Notification Data', resp.data.data);
           }
         })
         .catch(err => console.log('error', err.response))
