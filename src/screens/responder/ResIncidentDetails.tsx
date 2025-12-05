@@ -430,7 +430,7 @@ const ResIncidentDetails: React.FC = () => {
               ) : (
                 (incidentData?.status === 'Pending closure by Admin' ||
                   incidentData?.status === 'Closed' ||
-                  incidentData?.status === 'Admin Canceled' ||
+                  incidentData?.status === 'Admin Cancelled' ||
                   incidentData?.status === 'Reviewer Duplicate') && (
                   <View
                     style={{

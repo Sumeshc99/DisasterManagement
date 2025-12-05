@@ -234,12 +234,13 @@ const IncidentDetails: React.FC = () => {
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
+          console.log(resp.data.status, 'Response create incident');
           successRef.current.close();
           acceptRef.current.open();
           assignToReviewer();
         }
       })
-      .catch(err => console.log('err', err.response))
+      .catch(err => console.log('err', err))
       .finally(() => hideLoader());
   };
 
