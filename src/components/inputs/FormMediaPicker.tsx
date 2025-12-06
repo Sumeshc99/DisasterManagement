@@ -50,6 +50,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   const openCamera = async () => {
     sheetRef.current?.close();
     const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
+
     if (result.assets?.length) {
       onChangeMedia?.(result.assets);
     }

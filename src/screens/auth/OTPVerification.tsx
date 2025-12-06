@@ -77,7 +77,7 @@ export default function OTPVerification() {
             }),
           );
           dispatch(userToken(resp?.data?.token));
-          navigation.replace('mainAppSelector');
+          navigation.replace('termsAndConditions');
         } else {
           showSnackbar('Invalid OTP', 'error');
         }

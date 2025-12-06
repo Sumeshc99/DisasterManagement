@@ -35,6 +35,14 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to show your current position on the map.</string>
+	<key>NSCameraUsageDescription</key>
+    <string>This app requires access to your camera.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>The app needs access to your photo library.</string>
+
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>The app needs access to save images to your library.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

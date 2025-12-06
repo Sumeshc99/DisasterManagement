@@ -382,26 +382,6 @@ export const TEXT = {
 
   valid_email: () => t('valid_email', 'Enter valid email address'),
 
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
-
-  type: () => t('type', 'Type'),
+  termsAndConditions: () =>
+    t('legal_terms_description', 'Legal Terms & Privacy'),
 };

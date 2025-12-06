@@ -1,4 +1,4 @@
-package com.disastermgmt
+package com.disastermgt
 
 import android.app.Application
 import com.facebook.react.PackageList
