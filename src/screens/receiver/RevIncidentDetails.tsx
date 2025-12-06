@@ -388,8 +388,12 @@ const RevIncidentDetails: React.FC = () => {
                     <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
                   </TouchableOpacity>
                 </View>
-              ) : incidentData?.status === 'Reviewer Duplicate' ||
-                incidentData?.status === 'Reviewer Canceled' ? (
+              ) : incidentData?.status === 'Pending closure by Admin' ||
+                incidentData?.status === 'Closed' ||
+                incidentData?.status === 'Admin Cancelled' ||
+                incidentData?.status === 'Pending Response by Responder' ||
+                incidentData?.status === 'Reviewer Duplicate' ||
+                incidentData?.status === 'Reviewer Cancelled' ? (
                 <View
                   style={{
                     flexDirection: 'row',
