@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import { FONT } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
 import { TEXT } from '../i18n/locales/Text';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -32,7 +33,7 @@ const ImageContainer = ({ data }: any) => {
           style={styles.thumbnailImage}
         />
 
-        {data.length > 1 && (
+        {data?.length > 1 && (
           <Text style={styles.imageCountText}>
             {TEXT.image()} + {data.length - 1}
           </Text>
@@ -40,7 +41,7 @@ const ImageContainer = ({ data }: any) => {
       </TouchableOpacity>
 
       <Modal visible={visible} animationType="fade">
-        <View style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer}>
           <TouchableOpacity
             onPress={() => setVisible(false)}
             style={styles.closeIconContainer}
@@ -66,7 +67,7 @@ const ImageContainer = ({ data }: any) => {
               </View>
             )}
           />
-        </View>
+        </SafeAreaView>
       </Modal>
     </View>
   );
