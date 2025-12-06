@@ -174,7 +174,7 @@ const RevIncidentDetails: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
           return;
         }
 
@@ -319,7 +319,7 @@ const RevIncidentDetails: React.FC = () => {
                 label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 editable={false}
                 multiline
                 rules={{ required: TEXT.description_required() }}
@@ -388,8 +388,12 @@ const RevIncidentDetails: React.FC = () => {
                     <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
                   </TouchableOpacity>
                 </View>
-              ) : incidentData?.status === 'Reviewer Duplicate' ||
-                incidentData?.status === 'Reviewer Canceled' ? (
+              ) : incidentData?.status === 'Pending closure by Admin' ||
+                incidentData?.status === 'Closed' ||
+                incidentData?.status === 'Admin Cancelled' ||
+                incidentData?.status === 'Pending Response by Responder' ||
+                incidentData?.status === 'Reviewer Duplicate' ||
+                incidentData?.status === 'Reviewer Cancelled' ? (
                 <View
                   style={{
                     flexDirection: 'row',
@@ -459,7 +463,7 @@ const RevIncidentDetails: React.FC = () => {
       <AssignResponderSheet ref={assignRef} data={incidentData} />
       <SuccessSheet
         ref={successRef}
-        message="Responders Assigned Successfully"
+        message={TEXT.responder_assigned_success()}
       />
     </SafeAreaView>
   );

@@ -1,9 +1,10 @@
 import { Platform } from 'react-native';
 import RNBlobUtil from 'react-native-blob-util';
+import { TEXT } from '../i18n/locales/Text';
 
 export const downloadPDF = (pdfUrl: string, onError?: (msg: string) => void) => {
   if (!pdfUrl) {
-    onError && onError('PDF URL is not available');
+    onError && onError(TEXT.pdf_url_notavailable());
     return;
   }
 

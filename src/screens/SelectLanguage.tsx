@@ -160,7 +160,7 @@ const SelectLanguage = () => {
         {/* Content Section */}
         <View style={styles.contentContainer}>
           <Image
-            source={require('../assets/citizen/logo.png')}
+            source={require('../assets/DDMA LOGO.png')}
             style={styles.logo}
             resizeMode="contain"
           />

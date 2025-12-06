@@ -55,7 +55,7 @@ const SplashScreen = () => {
       >
         <View style={styles.content}>
           <Animated.Image
-            source={require('../assets/citizen/logo.png')}
+            source={require('../assets/DDMA LOGO.png')}
             style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
             resizeMode="contain"
           />

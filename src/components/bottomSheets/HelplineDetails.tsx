@@ -52,7 +52,7 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
             {/* Logo */}
             <Image
-              source={require('../../assets/logo.png')}
+              source={require('../../assets/DDMA LOGO.png')}
               style={styles.logo}
             />
 

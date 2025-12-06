@@ -174,7 +174,7 @@ const IncidentDetails: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
           return;
         }
 
@@ -234,12 +234,13 @@ const IncidentDetails: React.FC = () => {
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
+          console.log(resp.data.status, 'Response create incident');
           successRef.current.close();
           acceptRef.current.open();
           assignToReviewer();
         }
       })
-      .catch(err => console.log('err', err.response))
+      .catch(err => console.log('err', err))
       .finally(() => hideLoader());
   };
 
@@ -247,7 +248,7 @@ const IncidentDetails: React.FC = () => {
     ApiManager.assignToReviewer(data?.incident_auto_id || data, userToken)
       .then(resp => {
         if (resp.data.status) {
-          console.log('Assigned to reviewer successfully');
+          console.log(TEXT.assigned_reviewer_success());
         }
       })
       .catch(err => console.log('err', err.response));
@@ -299,7 +300,7 @@ const IncidentDetails: React.FC = () => {
 
   const downloadPDF = async (pdfUrl: string) => {
     if (!pdfUrl) {
-      snackbar('PDF URL is not available', 'error');
+      snackbar(TEXT.pdf_url_notavailable(), 'error');
       return;
     }
 

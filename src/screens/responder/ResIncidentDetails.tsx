@@ -199,7 +199,7 @@ const ResIncidentDetails: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
           return;
         }
 
@@ -430,7 +430,7 @@ const ResIncidentDetails: React.FC = () => {
               ) : (
                 (incidentData?.status === 'Pending closure by Admin' ||
                   incidentData?.status === 'Closed' ||
-                  incidentData?.status === 'Admin Canceled' ||
+                  incidentData?.status === 'Admin Cancelled' ||
                   incidentData?.status === 'Reviewer Duplicate') && (
                   <View
                     style={{

@@ -381,7 +381,29 @@ export const TEXT = {
   dob_required: () => t('dob_required', 'Date of birth is required'),
 
   valid_email: () => t('valid_email', 'Enter valid email address'),
-
+ 
   termsAndConditions: () =>
     t('legal_terms_description', 'Legal Terms & Privacy'),
+ 
+  responder_assigned_success: () =>
+    t('responder_assigned_success', 'Responders Assigned Successfully'),
+
+  failed_to_pick: () => t('failed_to_pick', 'Failed to pick image'),
+
+  enter_city: () => t('enter_city', 'Enter city'),
+
+  enter_tehsil: () => t('enter_tehsil', 'Enter tehsil'),
+
+  select_block: () => t('select_block', 'Select block'),
+
+  pdf_url_notavailable: () =>
+    t('pdf_url_notavailable', 'PDF URL is not available'),
+ 
+  assigned_reviewer_success: () =>
+    t('assigned_reviewer_success', 'Assigned to reviewer successfully'),
+
+  required_latitude: () => t('required_latitude', 'Latitude is required'),
+
+  required_longitude: () => t('required_longitude', 'Longitude is required'),
+
 };

@@ -258,7 +258,7 @@ const IncidentAddressSheet = forwardRef<
                     name="latitude"
                     control={control}
                     error={errors.latitude?.message}
-                    rules={{ required: 'Latitude is required' }}
+                    rules={{ required: TEXT.required_latitude() }}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -267,7 +267,7 @@ const IncidentAddressSheet = forwardRef<
                     name="longitude"
                     control={control}
                     error={errors.longitude?.message}
-                    rules={{ required: 'Longitude is required' }}
+                    rules={{ required: TEXT.required_longitude() }}
                   />
                 </View>
               </View>
