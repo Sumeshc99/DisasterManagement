@@ -298,37 +298,62 @@ const IncidentDetails: React.FC = () => {
       .finally(() => hideLoader());
   };
 
-  const downloadPDF = (item: any) => {
-    const pdfUrl = item;
+  const downloadPDF = async (pdfUrl: string) => {
     if (!pdfUrl) {
       snackbar(TEXT.pdf_url_notavailable(), 'error');
       return;
     }
-    const { dirs } = RNBlobUtil.fs;
+
+    const { fs } = RNBlobUtil;
+    const { dirs } = fs;
+
+    const fileName = `myfile_${Date.now()}.pdf`;
+
     const downloadPath =
       Platform.OS === 'android'
-        ? `${dirs.DownloadDir}/myfile_${Date.now()}.pdf`
-        : `${dirs.DocumentDir}/myfile_${Date.now()}.pdf`;
+        ? `${dirs.DownloadDir}/${fileName}`
+        : `${dirs.DocumentDir}/${fileName}`;
 
-    RNBlobUtil.config({
-      fileCache: true,
-      appendExt: 'pdf',
-      path: downloadPath,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        title: 'Downloading PDF',
-        description: 'Downloading PDF...',
-        path: downloadPath,
-        mime: 'application/pdf',
-        mediaScannable: true,
-      },
-    })
-      .fetch('GET', pdfUrl)
-      .then(res => {
-        console.log('Saved to:', downloadPath);
-      })
-      .catch(err => console.log(err));
+    try {
+      RNBlobUtil.config(
+        Platform.OS === 'android'
+          ? {
+              fileCache: true,
+              appendExt: 'pdf',
+              path: downloadPath,
+              addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                title: fileName,
+                description: 'Downloading PDF...',
+                mime: 'application/pdf',
+                mediaScannable: true,
+                path: downloadPath,
+              },
+            }
+          : {
+              fileCache: true,
+              path: downloadPath,
+            },
+      )
+        .fetch('GET', pdfUrl)
+        .then(async res => {
+          console.log('File downloaded to:', res.path());
+
+          if (Platform.OS === 'ios') {
+            RNBlobUtil.ios.openDocument(res.path());
+          } else {
+            snackbar('PDF Downloaded Successfully', 'success');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar('Download Failed', 'error');
+        });
+    } catch (e) {
+      console.log(e);
+      snackbar('Something went wrong!', 'error');
+    }
   };
 
   const onSuccessNo = () => {
