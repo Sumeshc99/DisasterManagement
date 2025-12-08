@@ -18,6 +18,7 @@ import IncidentDetails from '../screens/citizen/pages/IncidentDetails';
 import RevIncidentDetails from '../screens/receiver/RevIncidentDetails';
 import ResIncidentDetails from '../screens/responder/ResIncidentDetails';
 import Notification from '../screens/notification/Notification';
+import NotificationIncidentDetails from '../screens/citizen/pages/NotificationIncidentDetails';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -63,6 +64,10 @@ const AppNavigation = () => {
           component={ResIncidentDetails}
         />
         <Stack.Screen name="notification" component={Notification} />
+        <Stack.Screen
+          name="NotificationIncidentDetails"
+          component={NotificationIncidentDetails}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

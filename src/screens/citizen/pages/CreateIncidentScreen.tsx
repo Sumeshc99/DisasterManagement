@@ -52,6 +52,27 @@ const CreateIncidentScreen: React.FC = () => {
   const [desc, setdesc] = useState([]);
   const [showdropDown, setshowdropDown] = useState(false);
 
+  const DummyTehsil = [
+    'Nagpur',
+    'Hingna',
+    'Umred',
+    'Kalmeshwar',
+    'Katol',
+    'Parseoni',
+    'Saoner',
+    'Kamptee',
+    'Mohadi',
+    'Narkhed',
+    'Nagbhid',
+    'Bhiwapur',
+    'Savner',
+    'Ramtek',
+  ];
+  const DummyTehsilOptions = DummyTehsil.map(item => ({
+    label: item,
+    value: item,
+  }));
+
   const addressRef = useRef<any>(null);
 
   const {
@@ -265,6 +286,15 @@ const CreateIncidentScreen: React.FC = () => {
             </Text>
           )}
         </View>
+
+        <DropDownInput
+          label="Select Tehsil"
+          name="tehsil"
+          control={control}
+          placeholder="Enter Tehsil Name"
+          items={DummyTehsilOptions}
+          rules={{ required: 'Please specify tehsil' }}
+        />
 
         {/* Mobile Number */}
         <FormTextInput

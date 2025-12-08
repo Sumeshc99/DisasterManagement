@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import IncidentRecordsSheet2 from '../bottomSheets/IncidentRecordsSheet2';
 import IncidentRecordsSheet3 from '../bottomSheets/IncidentRecordsSheet3';
+import NotificationSheet from '../bottomSheets/NotificationSheet';
 
 interface props {
   drawer: boolean;
@@ -19,6 +20,8 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
   const sheetRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
+
+  const notificationSheetRef = useRef<any>(null);
 
   return (
     <View style={styles.container}>
@@ -44,7 +47,7 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('notification')}>
+        <TouchableOpacity onPress={() => notificationSheetRef.current?.open()}>
           <Image
             source={require('../../assets/bell.png')}
             style={styles.iconSmall1}
@@ -76,6 +79,8 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
       ) : (
         <IncidentRecordsSheet3 ref={sheetRef} />
       )}
+
+      <NotificationSheet ref={notificationSheetRef} />
     </View>
   );
 };
