@@ -65,10 +65,11 @@ const NotificationSheet = forwardRef((props: any, ref) => {
   const toggleExpand = (index: string) => {
     setExpandedItems(prev => ({ ...prev, [index]: !prev[index] }));
   };
-
   const navigateToIncident = (item: NotificationItem) => {
-    ref?.current?.close(); // close the sheet
-    navigation.navigate('NotificationIncidentDetails', { incident: item }); // navigate to incident details
+    ref?.current?.close();
+    navigation.navigate('NotificationIncidentDetails', {
+      incident_id: item.incident_id, // ⬅️ pass ID here
+    });
   };
 
   // Group notifications by date

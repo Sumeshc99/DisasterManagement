@@ -23,6 +23,7 @@ import ImageContainer from '../../../components/ImageContainer';
 import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import { TEXT } from '../../../i18n/locales/Text';
+import ReuseButton from '../../../components/UI/ReuseButton';
 
 const formatDateTime = (dateString: string) => {
   if (!dateString) return '';
@@ -77,7 +78,7 @@ const NotificationIncidentDetails: React.FC = () => {
   const route = useRoute();
   const snackbar = useSnackbar();
   const { userToken } = useSelector((state: RootState) => state.auth);
-  const data = (route as { params?: { data?: any } })?.params?.data;
+  const { incident_id } = route.params;
 
   const [incidentData, setIncidentData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -88,7 +89,7 @@ const NotificationIncidentDetails: React.FC = () => {
 
   const getIncidentDetails = () => {
     setLoading(true);
-    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+    ApiManager.incidentDetails(incident_id, userToken)
       .then(resp => {
         if (resp?.data?.status) {
           setIncidentData(resp.data.data);
@@ -153,43 +154,79 @@ const NotificationIncidentDetails: React.FC = () => {
           >
             {incidentData && (
               <View style={styles.form}>
-                <Text style={styles.label}>{TEXT.incident_id()}</Text>
-                <Text style={styles.readOnlyText}>
-                  {incidentData.incident_id}
-                </Text>
+                <View
+                  style={[
+                    styles.row,
+                    { borderBottomWidth: 2, borderBottomColor: '#D9D9D9' },
+                  ]}
+                >
+                  <Text style={styles.label}>{TEXT.incident_id()}</Text>
 
-                <Text style={styles.label}>{TEXT.incident_type()}</Text>
-                <Text style={styles.readOnlyText}>
-                  {incidentData.other_incident_type ||
-                    incidentData.incident_type_name}
-                </Text>
+                  <Text style={[styles.value, { marginRight: 6 }]}>
+                    {incidentData.incident_id}
+                  </Text>
 
-                <Text style={styles.label}>{TEXT.address()}</Text>
-                <Text style={styles.readOnlyText}>{incidentData.address}</Text>
+                  {incidentData?.status && (
+                    <View
+                      style={{
+                        backgroundColor: '#F2D370',
+                        paddingHorizontal: 10,
+                        paddingVertical: 3,
+                        borderRadius: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: '#AD9547',
+                          fontWeight: '700',
+                          fontSize: 12,
+                        }}
+                      >
+                        {incidentData.status}
+                      </Text>
+                    </View>
+                  )}
+                </View>
 
-                <Text style={styles.label}>{TEXT.mobile_number()}</Text>
-                <Text style={styles.readOnlyText}>
-                  {incidentData.mobile_number}
-                </Text>
+                <View style={styles.row}>
+                  <Text style={styles.label}>{TEXT.date_time_reporting()}</Text>
+                  <Text style={styles.readOnlyText}>
+                    {formatDateTime(incidentData.date_reporting)}
+                  </Text>
+                </View>
 
-                <Text style={styles.label}>{TEXT.description()}</Text>
-                <Text style={styles.readOnlyText}>
-                  {incidentData.description}
-                </Text>
+                <View style={styles.row}>
+                  <Text style={styles.label}>{TEXT.incident_type()}</Text>
+                  <Text style={styles.readOnlyText}>
+                    {incidentData.other_incident_type ||
+                      incidentData.incident_type_name}
+                  </Text>
+                </View>
+
+                <View style={styles.row}>
+                  <Text style={styles.label}>{TEXT.address()}</Text>
+                  <Text style={styles.readOnlyText}>
+                    {incidentData.address}
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>{TEXT.mobile_number()}</Text>
+                  <Text style={styles.readOnlyText}>
+                    {incidentData.mobile_number}
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>{TEXT.description()}</Text>
+                  <Text style={styles.readOnlyText}>
+                    {incidentData.description}
+                  </Text>
+                </View>
 
                 {incidentData.media?.length > 0 && (
                   <View style={{ marginVertical: 10 }}>
                     <ImageContainer data={incidentData.media} />
                   </View>
                 )}
-
-                <Text style={styles.label}>{TEXT.status()}</Text>
-                <Text style={styles.readOnlyText}>{incidentData.status}</Text>
-
-                <Text style={styles.label}>{TEXT.date_time_reporting()}</Text>
-                <Text style={styles.readOnlyText}>
-                  {formatDateTime(incidentData.date_reporting)}
-                </Text>
 
                 {incidentData?.reviewers?.length > 0 && (
                   <ReviewerTable
@@ -205,6 +242,20 @@ const NotificationIncidentDetails: React.FC = () => {
                   />
                 )}
 
+                {incidentData?.reviewers?.length > 0 && (
+                  <ReviewerTable
+                    title={TEXT.reviewer()}
+                    data={incidentData?.reviewers}
+                  />
+                )}
+
+                {incidentData?.responders?.length > 0 && (
+                  <ReviewerTable
+                    title={TEXT.responders()}
+                    data={incidentData?.responders}
+                  />
+                )}
+
                 {incidentData?.incident_blob_pdf && (
                   <TouchableOpacity
                     style={styles.submitButton1}
@@ -215,6 +266,25 @@ const NotificationIncidentDetails: React.FC = () => {
                     </Text>
                   </TouchableOpacity>
                 )}
+
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: '#6E6E6E',
+                    textAlign: 'center',
+                    marginTop: 18,
+                    lineHeight: 18,
+                  }}
+                >
+                  If you have more information to share on this incident, please
+                  feel free to post a comment by clicking on "Comment" button
+                  below.
+                </Text>
+
+                <ReuseButton
+                  text="Comment"
+                  style={{ width: WIDTH(50), alignSelf: 'center' }}
+                />
               </View>
             )}
           </ScrollView>
@@ -242,51 +312,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: COLOR.blue,
   },
   content: { flex: 1, backgroundColor: COLOR.white },
-  form: { paddingHorizontal: 16, paddingBottom: 16 },
-  label: {
-    fontSize: 16,
-    color: COLOR.textGrey,
-    fontWeight: '500',
-    marginTop: 10,
-  },
+  form: { paddingHorizontal: 16, paddingBottom: 16, gap: 6 },
   readOnlyText: {
-    fontSize: 15,
-    color: COLOR.black,
-    backgroundColor: '#F5F5F5',
-    padding: 10,
-    borderRadius: 6,
+    fontSize: 14,
+    color: COLOR.lightTextGrey,
+    fontFamily: FONT.R_REG_400,
     marginTop: 4,
+    paddingBottom: 6,
   },
   submitButton1: {
-    paddingVertical: 10,
-    borderRadius: 50,
-    alignItems: 'center',
-    marginTop: 24,
-    width: 160,
+    paddingVertical: 12,
+    borderRadius: 35,
+    width: 200,
     borderWidth: 2,
     borderColor: COLOR.blue,
     alignSelf: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+    marginBottom: 10,
+    alignItems: 'center',
   },
   submitButtonText1: {
     color: COLOR.blue,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
   },
   reviewTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '700',
     color: COLOR.textGrey,
     marginBottom: 10,
     marginTop: 10,
   },
   tableContainer: {
-    borderWidth: 1,
-    borderColor: '#D3D3D3',
+    borderWidth: 1.5,
+    borderColor: '#C2C2C2',
     borderRadius: 8,
     overflow: 'hidden',
   },
@@ -300,7 +365,24 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     padding: 10,
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  label: {
+    width: 130, // FIXED width makes alignment perfect
+    fontSize: 14,
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_MED_500,
+  },
+  value: {
+    flex: 1,
+    fontSize: 14,
+    color: COLOR.lightTextGrey,
+    fontFamily: FONT.R_REG_400,
   },
 });
