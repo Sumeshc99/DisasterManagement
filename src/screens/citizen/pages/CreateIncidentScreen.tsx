@@ -39,6 +39,7 @@ interface IncidentForm {
   mobileNumber: string;
   description: string;
   media: MediaAsset[];
+  tehsil: string;
 }
 
 const CreateIncidentScreen: React.FC = () => {
@@ -52,26 +53,28 @@ const CreateIncidentScreen: React.FC = () => {
   const [desc, setdesc] = useState([]);
   const [showdropDown, setshowdropDown] = useState(false);
 
-  const DummyTehsil = [
-    'Nagpur',
-    'Hingna',
-    'Umred',
-    'Kalmeshwar',
-    'Katol',
-    'Parseoni',
-    'Saoner',
-    'Kamptee',
-    'Mohadi',
-    'Narkhed',
-    'Nagbhid',
-    'Bhiwapur',
-    'Savner',
-    'Ramtek',
-  ];
-  const DummyTehsilOptions = DummyTehsil.map(item => ({
-    label: item,
-    value: item,
-  }));
+  const [tahsilList, setTahsilList] = useState([]);
+
+  useEffect(() => {
+    const getTahsil = () => {
+      showLoader();
+      ApiManager.tahsilList()
+        .then(resp => {
+          if (resp?.data?.success) {
+            setTahsilList(
+              (resp?.data?.data?.tehsils || []).map((item: any) => ({
+                label: item.Tehsil,
+                value: item.id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('error', err.response))
+        .finally(() => hideLoader());
+    };
+
+    getTahsil();
+  }, []);
 
   const addressRef = useRef<any>(null);
 
@@ -92,6 +95,7 @@ const CreateIncidentScreen: React.FC = () => {
       mobileNumber: '',
       description: '',
       media: [],
+      tehsil: '',
     },
   });
 
@@ -142,7 +146,7 @@ const CreateIncidentScreen: React.FC = () => {
 
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
-      formData.append('tehsil', user?.tehsil || '');
+      formData.append('tehsil', data.tehsil || '');
       formData.append('incident_type_id', String(data?.incidentType));
       formData.append('address', data.address);
       formData.append('mobile_number', data.mobileNumber);
@@ -288,12 +292,12 @@ const CreateIncidentScreen: React.FC = () => {
         </View>
 
         <DropDownInput
-          label="Select Tehsil"
           name="tehsil"
+          label="Select Tehsil"
           control={control}
-          placeholder="Enter Tehsil Name"
-          items={DummyTehsilOptions}
-          rules={{ required: 'Please specify tehsil' }}
+          placeholder="Select Tehsil"
+          rules={{ required: 'Tehsil is required' }}
+          items={tahsilList}
         />
 
         {/* Mobile Number */}

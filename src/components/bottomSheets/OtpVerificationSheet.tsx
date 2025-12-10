@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import OTPInput from '../OTPInput';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface Props {
   onOtpVerified: () => void;
@@ -48,7 +49,7 @@ const OtpVerificationSheet = forwardRef<
           />
         </TouchableOpacity>
 
-        <Text style={styles.title}>OTP Verification</Text>
+        <Text style={styles.title}>{TEXT.otp_verification()}</Text>
 
         <View style={{ marginTop: 20, marginBottom: 30 }}>
           <Text style={styles.txt}>Please enter OTP</Text>

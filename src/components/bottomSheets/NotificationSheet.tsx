@@ -69,6 +69,7 @@ const NotificationSheet = forwardRef((props: any, ref) => {
     ref?.current?.close();
     navigation.navigate('NotificationIncidentDetails', {
       incident_id: item.incident_id, // ⬅️ pass ID here
+      notification_id: item.notification_id,
     });
   };
 

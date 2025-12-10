@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
 
 interface AssignProps {
   data: any;
@@ -28,6 +29,8 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
   const [error, setError] = useState('');
+
+  const snackbar = useSnackbar();
 
   // fetch responder types
   useEffect(() => {
@@ -61,7 +64,7 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
     const ids = selectedResponders.map(item => item.value).join(',');
 
     const body = {
-      incident_id: data?.id,
+      incident_id: String(data?.id),
       responder_type_id: ids,
     };
 
@@ -78,6 +81,19 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
       }
     } catch (err: any) {
       console.log('Assign Error:', err.response || err);
+
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        'Something went wrong';
+
+      // CLOSE BOTTOM SHEET FIRST
+      (ref as any)?.current?.close();
+
+      // Show snackbar with delay
+      setTimeout(() => {
+        snackbar(message, 'error');
+      }, 300);
     }
   };
 
@@ -98,7 +114,12 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
       customStyles={{
         wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
         draggableIcon: { backgroundColor: '#ccc' },
-        container: { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+        container: {
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          zIndex: 1, // <— required
+          elevation: 1,
+        },
       }}
     >
       <View style={styles.container}>

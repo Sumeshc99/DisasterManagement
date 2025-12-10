@@ -84,6 +84,7 @@ const requestPath = {
   assignedToResponder: 'mobileapis/getResponderAssignedIncident',
   assignToReviewer: 'mobileapis/assignedIncident',
   notifcation: 'mobileapis/getNotifications',
+  notificationDetails: 'mobileapis/getNotificationDetails',
 };
 
 const ApiManager = {
@@ -119,6 +120,16 @@ const ApiManager = {
     requests.get(`${requestPath.assignToReviewer}/${id}`, token),
   notifications: (id: any, token: string) =>
     requests.get(`${requestPath.notifcation}/${id}`, token),
+
+  getNotificationDetails: (
+    incidentId: any,
+    notificationId: any,
+    token: string,
+  ) =>
+    requests.get(
+      `${requestPath.notificationDetails}/${incidentId}/${notificationId}`,
+      token,
+    ),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>

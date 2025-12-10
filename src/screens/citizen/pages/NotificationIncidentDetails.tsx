@@ -78,7 +78,7 @@ const NotificationIncidentDetails: React.FC = () => {
   const route = useRoute();
   const snackbar = useSnackbar();
   const { userToken } = useSelector((state: RootState) => state.auth);
-  const { incident_id } = route.params;
+  const { incident_id, notification_id } = route.params;
 
   const [incidentData, setIncidentData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ const NotificationIncidentDetails: React.FC = () => {
 
   const getIncidentDetails = () => {
     setLoading(true);
-    ApiManager.incidentDetails(incident_id, userToken)
+    ApiManager.getNotificationDetails(incident_id, notification_id, userToken)
       .then(resp => {
         if (resp?.data?.status) {
           setIncidentData(resp.data.data);
