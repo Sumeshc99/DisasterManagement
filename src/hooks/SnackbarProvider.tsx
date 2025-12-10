@@ -64,7 +64,7 @@ export const SnackbarProvider = ({
         visible={visible}
         onDismiss={onDismiss}
         duration={3000}
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: bgColor, zIndex: 9999, elevation: 9999 }}
       >
         <Text style={{ color: textColor }}>{message}</Text>
       </Snackbar>
