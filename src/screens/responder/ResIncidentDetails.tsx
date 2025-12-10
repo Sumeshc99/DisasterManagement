@@ -155,7 +155,7 @@ const ResIncidentDetails: React.FC = () => {
               address: inc?.address,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
-              media: inc?.upload_media,
+              media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
             });

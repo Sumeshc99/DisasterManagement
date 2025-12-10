@@ -28,6 +28,8 @@ const OTPInput: React.FC<OTPInputProps> = ({
         handleTextChange={(code: string) => setOtp(code)}
         containerStyle={styles.otpRow}
         textInputStyle={styles.otpInput}
+        tintColor={COLOR.blue}
+        offTintColor="#ccc"
       />
     </View>
   );
