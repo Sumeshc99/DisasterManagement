@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0402C9982EE94EEE00BBFA23 /* sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0402C9972EE94EEE00BBFA23 /* sound.mp3 */; };
 		055E310EA93643C6AEB903E3 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2DB9FFBC22E494CAB2DB66A /* Roboto-Thin.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-DisasterMgmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-DisasterMgmt.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -33,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0402C9972EE94EEE00BBFA23 /* sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sound.mp3; sourceTree = "<group>"; };
 		088342B94FD640B580ECEEE1 /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		0C382B7F31FB47098274393B /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		0DCB22C8C55D41308099A034 /* Roboto-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraLight.ttf"; path = "../assets/fonts/Roboto-ExtraLight.ttf"; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				0402C9972EE94EEE00BBFA23 /* sound.mp3 */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
@@ -224,6 +227,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				7492B9BC6ECECC6ECDE9D024 /* PrivacyInfo.xcprivacy in Resources */,
 				54F6CED7B5854B199D7E7322 /* Roboto-Black.ttf in Resources */,
+				0402C9982EE94EEE00BBFA23 /* sound.mp3 in Resources */,
 				5DC5B778D960497283372055 /* Roboto-BlackItalic.ttf in Resources */,
 				BE867FA871E9432FB438C761 /* Roboto-Bold.ttf in Resources */,
 				CE3C5E7F91E34E38B5FCF3B2 /* Roboto-BoldItalic.ttf in Resources */,
@@ -347,7 +351,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -370,20 +374,20 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SMU255K325;
+				DEVELOPMENT_TEAM = K75V7UMY4V;
 				INFOPLIST_FILE = DisasterMgmt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.disastermgmt;
 				PRODUCT_NAME = DisasterMgmt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

@@ -1,4 +1,5 @@
 PODS:
+  - BEMCheckBox (1.4.1)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (8.0.0)
@@ -1931,6 +1932,8 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
+  - react-native-render-html (6.3.4):
+    - React-Core
   - react-native-safe-area-context (5.6.2):
     - boost
     - DoubleConversion
@@ -2613,6 +2616,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNCCheckbox (0.5.20):
+    - BEMCheckBox (~> 1.4)
+    - React-Core
   - RNCClipboard (1.16.3):
     - boost
     - DoubleConversion
@@ -2949,6 +2955,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -2984,6 +2991,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
@@ -2997,6 +3005,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - BEMCheckBox
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -3095,6 +3104,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-render-html:
+    :path: "../node_modules/react-native-render-html"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
@@ -3165,6 +3176,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-location"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCCheckbox:
+    :path: "../node_modules/@react-native-community/checkbox"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCPicker:
@@ -3185,6 +3198,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
@@ -3232,6 +3246,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 43e6cd4231e670030fe09b079d696fa5a634ccfc
   react-native-maps: 751e54bb543d9b27716c0d27bc23c7ade04e3543
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-render-html: 984dfe2294163d04bf5fe25d7c9f122e60e05ebe
   react-native-safe-area-context: 54d812805f3c4e08a4580ad086cbde1d8780c2e4
   React-NativeModulesApple: 1b4d9722d8df62e881684abadf320e7a8fa1b7f6
   React-oscompat: 80ca388c4831481cd03a6b45ecfc82739ca9a95e
@@ -3267,10 +3282,11 @@ SPEC CHECKSUMS:
   ReactCommon: 17f21c8e189e290113e40fd8652758ec9694897b
   ReactNativeGetLocation: 0ad290bf4c9789602f2e136a49dffeb23c38fb30
   RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
+  RNCCheckbox: 471ebdc33884c084f362615c1ef3507496cc07f1
   RNCClipboard: 962296f7af77f6c039b683e21c2e2255af9c05df
   RNCPicker: 3fc4d505041318ee8f59662d8d66892ce3c3295c
   RNDateTimePicker: 46e70e8695fe52cb5808cf1ef6d74d5ce496accc
-  RNPermissions: 18fa2c6f4cb0b19d5500ea6d476d6af3a53ac9ed
+  RNPermissions: c30fa7c7eb8609f7b2aea74e63e97656ab0b5eb8
   RNScreens: 3693ec4bbc0065151b843269e50e9807644e9918
   RNSound: 280924a6b051cd4c21320bd15ec9bbbf27760ee5
   RNSVG: 870974196fca9fedd72914d560cc4c774f98d170
@@ -3278,6 +3294,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: edeb9900b9e5bb5b27b9a6a2d5914e4fe4033c1b
 
-PODFILE CHECKSUM: 3d067e2db0fb582c44031c240fe111f55a3b7b81
+PODFILE CHECKSUM: 5e25967e34b342314d4b3665facfe2d239c6ba5f
 
 COCOAPODS: 1.15.2
