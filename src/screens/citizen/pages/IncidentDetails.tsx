@@ -416,7 +416,8 @@ const IncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
-              <View style={{ marginVertical: 10 }}>
+
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
                 <Text style={styles.label}>Tehsil</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>

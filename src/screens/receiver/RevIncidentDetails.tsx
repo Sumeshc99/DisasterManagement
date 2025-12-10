@@ -361,8 +361,6 @@ const RevIncidentDetails: React.FC = () => {
                 />
               )}
 
-              {/* BUTTONS */}
-              {/* BUTTONS */}
               {incidentData?.status === 'Pending Review' ? (
                 <View
                   style={{
@@ -388,12 +386,7 @@ const RevIncidentDetails: React.FC = () => {
                     <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
                   </TouchableOpacity>
                 </View>
-              ) : incidentData?.status === 'Pending closure by Admin' ||
-                incidentData?.status === 'Closed' ||
-                incidentData?.status === 'Admin Cancelled' ||
-                incidentData?.status === 'Pending Response by Responder' ||
-                incidentData?.status === 'Reviewer Duplicate' ||
-                incidentData?.status === 'Reviewer Cancelled' ? (
+              ) : (
                 <View
                   style={{
                     flexDirection: 'row',
@@ -407,26 +400,6 @@ const RevIncidentDetails: React.FC = () => {
                   >
                     <Text style={styles.submitButtonText1}>
                       {TEXT.download_pdf()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => ''}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      {TEXT.completed()}
                     </Text>
                   </TouchableOpacity>
                 </View>
