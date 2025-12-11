@@ -40,6 +40,7 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -158,6 +159,7 @@ const ResIncidentDetails: React.FC = () => {
               media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
+              tehsil: inc?.tehsil_name,
             });
           }
         })
@@ -321,6 +323,12 @@ const ResIncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>Tehsil</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
               <FormTextInput
                 label={TEXT.mobile_number()}
                 name="mobileNumber"

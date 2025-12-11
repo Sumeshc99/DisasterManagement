@@ -85,6 +85,12 @@ const requestPath = {
   assignToReviewer: 'mobileapis/assignedIncident',
   notifcation: 'mobileapis/getNotifications',
   notificationDetails: 'mobileapis/getNotificationDetails',
+
+  //selfhelp options path
+  getRespondersByTehsilAndResource:
+    'responder/getRespondersByTehsilAndResource',
+
+  getTehsilByCity: 'mobileapis/getTehsilByCity',
 };
 
 const ApiManager = {
@@ -154,6 +160,16 @@ const ApiManager = {
     requests.post(requestPath.updateIncident, params, token),
   assignResponders: (params: any, token: string) =>
     requests.post(requestPath.assignResponders, params, token),
+
+  //selfhelp options api
+  getRespondersByTehsilAndResource: (params: any, token: string) =>
+    requests.post(requestPath.getRespondersByTehsilAndResource, params, token),
+
+  getTehsilByCity: (stateName: string, cityName: string, token: string) =>
+    requests.get(
+      `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
+      token,
+    ),
 };
 
 export default ApiManager;
