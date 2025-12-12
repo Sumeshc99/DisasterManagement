@@ -223,7 +223,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                     fontFamily: FONT.R_SBD_600,
                   }}
                 >
-                  No incident recorded by you
+                  {TEXT.no_incident_records()}
                 </Text>
               </View>
             }
@@ -330,9 +330,10 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   statusText: {
-    color: '#000',
+    color: COLOR.textGrey,
     fontSize: 11,
     fontWeight: '600',
+    maxWidth: 120,
   },
 });
 

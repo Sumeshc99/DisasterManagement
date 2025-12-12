@@ -15,7 +15,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 interface BasicInfoProps {
   control: Control<any>;
   errors: FieldErrors;
-  tahsilList: any;
+  blockList: any;
   saveInDraft: Function;
   handleSubmit: UseFormHandleSubmit<any>;
   onSubmit: (data: any) => void;
@@ -24,7 +24,7 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({
   control,
   errors,
-  tahsilList,
+  blockList,
   saveInDraft,
   handleSubmit,
   onSubmit,
@@ -67,10 +67,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         placeholder={TEXT.enter_email_id()}
         keyboardType="email-address"
         rules={{
-          required: 'Email is required',
+          required: TEXT.email_required(),
           pattern: {
             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Enter valid email address',
+            message: TEXT.valid_email(),
           },
         }}
         error={errors.email?.message}
@@ -90,7 +90,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.city()}
         name="city"
         control={control}
-        placeholder="Enter city"
+        placeholder={TEXT.enter_city()}
         rules={{ required: TEXT.city_required() }}
         error={errors.city?.message}
       />
@@ -100,8 +100,8 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="tehsil"
         control={control}
         editable={false}
-        placeholder="Enter tehsil"
-        rules={{ required: 'Tehsil is required' }}
+        placeholder={TEXT.enter_tehsil()}
+        rules={{ required: TEXT.tehsil_is_required() }}
         error={errors.tehsil?.message}
       />
 
@@ -109,8 +109,8 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.block()}
         name="block"
         control={control}
-        placeholder="Select block"
-        items={tahsilList}
+        placeholder={TEXT.select_block()}
+        items={blockList}
         rules={{ required: TEXT.block_required() }}
         errors={errors}
       />
@@ -119,13 +119,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.pincode()}
         name="pincode"
         control={control}
-        placeholder="Enter pin code"
+        placeholder={TEXT.enter_pin_code()}
         keyboardType="phone-pad"
         rules={{
-          required: 'Pin code is required',
+          required: TEXT.pin_code_required(),
           pattern: {
             value: /^[0-9]{6}$/,
-            message: 'Enter valid 6-digit pin code',
+            message: TEXT.valid_pin_code(),
           },
         }}
         error={errors.pincode?.message}
@@ -135,8 +135,8 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.address()}
         name="address"
         control={control}
-        placeholder="Enter address"
-        rules={{ required: 'Address is required' }}
+        placeholder={TEXT.enter_address()}
+        rules={{ required: TEXT.address_required() }}
         error={errors.address?.message}
       />
 
@@ -144,7 +144,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         label={TEXT.blood_group()}
         name="bloodGroup"
         control={control}
-        placeholder="Select blood group"
+        placeholder={TEXT.select_blood_group()}
         items={bloodGroups}
       />
 
@@ -152,7 +152,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
         name="dateOfBirth"
         label={TEXT.date_of_birth()}
         control={control}
-        rules={{ required: 'Date of birth is required' }}
+        rules={{ required: TEXT.dob_required() }}
         errors={errors}
       />
 

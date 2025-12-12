@@ -15,147 +15,217 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
 
 interface AssignProps {
   data: any;
+  assignRes: any;
 }
 
-const AssignResponderSheet = forwardRef<any, AssignProps>(({ data }, ref) => {
-  const navigation = useNavigation();
-  const { userToken } = useSelector((state: RootState) => state.auth);
+const AssignResponderSheet = forwardRef<any, AssignProps>(
+  ({ data, assignRes }, ref) => {
+    const navigation = useNavigation();
+    const { userToken } = useSelector((state: RootState) => state.auth);
 
-  const [resources, setResources] = useState<any[]>([]);
-  const [openDropdown, setOpenDropdown] = useState(false);
-  const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
+    const [resources, setResources] = useState<any[]>([]);
+    const [openDropdown, setOpenDropdown] = useState(false);
+    const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
+    const [error, setError] = useState('');
 
-  // fetch responder types
-  useEffect(() => {
-    const getIncidentType = async () => {
+    const snackbar = useSnackbar();
+
+    useEffect(() => {
+      const getResponder = async () => {
+        const body = {
+          tehsil_id: data.tehsil_id,
+        };
+
+        try {
+          const resp = await ApiManager.resByTehsil(body);
+
+          if (resp?.data?.success) {
+            setResources(
+              (resp?.data?.responders || []).map((item: any) => ({
+                label: item?.owner_full_name,
+                value: item?.user_id,
+                type: item?.resource_type,
+                typeId: item?.resource_type_id,
+              })),
+            );
+          }
+        } catch (err: any) {
+          console.log('Incident Error:', err.response || err);
+        }
+      };
+      data && getResponder();
+    }, [data]);
+
+    // Assign responder API
+    const assignResponders = async () => {
+      if (selectedResponders.length === 0) {
+        setError('Please select at least one responder type.');
+        return;
+      }
+
+      setError('');
+
+      const typeIds = selectedResponders.map(item => item.typeId).join(',');
+      const userIds = selectedResponders.map(item => item.value).join(',');
+
+      const body = {
+        incident_id: String(data?.id),
+        responder_type_id: typeIds,
+        user_id: userIds,
+      };
+
       try {
-        const resp = await ApiManager.incidentType(userToken);
-        if (resp?.data?.success) {
-          setResources(
-            (resp?.data?.data?.resource_types || []).map((item: any) => ({
-              label: item.name,
-              value: item.id,
-            })),
+        const resp = await ApiManager.assignResponders(body, userToken);
+        if (resp?.data?.status) {
+          (ref as any)?.current?.close();
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'mainAppSelector' }],
+            }),
           );
         }
       } catch (err: any) {
-        console.log('Incident Error:', err.response || err);
-      }
-    };
+        console.log('Assign Error:', err.response || err);
 
-    getIncidentType();
-  }, []);
+        const message =
+          err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          'Something went wrong';
 
-  // assign API call
-  const assignResponders = async () => {
-    const ids = selectedResponders.map(item => item.value).join(',');
-
-    const body = {
-      incident_id: data?.id,
-      responder_type_id: ids,
-    };
-
-    try {
-      const resp = await ApiManager.assignResponders(body, userToken);
-      if (resp?.data?.status) {
+        // CLOSE BOTTOM SHEET FIRST
         (ref as any)?.current?.close();
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'mainAppSelector' }],
-          }),
-        );
+
+        // Show snackbar with delay
+        setTimeout(() => {
+          snackbar(message, 'error');
+        }, 300);
       }
-    } catch (err: any) {
-      console.log('Assign Error:', err.response || err);
-    }
-  };
+    };
 
-  const toggleSelect = (item: any) => {
-    if (selectedResponders.some(r => r.value === item.value)) {
-      setSelectedResponders(prev => prev.filter(r => r.value !== item.value));
-    } else {
-      setSelectedResponders(prev => [...prev, item]);
-    }
-  };
+    const toggleSelect = (item: any) => {
+      if (selectedResponders.some(r => r.value === item.value)) {
+        setSelectedResponders(prev => prev.filter(r => r.value !== item.value));
+      } else {
+        setSelectedResponders(prev => [...prev, item]);
+      }
+      setError('');
+    };
 
-  return (
-    <RBSheet
-      ref={ref}
-      height={380}
-      // closeOnDragDown={true}
-      customStyles={{
-        wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
-        draggableIcon: { backgroundColor: '#ccc' },
-        container: { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
-      }}
-    >
-      <View style={styles.container}>
-        <View style={styles.dragIndicator} />
+    return (
+      <RBSheet
+        ref={ref}
+        height={380}
+        // closeOnDragDown={true}
+        customStyles={{
+          wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
+          draggableIcon: { backgroundColor: '#ccc' },
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            zIndex: 1, // <— required
+            elevation: 1,
+          },
+        }}
+      >
+        <View style={styles.container}>
+          <View style={styles.dragIndicator} />
 
-        <View style={styles.headerRow}>
-          <View style={{ paddingHorizontal: 40 }}>
-            <Text style={styles.title}>{TEXT.assign_responders()}</Text>
+          <View style={styles.headerRow}>
+            <View style={{ paddingHorizontal: 40 }}>
+              <Text style={styles.title}>{TEXT.assign_responders()}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.closeIconContainer}
+              onPress={() => (ref as any)?.current?.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={styles.closeIcon}
+              />
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.closeIconContainer}
-            onPress={() => (ref as any)?.current?.close()}
-          >
-            <Image
-              source={require('../../assets/cancel.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
+          {/* Dropdown */}
+          <View>
+            <TouchableOpacity
+              style={[styles.dropdown, error ? { borderColor: 'red' } : {}]}
+              onPress={() => setOpenDropdown(!openDropdown)}
+            >
+              <Text style={styles.dropdownText}>
+                {selectedResponders.length > 0
+                  ? selectedResponders.map(i => i.label).join(', ')
+                  : 'Select'}
+              </Text>
+              <Text style={styles.dropdownIcon}>▼</Text>
+            </TouchableOpacity>
+
+            {/* Error message */}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+            {openDropdown && (
+              <View style={styles.dropdownListWrapper}>
+                <ScrollView style={styles.dropdownList}>
+                  {resources.map(item => {
+                    const isAssigned = assignRes.some(
+                      (i: any) => i.value === item.value,
+                    );
+                    const isSelected = selectedResponders.some(
+                      r => r.value === item.value,
+                    );
+
+                    const isChecked = isAssigned || isSelected;
+
+                    return (
+                      <TouchableOpacity
+                        key={item.value}
+                        style={styles.checkboxRow}
+                        onPress={() => {
+                          if (!isAssigned) {
+                            toggleSelect(item);
+                          }
+                        }}
+                        disabled={isAssigned}
+                      >
+                        <View
+                          style={[
+                            styles.checkboxBox,
+                            isAssigned && { opacity: 0.5 },
+                          ]}
+                        >
+                          {isChecked && <View style={styles.checkboxTick} />}
+                        </View>
+
+                        <Text
+                          style={[
+                            styles.checkboxLabel,
+                            isAssigned && { color: 'gray' },
+                          ]}
+                        >
+                          {item.label} ({item.type})
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            )}
+          </View>
         </View>
 
-        {/* Dropdown */}
-        <View>
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setOpenDropdown(!openDropdown)}
-          >
-            <Text style={styles.dropdownText}>
-              {selectedResponders.length > 0
-                ? selectedResponders.map(i => i.label).join(', ')
-                : 'Select'}
-            </Text>
-            <Text style={styles.dropdownIcon}>▼</Text>
-          </TouchableOpacity>
-
-          {openDropdown && (
-            <View style={styles.dropdownListWrapper}>
-              <ScrollView style={styles.dropdownList}>
-                {resources.map(item => (
-                  <TouchableOpacity
-                    key={item.value}
-                    style={styles.checkboxRow}
-                    onPress={() => toggleSelect(item)}
-                  >
-                    <View style={styles.checkboxBox}>
-                      {selectedResponders.some(r => r.value === item.value) && (
-                        <View style={styles.checkboxTick} />
-                      )}
-                    </View>
-                    <Text style={styles.checkboxLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* Save Button */}
-      <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
-        <Text style={styles.saveText}>{TEXT.save()}</Text>
-      </TouchableOpacity>
-    </RBSheet>
-  );
-});
+        {/* Save Button */}
+        <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
+          <Text style={styles.saveText}>{TEXT.save()}</Text>
+        </TouchableOpacity>
+      </RBSheet>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -241,6 +311,13 @@ const styles = StyleSheet.create({
     color: COLOR.black,
   },
 
+  errorText: {
+    color: 'red',
+    marginTop: 5,
+    marginLeft: 5,
+    fontSize: 13,
+  },
+
   saveBtn: {
     marginTop: 25,
     backgroundColor: COLOR.blue,
@@ -257,8 +334,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   closeIconContainer: {
-    // position: 'absolute',
-    //top: 20,
     right: 20,
     borderRadius: 20,
   },
@@ -270,7 +345,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10, // gives top + bottom space
+    paddingVertical: 10,
     position: 'relative',
   },
 });

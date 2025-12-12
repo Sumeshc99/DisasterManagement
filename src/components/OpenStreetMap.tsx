@@ -29,8 +29,8 @@ const OpenStreetMap: React.FC<Props> = ({ responders, incidents }) => {
 
   const CurrentLocation = useMemo(
     () => ({
-      latitude: 21.1458,
-      longitude: 79.0882,
+      latitude: location.latitude || 21.1458,
+      longitude: location.longitude || 79.0882,
       latitudeDelta: 0.03,
       longitudeDelta: 0.03,
     }),

@@ -159,7 +159,8 @@ export const TEXT = {
     t('please_upload_photo', 'Please Upload The Photo'),
 
   enter_your_address: () => t('enter_your_address', 'Enter your address'),
-  other_incident_records: () => t('other_incident_records', 'Address'),
+  other_incident_records: () =>
+    t('other_incident_records', 'Other Incident Records'),
 
   assign_responders: () =>
     t('assign_responders', 'Assign responders to the incident report'),
@@ -217,4 +218,192 @@ export const TEXT = {
   police_stations: () => t('police_stations', 'Police Station'),
   hospital: () => t('hospital', 'Hospital'),
   boat: () => t('boat', 'Boat'),
+
+  // monday
+
+  upload_image: () => t('upload_image', 'Upload Image'),
+
+  capture_or_upload: () =>
+    t('capture_or_upload', 'Capture or upload incident images and videos'),
+  document_required: () => t('document_required', 'Document is required'),
+  create_incident: () => t('create_incident', 'Create Incident'),
+  please_specify: () => t('please_specify', 'Please specify the incident type'),
+  take_photo: () => t('take_photo', 'Take a photo'),
+  select_from_device: () => t('select_from_device', 'Select from device'),
+  status: () => t('status', 'Status'),
+  date_time_reporting: () =>
+    t('date_time_reporting', 'Date & Time of Reporting'),
+  update: () => t('update', 'Update'),
+
+  send: () => t('send', 'Send'),
+
+  send_otp: () => t('send_otp', 'Send OTP'),
+
+  tap_to_cancel: () =>
+    t('tap_to_cancel', 'Tap 3 times to cancel the incident report'),
+
+  confirm_submission: () =>
+    t(
+      'confirm_submission',
+      'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?',
+    ),
+
+  yes: () => t('yes', 'Yes'),
+
+  no: () => t('no', 'No'),
+
+  self_help_options: () => t('self_help_options', 'Self-Help Options'),
+
+  police_station: () => t('police_station', 'Police Stations'),
+
+  ambulance: () => t('ambulance', 'Ambulance'),
+
+  reviewer: () => t('reviewer', 'Reviewer'),
+
+  type: () => t('type', 'Type'),
+
+  contact_details: () => t('contact_details', 'Contact Details'),
+
+  sr_no: () => t('sr_no', 'Sr. No'),
+
+  important_alert: () => t('important_alert', 'IMPORTANT ALERT'),
+
+  acknowledge: () => t('acknowledge', 'Acknowledge'),
+
+  incident_type_name: () => t('incident_type_name', 'Incident Type Name'),
+
+  select_incident_id: () => t('select_incident_id', 'Select Incident Id'),
+
+  incident_id_required: () => t('incident_id_required', 'Incident Id required'),
+
+  only_alphabets: () => t('only_alphabets', 'Only alphabets are allowed'),
+
+  relation_required: () => t('relation_required', 'Relation is required'),
+
+  other_incident_type: () =>
+    t('other_incident_type', 'Enter other incident type'),
+
+  reject: () => t('reject', 'Reject'),
+
+  accept: () => t('accept', 'Accept'),
+
+  completed: () => t('completed', 'Completed'),
+
+  image_and_video: () => t('image_and_video', 'Image and Video'),
+
+  helpline_message: () =>
+    t(
+      'helpline_message',
+      'While we alert your emergency contacts & notify nearby app users, please call below helpline numbers immediately.',
+    ),
+
+  emergency: () => t('emergency', 'Emergency'),
+
+  clinic_hospital: () => t('clinic_hospital', 'Clinic/Hospital'),
+
+  fire_brigade: () => t('fire_brigade', 'Fire Brigades'),
+
+  all_fields_required: () =>
+    t('all_fields_required', 'All fields are required'),
+
+  new_confirm_not_match: () =>
+    t('new_confirm_not_match', 'New PIN and Confirm PIN do not match'),
+
+  unable_change_pin: () => t('unable_change_pin', 'Unable to change PIN'),
+
+  somethingwent_whrong: () => t('somethingwent_whrong', 'Something went wrong'),
+
+  your_decision: () =>
+    t(
+      'your_decision',
+      'Your decision is needed on pending incident requests. Take action now',
+    ),
+
+  view_details: () => t('view_details', 'View Details'),
+
+  filter: () => t('filter', 'Filter'),
+
+  specify_another_type: () => t('specify_another_type', 'Specify Other Type'),
+
+  select_duplicate_incident_id: () =>
+    t('select_duplicate_incident_id', 'Select duplicate Incident Id'),
+
+  pending_response_by_responder: () =>
+    t('pending_response_by_responder', 'Pending closure by Responder'),
+
+  while_creating_incident: () =>
+    t(
+      'while_creating_incident',
+      'Something went wrong while creating the incident.',
+    ),
+
+  failed_creating_incident: () =>
+    t('failed_creating_incident', 'Failed to create incident.'),
+
+  failed_load_sound: () => t('failed_load_sound', 'Failed to load sound'),
+
+  my_records: () => t('my_records', 'My Records'),
+  other_records: () => t('other_records', 'Other Records'),
+
+  my_incident: () => t('my_incident', ' My incident'),
+
+  other_incident: () => t('other_incident', 'Other incident'),
+
+  pending_closure_by_responder: () =>
+    t('pending_closure_by_responder', 'Pending closure by Responder'),
+
+  download_pdf: () => t('download_pdf', 'Download PDF'),
+
+  report_cancelled: () =>
+    t('report_cancelled', 'Your report has been successfully cancelled.'),
+
+  image: () => t('image', 'Image'),
+
+  mobile_required: () => t('mobile_required', 'Mobile number is required'),
+
+  state_required: () => t('state_required', 'State is required'),
+
+  street_required: () => t('street_required', 'Street is required'),
+
+  success: () => t('success', 'Success'),
+
+  incident_update: () => t('incident_update', 'Incident updated successfully.'),
+
+  ok: () => t('ok', 'OK'),
+
+  valid_pin_code: () => t('valid_pin_code', 'Enter valid 6-digit pin code'),
+
+  email_required: () => t('email_required', 'Email is required'),
+
+  complete: () => t('complete', 'Complete'),
+
+  select_blood_group: () => t('select_blood_group', 'Select blood group'),
+
+  dob_required: () => t('dob_required', 'Date of birth is required'),
+
+  valid_email: () => t('valid_email', 'Enter valid email address'),
+
+  termsAndConditions: () =>
+    t('legal_terms_description', 'Legal Terms & Privacy'),
+
+  responder_assigned_success: () =>
+    t('responder_assigned_success', 'Responders Assigned Successfully'),
+
+  failed_to_pick: () => t('failed_to_pick', 'Failed to pick image'),
+
+  enter_city: () => t('enter_city', 'Enter city'),
+
+  enter_tehsil: () => t('enter_tehsil', 'Enter tehsil'),
+
+  select_block: () => t('select_block', 'Select block'),
+
+  pdf_url_notavailable: () =>
+    t('pdf_url_notavailable', 'PDF URL is not available'),
+
+  assigned_reviewer_success: () =>
+    t('assigned_reviewer_success', 'Assigned to reviewer successfully'),
+
+  required_latitude: () => t('required_latitude', 'Latitude is required'),
+
+  required_longitude: () => t('required_longitude', 'Longitude is required'),
 };

@@ -11,6 +11,7 @@ import { Controller, Control, RegisterOptions } from 'react-hook-form';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLOR } from '../../themes/Colors';
 import MediaOptionSheet from '../bottomSheets/MediaOptionSheet';
+import { TEXT } from '../../i18n/locales/Text';
 
 interface MediaAsset {
   uri?: string;
@@ -49,8 +50,9 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   const openCamera = async () => {
     sheetRef.current?.close();
     const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
+
     if (result.assets?.length) {
-      onChangeMedia?.([...media, result.assets]);
+      onChangeMedia?.(result.assets);
     }
   };
 
@@ -61,7 +63,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
       selectionLimit: 5,
     });
     if (result.assets?.length) {
-      onChangeMedia?.([...media, result.assets]);
+      onChangeMedia?.(result.assets);
     }
   };
 
@@ -94,7 +96,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
                   {media?.map((item: any, index) => (
                     <View key={index} style={styles.thumbnailWrapper}>
                       <Image
-                        source={{ uri: (item[0] as { uri: any }).uri }}
+                        source={{ uri: (item as { uri: any }).uri }}
                         style={styles.previewImage}
                       />
                       {onRemoveMedia && (
@@ -112,7 +114,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
                 </ScrollView>
               ) : (
                 <Text style={styles.placeholderText}>
-                  Capture or upload images
+                  {TEXT.capture_or_upload()}
                 </Text>
               )}
             </TouchableOpacity>

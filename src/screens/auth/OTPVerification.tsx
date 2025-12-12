@@ -77,7 +77,7 @@ export default function OTPVerification() {
             }),
           );
           dispatch(userToken(resp?.data?.token));
-          navigation.replace('mainAppSelector');
+          navigation.replace('termsAndConditions');
         } else {
           showSnackbar('Invalid OTP', 'error');
         }
@@ -105,7 +105,7 @@ export default function OTPVerification() {
       })
       .catch(err => {
         console.log('error', err.response);
-        showSnackbar('Something went wrong', 'error');
+        showSnackbar(TEXT.somethingwent_whrong(), 'error');
       })
       .finally(() => {
         setIsResending(false);
@@ -137,7 +137,7 @@ export default function OTPVerification() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.png')}
+            source={require('../../assets/DDMA LOGO.png')}
             resizeMode="contain"
             style={{ width: 100, height: 100, marginTop: 60 }}
           />

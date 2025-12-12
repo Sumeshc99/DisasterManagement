@@ -7,15 +7,12 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import FormTextInput from '../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
@@ -26,19 +23,23 @@ import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
-import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
+import ImageContainer from '../../components/ImageContainer';
+import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
+import { downloadPDF } from '../../Utils/downloadPDF';
 
 interface IncidentDetailsForm {
   incidentId: string;
   incidentType: string;
   address: string;
+  tehsil: string;
   mobileNumber: string;
   description: string;
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -49,12 +50,17 @@ const ReviewerTable = ({ title, data }: any) => {
       <View style={styles.tableContainer}>
         {/* Header */}
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
-          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          <Text style={[styles.tableCell, { flex: 1 }]}>{TEXT.sr_no()}</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.full_name()}
+          </Text>
           {title === 'Responder' && (
-            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{TEXT.type()}</Text>
           )}
-          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {' '}
+            {TEXT.contact_details()}
+          </Text>
         </View>
 
         {/* Rows */}
@@ -90,6 +96,7 @@ const RevIncidentDetails: React.FC = () => {
 
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
+  const [assignInc, setassignInc] = useState([]);
 
   const {
     control,
@@ -97,12 +104,12 @@ const RevIncidentDetails: React.FC = () => {
     reset,
     formState: { errors },
     watch,
-    setValue,
   } = useForm<IncidentDetailsForm>({
     defaultValues: {
       incidentId: '',
       incidentType: '',
       address: '',
+      tehsil: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -132,7 +139,6 @@ const RevIncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
     const getIncidentDetails = () => {
       setLoading(true);
@@ -144,13 +150,15 @@ const RevIncidentDetails: React.FC = () => {
 
             reset({
               incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
+              incidentType: inc.other_incident_type || inc?.incident_type_name,
               address: inc?.address,
+              tehsil: inc?.tehsil_name,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
-              media: inc?.upload_media,
+              media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
+              tehsil: inc?.tehsil_name,
             });
           }
         })
@@ -161,65 +169,36 @@ const RevIncidentDetails: React.FC = () => {
     getIncidentDetails();
   }, []);
 
-  // ==================== IMAGE UPLOAD ============================
-  const handleImageUpload1 = (item: any) => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
-          return;
-        }
+  useEffect(() => {
+    const getAssignedResponder = () => {
+      setLoading(true);
+      ApiManager.assignRes(data?.incident_auto_id || data, userToken)
+        .then(resp => {
+          if (resp?.data?.status) {
+            const data = resp?.data?.data;
 
-        const newImages =
-          response.assets?.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName,
-            type: asset.type,
-          })) || [];
-
-        setValue('media', [...media, ...newImages]);
-      },
-    );
-  };
-
-  const handleImageUpload = (items: any[]) => {
-    const updated = [...media, ...items];
-    setValue('media', updated);
-  };
-
-  const handleRemoveMedia = (index: number) => {
-    const updated = media.filter((_, i) => i !== index);
-    setValue('media', updated);
-  };
-
-  // ==================== UPDATE INCIDENT ============================
-  const updateIncedents = (formData: IncidentDetailsForm) => {
-    const body = {
-      incident_id: incidentData?.id,
-      address: formData.address,
-      mobile_number: formData.mobileNumber,
-      description: formData.description,
-      upload_media: formData.media || [],
+            setassignInc(
+              data?.map((i: any) => ({
+                label: i?.contact_name,
+                value: i?.user_id,
+                type: i?.responder_name,
+                typeId: i?.responder_type_id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('err', err.response))
+        .finally(() => setLoading(false));
     };
 
-    showLoader();
-    ApiManager.updateIncident(body, userToken)
-      .then(resp => {
-        if (resp.data.status) {
-          Alert.alert('Success', 'Incident updated successfully.');
-        }
-      })
-      .catch(err => console.log('err', err.response))
-      .finally(() => hideLoader());
-  };
+    getAssignedResponder();
+  }, []);
 
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = () => {
     const body = {
       incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
+      button_type: TEXT.yes(),
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
@@ -255,7 +234,7 @@ const RevIncidentDetails: React.FC = () => {
         >
           <Image source={require('../../assets/backArrow.png')} />
         </TouchableOpacity>
-        <Text style={styles.title}>Incident Details</Text>
+        <Text style={styles.title}>{TEXT.incident_details()}</Text>
         <View style={styles.backButton} />
       </View>
 
@@ -267,13 +246,13 @@ const RevIncidentDetails: React.FC = () => {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.form}>
-              <Text style={styles.label}>Incident ID</Text>
+              <Text style={styles.label}>{TEXT.incident_id()}</Text>
               <View style={styles.disabledBox}>
                 <Text style={styles.disabledText}>{watch('incidentId')}</Text>
               </View>
 
               <View style={{ marginVertical: 10 }}>
-                <Text style={styles.label}>Incident Type</Text>
+                <Text style={styles.label}>{TEXT.incident_type()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>
                     {watch('incidentType')}
@@ -285,22 +264,35 @@ const RevIncidentDetails: React.FC = () => {
                 label={TEXT.address()}
                 name="address"
                 control={control}
-                placeholder="Enter address"
+                placeholder={TEXT.enter_address()}
                 multiline
                 editable={false}
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>Tehsil</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>Tehsil</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
 
               <FormTextInput
-                label="Mobile Number"
+                label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
-                placeholder="Enter mobile number"
+                placeholder={TEXT.enter_mobile_number()}
                 keyboardType="phone-pad"
                 editable={false}
                 rules={{
-                  required: 'Mobile number is required',
+                  required: TEXT.mobile_required(),
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: TEXT.enter_valid_10_digit_number(),
@@ -310,39 +302,30 @@ const RevIncidentDetails: React.FC = () => {
               />
 
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 editable={false}
                 multiline
-                rules={{ required: 'Description is required' }}
+                rules={{ required: TEXT.description_required() }}
                 error={errors.description?.message}
               />
 
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {/* <FormMediaPicker
-                    label="Images"
-                    name="media"
-                    control={control}
-                    rules={{ required: 'At least one image is required' }}
-                    error={errors.media?.message}
-                    media={media}
-                    onChangeMedia={handleImageUpload}
-                    onRemoveMedia={handleRemoveMedia}
-                  /> */}
+                  {media?.length && <ImageContainer data={media} />}
                 </View>
 
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.label}>Status</Text>
+                  <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
                   </View>
 
                   <Text style={[styles.label, { marginTop: 6 }]}>
-                    Date & Time of Reporting
+                    {TEXT.date_time_reporting()}
                   </Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('dateTime')}</Text>
@@ -352,7 +335,7 @@ const RevIncidentDetails: React.FC = () => {
 
               {incidentData?.reviewers?.length > 0 && (
                 <ReviewerTable
-                  title={'Reviewer'}
+                  title={TEXT.reviewer()}
                   data={incidentData?.reviewers}
                 />
               )}
@@ -364,7 +347,6 @@ const RevIncidentDetails: React.FC = () => {
                 />
               )}
 
-              {/* BUTTONS */}
               {incidentData?.status === 'Pending Review' ? (
                 <View
                   style={{
@@ -380,14 +362,14 @@ const RevIncidentDetails: React.FC = () => {
                     ]}
                     onPress={() => rejectRef.current.open()}
                   >
-                    <Text style={styles.submitButtonText}>Reject</Text>
+                    <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.submitButton}
                     onPress={() => assignRef.current.open()}
                   >
-                    <Text style={styles.submitButtonText}>Accept</Text>
+                    <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -399,13 +381,12 @@ const RevIncidentDetails: React.FC = () => {
                   }}
                 >
                   <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => ''}
+                    style={[styles.submitButton1]}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
-                    <Text style={styles.submitButtonText}>Completed</Text>
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -417,9 +398,7 @@ const RevIncidentDetails: React.FC = () => {
       {/* SEND CONFIRMATION */}
       <SuccessScreen
         ref={successRef}
-        description={
-          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
-        }
+        description={TEXT.confirm_submission()}
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}
@@ -429,7 +408,7 @@ const RevIncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 
@@ -440,7 +419,15 @@ const RevIncidentDetails: React.FC = () => {
       />
 
       <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} />
+      <AssignResponderSheet
+        ref={assignRef}
+        data={incidentData}
+        assignRes={assignInc}
+      />
+      <SuccessSheet
+        ref={successRef}
+        message={TEXT.responder_assigned_success()}
+      />
     </SafeAreaView>
   );
 };
@@ -472,7 +459,7 @@ const styles = StyleSheet.create({
   form: { paddingHorizontal: 16, paddingBottom: 16 },
   label: {
     fontSize: 16,
-    color: '#000',
+    color: COLOR.textGrey,
     fontWeight: '500',
     marginBottom: 4,
   },
@@ -526,7 +513,21 @@ const styles = StyleSheet.create({
 
   tableCell: {
     padding: 10,
-    fontSize: 15,
+    fontSize: 12,
     textAlign: 'center',
+  },
+  submitButton1: {
+    paddingVertical: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+    width: 160,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+  },
+  submitButtonText1: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

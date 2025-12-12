@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import OtpInputs from 'react-native-otp-inputs';
+import OTPTextInput from 'react-native-otp-textinput';
 import { WIDTH } from '../themes/AppConst';
+import { COLOR } from '../themes/Colors';
 
 interface OTPInputProps {
   length?: number;
@@ -14,14 +15,21 @@ const OTPInput: React.FC<OTPInputProps> = ({
   onChangeOTP,
   containerStyle,
 }) => {
+  const [otp, setOtp] = useState('');
+
+  useEffect(() => {
+    onChangeOTP(otp);
+  }, [otp]);
+
   return (
     <View style={[styles.container, containerStyle]}>
-      <OtpInputs
-        handleChange={(code: string) => onChangeOTP(code)}
-        numberOfInputs={length}
-        autofillFromClipboard={false}
-        inputStyles={styles.otpInput}
-        style={styles.otpRow}
+      <OTPTextInput
+        inputCount={length}
+        handleTextChange={(code: string) => setOtp(code)}
+        containerStyle={styles.otpRow}
+        textInputStyle={styles.otpInput}
+        tintColor={COLOR.blue}
+        offTintColor="#ccc"
       />
     </View>
   );
@@ -36,7 +44,6 @@ const styles = StyleSheet.create({
   },
   otpRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
   },
   otpInput: {
     width: WIDTH(11),
@@ -46,7 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     textAlign: 'center',
     fontSize: 18,
-    color: '#000',
+    color: COLOR.textGrey,
     marginHorizontal: 8,
   },
 });

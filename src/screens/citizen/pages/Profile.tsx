@@ -53,7 +53,7 @@ const Profile: React.FC = () => {
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const draft = useSelector((state: RootState) => state?.draft?.user);
 
-  const [tahsilList, settahsilList] = useState([]);
+  const [blockList, setBlockList] = useState([]);
   const [activeTab, setActiveTab] = useState<'basic' | 'emergency'>('basic');
   const [userData, setUserData] = useState<any>({});
   const [loading, setloading] = useState(false);
@@ -138,7 +138,7 @@ const Profile: React.FC = () => {
       ApiManager.tahsilList()
         .then(resp => {
           if (resp?.data?.success) {
-            settahsilList(
+            setBlockList(
               (resp?.data?.data?.blocks || []).map((item: any) => ({
                 label: item.Block,
                 value: item.id,
@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
     formData.append('mobile', data.mobileNumber || '');
     formData.append('email', data.email || '');
     formData.append('state', data.state || '');
-    formData.append('district', '1');
+    formData.append('district', userData?.district_id || '');
     formData.append('city', data.city || '');
     formData.append('tehsil', data.tehsil || '');
     formData.append('block', data.block);
@@ -322,7 +322,7 @@ const Profile: React.FC = () => {
               <BasicInfo
                 control={control}
                 errors={errors}
-                tahsilList={tahsilList}
+                blockList={blockList}
                 saveInDraft={saveInDraft}
                 handleSubmit={handleSubmit}
                 onSubmit={changeTab}
@@ -360,7 +360,7 @@ const Profile: React.FC = () => {
 
       <UpdateConfirmation
         ref={statusRef}
-        message={'Profile saved successfully'}
+        message={TEXT.profile_saved()}
         onUpdatePress={() => statusRef.current?.close()}
       />
 

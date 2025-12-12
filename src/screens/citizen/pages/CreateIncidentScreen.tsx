@@ -24,6 +24,7 @@ import { useGlobalLoader } from '../../../hooks/GlobalLoaderContext';
 import IncidentAddressSheet from '../../../components/bottomSheets/IncidentAddressSheet';
 import FormTextInput2 from '../../../components/inputs/FormTextInput2';
 import { useNavigation } from '@react-navigation/native';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface MediaAsset {
   uri?: string;
@@ -38,17 +39,21 @@ interface IncidentForm {
   mobileNumber: string;
   description: string;
   media: MediaAsset[];
+  tehsil: string;
 }
 
 const CreateIncidentScreen: React.FC = () => {
   const navigation = useNavigation();
   const { showLoader, hideLoader } = useGlobalLoader();
   const { user, userToken } = useSelector((state: RootState) => state.auth);
+  const snackbar = useSnackbar();
 
   const [incidentTypes, setIncidentTypes] = useState([]);
   const [allAddress, setallAddress] = useState<any>('');
   const [desc, setdesc] = useState([]);
   const [showdropDown, setshowdropDown] = useState(false);
+
+  const [tahsilList, setTahsilList] = useState([]);
 
   const addressRef = useRef<any>(null);
 
@@ -69,6 +74,7 @@ const CreateIncidentScreen: React.FC = () => {
       mobileNumber: '',
       description: '',
       media: [],
+      tehsil: '',
     },
   });
 
@@ -76,7 +82,7 @@ const CreateIncidentScreen: React.FC = () => {
   const selectedType = watch('incidentType');
 
   useEffect(() => {
-    register('address', { required: 'Address is required' });
+    register('address', { required: TEXT.address_required() });
   }, [register]);
 
   useEffect(() => {
@@ -119,7 +125,7 @@ const CreateIncidentScreen: React.FC = () => {
 
       const formData = new FormData();
       formData.append('user_id', user?.id || '');
-      formData.append('tehsil', user?.tehsil || '');
+      formData.append('tehsil', data.tehsil || '');
       formData.append('incident_type_id', String(data?.incidentType));
       formData.append('address', data.address);
       formData.append('mobile_number', data.mobileNumber);
@@ -130,12 +136,12 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('city_id', allAddress?.city || '');
       formData.append('district_id', allAddress?.district_id || '');
       formData.append('city_code', allAddress?.pincode || '');
-      // formData.append('other_incident_type', data?.customIncidentType || '');
+      formData.append('other_incident_type', data?.customIncidentType || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file: any, index) => {
           formData.append('upload_media[]', {
-            uri: file[0]?.uri,
+            uri: file?.uri,
             type: file.type || 'image/jpeg',
             name: file.fileName || `media_${index}.jpg`,
           });
@@ -150,14 +156,17 @@ const CreateIncidentScreen: React.FC = () => {
         });
         reset();
       } else {
-        Alert.alert(
-          'Error',
-          response?.data?.message || 'Failed to create incident.',
+        snackbar(
+          response?.data?.message || TEXT.failed_creating_incident(),
+          'error',
         );
       }
     } catch (error: any) {
       console.log('error', error.response);
-      Alert.alert('Error', 'Something went wrong while creating the incident.');
+      snackbar(
+        error?.response?.data?.message || TEXT.while_creating_incident(),
+        'error',
+      );
     } finally {
       hideLoader();
     }
@@ -190,7 +199,7 @@ const CreateIncidentScreen: React.FC = () => {
             />
           </TouchableOpacity>
 
-          <Text style={styles.header}>Create Incident</Text>
+          <Text style={styles.header}>{TEXT.create_incident()}</Text>
         </View>
 
         {/* Incident Type */}
@@ -200,7 +209,7 @@ const CreateIncidentScreen: React.FC = () => {
           control={control}
           placeholder={TEXT.select_incident_type()}
           items={incidentTypes}
-          rules={{ required: 'Please specify the incident type' }}
+          rules={{ required: TEXT.please_specify() }}
           errors={errors}
           onSelect={value => handleIncidentTypeChange(value)}
         />
@@ -208,11 +217,11 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Custom Other Type */}
         {selectedType == '43' && (
           <FormTextInput2
-            label="Specify Other Type"
+            label={TEXT.specify_another_type()}
             name="customIncidentType"
             control={control}
-            placeholder="Enter other incident type"
-            rules={{ required: 'Please specify the incident type' }}
+            placeholder={TEXT.other_incident_type()}
+            rules={{ required: TEXT.please_specify() }}
             error={errors.customIncidentType?.message}
           />
         )}
@@ -261,6 +270,15 @@ const CreateIncidentScreen: React.FC = () => {
           )}
         </View>
 
+        <DropDownInput
+          name="tehsil"
+          label="Select Tehsil"
+          control={control}
+          placeholder="Select Tehsil"
+          rules={{ required: 'Tehsil is required' }}
+          items={tahsilList}
+        />
+
         {/* Mobile Number */}
         <FormTextInput
           label={TEXT.mobile_number()}
@@ -281,7 +299,7 @@ const CreateIncidentScreen: React.FC = () => {
         {/* Description */}
         <View>
           <FormTextInput
-            label="Description"
+            label={TEXT.description()}
             name="description"
             control={control}
             multiline
@@ -312,7 +330,7 @@ const CreateIncidentScreen: React.FC = () => {
 
         {/* Media Picker */}
         <FormMediaPicker
-          label="Upload Image"
+          label={TEXT.upload_image()}
           name="media"
           control={control}
           // rules={{ required: 'At least one media file is required' }}
@@ -333,9 +351,39 @@ const CreateIncidentScreen: React.FC = () => {
 
       <IncidentAddressSheet
         ref={addressRef}
-        onSubmit={data => {
+        onSubmit={async data => {
           setValue('address', data?.flat || '', { shouldValidate: true });
           setallAddress(data);
+
+          console.log('Selected State:', data?.state);
+          console.log('Selected City:', data?.city);
+
+          if (data?.state && data?.city) {
+            try {
+              showLoader();
+              const resp = await ApiManager.getTehsilByCity(
+                data.state,
+                data.city,
+                userToken,
+              );
+
+              if (resp?.data?.status) {
+                setTahsilList(
+                  (resp?.data?.data || []).map(item => ({
+                    label: item.tehsil_name,
+                    value: item.id,
+                  })),
+                );
+              } else {
+                snackbar('Failed to load tehsil list', 'error');
+              }
+            } catch (err) {
+              console.log('Tehsil Fetch Error:', err);
+              snackbar('Error fetching tehsil list', 'error');
+            } finally {
+              hideLoader();
+            }
+          }
         }}
       />
     </SafeAreaView>

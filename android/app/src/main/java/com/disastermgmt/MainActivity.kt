@@ -1,4 +1,4 @@
-package com.disastermgmt
+package com.disastermgt
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

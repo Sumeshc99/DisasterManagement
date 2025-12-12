@@ -10,8 +10,16 @@ import {
   Platform,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { FONT } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import HospitalSvg from '../../assets/svg/Hospital (2).svg';
+import PoliceSvg from '../../assets/svg/Police.svg';
+import AmbulanceSvg from '../../assets/svg/Ambulance.svg';
+import FireBrigadesSvg from '../../assets/svg/FireBrigades.svg';
+import { TEXT } from '../../i18n/locales/Text';
+import ApiManager from '../../apis/ApiManager';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 interface SelfHelpBottomSheetProps {
   onClose: () => void;
@@ -22,6 +30,8 @@ const SelfHelpBottomSheet = forwardRef<
   SelfHelpBottomSheetProps
 >(({ onClose }, ref) => {
   const navigation = useNavigation();
+
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
 
   const makeCall = async (num: string) => {
     try {
@@ -38,7 +48,48 @@ const SelfHelpBottomSheet = forwardRef<
     }
   };
 
-  const getResponders = (type: String) => {};
+  const getResponders = async (type: string) => {
+    try {
+      const resourceMap: any = {
+        clinic: 'Hospital',
+        police: 'Police',
+        ambulance: 'Ambulance',
+        fire: 'Fire Brigade',
+      };
+      // imp note : add dynamic data below in the body
+      const body = {
+        tehsil_id: 3,
+        resource_type: resourceMap[type],
+        latitude: 53,
+        longitude: 53,
+      };
+
+      const token = userToken;
+      const response = await ApiManager.getRespondersByTehsilAndResource(
+        body,
+        token,
+      );
+      console.log('api response', response?.data);
+
+      const responderList = response?.data?.responders || [];
+      console.log('api responder List', responderList);
+
+      (ref as any)?.current?.close();
+
+      navigation.navigate('mainAppSelector', {
+        screen: 'tabNavigation',
+        params: {
+          screen: 'home',
+          params: {
+            responders: responderList,
+            selectedType: resourceMap[type],
+          },
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <RBSheet
@@ -78,12 +129,9 @@ const SelfHelpBottomSheet = forwardRef<
           />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Self-Help Options</Text>
+        <Text style={styles.title}>{TEXT.self_help_options()}</Text>
 
-        <Text style={styles.description}>
-          While we alert your emergency contacts & notify nearby app users,
-          please call below helpline numbers immediately.
-        </Text>
+        <Text style={styles.description}>{TEXT.helpline_message()}</Text>
 
         <TouchableOpacity
           style={styles.primaryButton}
@@ -96,7 +144,7 @@ const SelfHelpBottomSheet = forwardRef<
           <Text style={styles.primaryButtonText}>112</Text>
         </TouchableOpacity>
 
-        <Text style={styles.alternateLabel}>Alternate call</Text>
+        <Text style={styles.alternateLabel}>{TEXT.emergency()}</Text>
 
         <View style={styles.alternateRow}>
           <TouchableOpacity
@@ -124,15 +172,12 @@ const SelfHelpBottomSheet = forwardRef<
 
         {/* Labels for Police and Ambulance */}
         <View style={styles.labelsRow}>
-          <Text style={styles.serviceLabel}>Police</Text>
-          <Text style={styles.serviceLabel}>Ambulance</Text>
+          <Text style={styles.serviceLabel}>{TEXT.police()}</Text>
+          <Text style={styles.serviceLabel}>{TEXT.ambulance()}</Text>
         </View>
 
         {/* Help Message */}
-        <Text style={styles.description}>
-          Please reach out to nearby services for help till we notify our
-          Responders.
-        </Text>
+        <Text style={styles.description}>{TEXT.reach_nearby_services()}</Text>
 
         {/* Service Cards */}
         <View style={styles.servicesGrid}>
@@ -140,45 +185,30 @@ const SelfHelpBottomSheet = forwardRef<
             onPress={() => getResponders('clinic')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/hospi.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
-            <Text style={styles.serviceCardText}>Clinic/Hospital</Text>
+            <HospitalSvg height={WIDTH(20)} width={WIDTH(20)} />
+
+            <Text style={styles.serviceCardText}>{TEXT.clinic_hospital()}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('police')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/police.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
-            <Text style={styles.serviceCardText}>Police Station</Text>
+            <PoliceSvg height={WIDTH(20)} width={WIDTH(20)} />
+            <Text style={styles.serviceCardText}>{TEXT.police_station()}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('ambulance')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/amb.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
-            <Text style={styles.serviceCardText}>Ambulance</Text>
+            <AmbulanceSvg height={WIDTH(20)} width={WIDTH(20)} />
+            <Text style={styles.serviceCardText}>{TEXT.ambulance()}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => getResponders('fire')}
             style={styles.serviceCard}
           >
-            <Image
-              source={require('../../assets/firev.png')}
-              resizeMode="contain"
-              style={{ width: 70, height: 70 }}
-            />
-            <Text style={styles.serviceCardText}>Fire Brigades</Text>
+            <FireBrigadesSvg height={WIDTH(20)} width={WIDTH(20)} />
+            <Text style={styles.serviceCardText}>{TEXT.fire_brigade()}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -239,7 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     borderRadius: 25,
-    marginBottom: 12,
+    marginBottom: 6,
     width: 130,
     gap: 10,
   },
@@ -266,7 +296,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   alternateButton: {
-    flex: 1,
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
     borderColor: '#0D5FB3',

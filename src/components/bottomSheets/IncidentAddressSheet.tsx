@@ -23,7 +23,7 @@ const { height } = Dimensions.get('window');
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 
-Geocoder.init('AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw', { language: 'en' });
+Geocoder.init('AIzaSyBx9ZKDGqCuGIlboDZ-KTZcsPkOazI9l6Y', { language: 'en' });
 
 interface IncidentAddressSheetProps {
   onSubmit?: (data: any) => void;
@@ -127,7 +127,7 @@ const IncidentAddressSheet = forwardRef<
     if (onSubmit) {
       onSubmit(finalData);
     }
-    (ref as any)?.current?.close?.();
+    settab(0), (ref as any)?.current?.close?.();
   };
 
   return (
@@ -150,7 +150,9 @@ const IncidentAddressSheet = forwardRef<
           </View>
           <TouchableOpacity
             style={styles.sideBox}
-            onPress={() => (ref as any)?.current?.close?.()}
+            onPress={() => {
+              setLocation(''), settab(0), (ref as any)?.current?.close?.();
+            }}
           >
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
@@ -199,7 +201,7 @@ const IncidentAddressSheet = forwardRef<
                 name="street"
                 control={control}
                 placeholder={TEXT.street_address()}
-                rules={{ required: 'Street is required' }}
+                rules={{ required: TEXT.street_required() }}
                 error={errors.street?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -235,7 +237,7 @@ const IncidentAddressSheet = forwardRef<
                 name="state"
                 control={control}
                 placeholder={TEXT.state()}
-                rules={{ required: 'State is required' }}
+                rules={{ required: TEXT.state_required() }}
                 error={errors.state?.message}
               />
               <View style={{ marginTop: -6 }} />
@@ -256,7 +258,7 @@ const IncidentAddressSheet = forwardRef<
                     name="latitude"
                     control={control}
                     error={errors.latitude?.message}
-                    rules={{ required: 'Latitude is required' }}
+                    rules={{ required: TEXT.required_latitude() }}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -265,7 +267,7 @@ const IncidentAddressSheet = forwardRef<
                     name="longitude"
                     control={control}
                     error={errors.longitude?.message}
-                    rules={{ required: 'Longitude is required' }}
+                    rules={{ required: TEXT.required_longitude() }}
                   />
                 </View>
               </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,9 @@ import {
   Image,
   StatusBar,
   ImageBackground,
+  Platform,
+  PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +19,13 @@ import { COLOR } from '../themes/Colors';
 import i18n from '../i18n/i18n';
 import { useDispatch } from 'react-redux';
 import { setLanguage } from '../store/slices/LanguageSlice';
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  request,
+  RESULTS,
+} from 'react-native-permissions';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -49,14 +59,92 @@ const SelectLanguage = () => {
     },
   ];
 
-  const handleNext = () => {
-    navigation.navigate('loginScreen');
-  };
+  useEffect(() => {
+    const requestPermissions = async () => {
+      if (Platform.OS === 'android') {
+        const locationGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+
+        if (locationGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Android Location Granted');
+
+          const cameraGranted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+          );
+
+          if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Android Camera Granted');
+          }
+        }
+
+        return;
+      }
+
+      // 1️⃣ Location Permission
+      const locStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+      let locationGranted = false;
+
+      if (locStatus === RESULTS.GRANTED) {
+        locationGranted = true;
+      } else if (locStatus === RESULTS.DENIED) {
+        const newStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        locationGranted = newStatus === RESULTS.GRANTED;
+      } else if (locStatus === RESULTS.BLOCKED) {
+        Alert.alert(
+          'Location Permission Needed',
+          'Enable location permission in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ],
+        );
+      }
+
+      if (!locationGranted) return;
+
+      console.log('iOS Location Granted');
+
+      // 2️⃣ Camera Permission
+      const camStatus = await check(PERMISSIONS.IOS.CAMERA);
+
+      let cameraGranted = false;
+
+      if (camStatus === RESULTS.GRANTED) {
+        cameraGranted = true;
+      } else if (camStatus === RESULTS.DENIED) {
+        const newStatus = await request(PERMISSIONS.IOS.CAMERA);
+        cameraGranted = newStatus === RESULTS.GRANTED;
+      } else if (camStatus === RESULTS.BLOCKED) {
+        Alert.alert(
+          'Camera Permission Needed',
+          'Enable camera permission in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ],
+        );
+      }
+
+      if (cameraGranted) console.log('iOS Camera Granted');
+    };
+
+    requestPermissions();
+  }, []);
+
+  useEffect(() => {
+    SelectLanguage(languages[0]);
+  }, []);
 
   const SelectLanguage = (item: any) => {
     setSelectedLanguage(item.name);
     i18n.changeLanguage(item.code);
     dispatch(setLanguage(item.code));
+  };
+
+  const handleNext = () => {
+    navigation.navigate('loginScreen');
   };
 
   return (
@@ -72,7 +160,7 @@ const SelectLanguage = () => {
         {/* Content Section */}
         <View style={styles.contentContainer}>
           <Image
-            source={require('../assets/citizen/logo.png')}
+            source={require('../assets/DDMA LOGO.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -186,7 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.blue,
   },
   languageText: {
-   fontFamily: FONT.R_SBD_600,
+    fontFamily: FONT.R_SBD_600,
     color: COLOR.textGrey,
     fontSize: 16,
   },

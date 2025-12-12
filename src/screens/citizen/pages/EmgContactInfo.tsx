@@ -84,7 +84,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
       <Controller
         name="document"
         control={control}
-        rules={{ required: 'Document is required' }}
+        rules={{ required: TEXT.document_required() }}
         render={() => (
           <View style={styles.documentsContainer}>
             {document ? (
@@ -131,8 +131,8 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         rules={{
           required: TEXT.enter_full_name(),
           pattern: {
-            value: /^[A-Za-z\s]+$/,
-            message: 'Only alphabets are allowed',
+            value: /^[A-Za-z\s\u0900-\u097F]+$/,
+            message: TEXT.only_alphabets(),
           },
         }}
         keyboardType="default"
@@ -145,7 +145,7 @@ const EmgContactInfo: React.FC<EmgContactInfoProps> = ({
         control={control}
         placeholder={TEXT.Select_relation()}
         items={relations}
-        rules={{ required: 'Relation is required' }}
+        rules={{ required: TEXT.relation_required() }}
         errors={errors}
       />
 

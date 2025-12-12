@@ -15,7 +15,7 @@ import { FONT } from '../themes/AppConst';
 import { TEXT } from '../i18n/locales/Text';
 import SearchIcon from '../assets/svg/searchIcon.svg';
 
-const GOOGLE_API_KEY = 'AIzaSyDjFGPFuN3IMaMQU76874r-T1glz8dyupw';
+const GOOGLE_API_KEY = 'AIzaSyBx9ZKDGqCuGIlboDZ-KTZcsPkOazI9l6Y';
 Geocoder.init(GOOGLE_API_KEY);
 
 interface Location {

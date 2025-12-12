@@ -8,6 +8,10 @@ import {
   Image,
 } from 'react-native';
 import Sound from 'react-native-sound';
+import SystemSetting from 'react-native-system-setting';
+import { COLOR } from '../themes/Colors';
+import { FONT } from '../themes/AppConst';
+import { TEXT } from '../i18n/locales/Text';
 
 interface AlertModalProps {
   visible: boolean;
@@ -20,8 +24,8 @@ interface AlertModalProps {
 
 const AlertModal: React.FC<AlertModalProps> = ({
   visible,
-  title = 'IMPORTANT ALERT',
-  message = 'Your decision is needed on pending incident requests. Take action now',
+  title = TEXT.important_alert(),
+  message = TEXT.your_decision(),
   onAcknowledge,
   onViewDetails,
   onClose,
@@ -30,11 +34,12 @@ const AlertModal: React.FC<AlertModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      SystemSetting.setVolume(1.0);
       Sound.setCategory('Playback', true);
 
       const s = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {
         if (error) {
-          console.log('Failed to load sound', error);
+          console.log(TEXT.failed_load_sound(), error);
           return;
         }
 
@@ -97,7 +102,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
                 activeOpacity={0.8}
               >
                 <Text style={[styles.buttonText, styles.outlinedText]}>
-                  Acknowledge
+                  {TEXT.acknowledge()}
                 </Text>
               </TouchableOpacity>
 
@@ -110,7 +115,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
                 activeOpacity={0.8}
               >
                 <Text style={[styles.buttonText, styles.outlinedText]}>
-                  View Details
+                  {TEXT.view_details()}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -152,13 +157,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '700',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_BOLD_700,
     marginBottom: 10,
   },
   message: {
     fontSize: 14,
-    color: '#666',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_SBD_600,
     textAlign: 'center',
     marginBottom: 20,
     lineHeight: 20,
@@ -182,7 +188,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   outlinedText: {
-    color: '#000',
+    color: COLOR.textGrey,
   },
 });
 

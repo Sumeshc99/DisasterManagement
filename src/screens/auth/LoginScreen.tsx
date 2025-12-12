@@ -16,7 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import { COLOR } from '../../themes/Colors';
 import { FONT, HEIGHT, WIDTH } from '../../themes/AppConst';
-import '../../../i18n';
 import ApiManager from '../../apis/ApiManager';
 import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useForm } from 'react-hook-form';
@@ -24,6 +23,8 @@ import FormTextInput from '../../components/inputs/FormTextInput';
 import DropDownInput from '../../components/inputs/DropDownInput';
 import { useTranslation } from 'react-i18next';
 import { TEXT } from '../../i18n/locales/Text';
+import '../../../i18n';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
 
 interface LoginFormData {
   phone: string;
@@ -34,6 +35,7 @@ const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const { showLoader, hideLoader } = useGlobalLoader();
   const { t } = useTranslation();
+  const snackbar = useSnackbar();
 
   const [tahsilList, settahsilList] = useState([]);
 
@@ -90,7 +92,10 @@ const LoginScreen = () => {
           Alert.alert('Login Failed', resp?.data?.message || 'Unknown error');
         }
       })
-      .catch(err => console.log('error', err.response))
+      .catch(err => {
+        console.log('error', err.response),
+          snackbar(err.response?.data?.error, 'error');
+      })
       .finally(() => hideLoader());
   };
 
@@ -118,7 +123,7 @@ const LoginScreen = () => {
             }}
           >
             <Image
-              source={require('../../assets/logo.png')}
+              source={require('../../assets/DDMA LOGO.png')}
               style={styles.logo}
               resizeMode="contain"
             />

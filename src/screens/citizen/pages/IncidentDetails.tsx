@@ -8,16 +8,15 @@ import {
   StatusBar,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
-import FormMediaPicker from '../../../components/inputs/FormMediaPicker';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH } from '../../../themes/AppConst';
+import { FONT, WIDTH, HEIGHT } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -27,6 +26,9 @@ import SelfHelpBottomSheet from '../../../components/bottomSheets/SelfHelpOption
 import { TEXT } from '../../../i18n/locales/Text';
 import ScreenStateHandler from '../../../components/ScreenStateHandler';
 import BackArrow from '../../../assets/svg/backArrow.svg';
+import ImageContainer from '../../../components/ImageContainer';
+import RNBlobUtil from 'react-native-blob-util';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -37,6 +39,7 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -47,12 +50,16 @@ const ReviewerTable = ({ title, data }: any) => {
       <View style={styles.tableContainer}>
         {/* Header */}
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={[styles.tableCell, { flex: 1 }]}>Sr. No</Text>
-          <Text style={[styles.tableCell, { flex: 2 }]}>Full Name</Text>
+          <Text style={[styles.tableCell, { flex: 1 }]}>{TEXT.sr_no()}</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.full_name()}
+          </Text>
           {title === 'Responder' && (
-            <Text style={[styles.tableCell, { flex: 2 }]}>Type</Text>
+            <Text style={[styles.tableCell, { flex: 2 }]}>{TEXT.type()}</Text>
           )}
-          <Text style={[styles.tableCell, { flex: 2 }]}>Contact Details</Text>
+          <Text style={[styles.tableCell, { flex: 2 }]}>
+            {TEXT.contact_details()}
+          </Text>
         </View>
 
         {/* Rows */}
@@ -93,6 +100,7 @@ const formatDateTime = (dateString: string) => {
 const IncidentDetails: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const snackbar = useSnackbar();
 
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
@@ -121,6 +129,7 @@ const IncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      tehsil: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -131,66 +140,33 @@ const IncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
-    const getIncidentDetails = () => {
-      setLoading(true);
-      ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
-        .then(resp => {
-          if (resp?.data?.status) {
-            const inc = resp?.data?.data;
-            setIncidentData(inc);
-
-            reset({
-              incidentId: inc?.incident_id,
-              incidentType: inc?.incident_type_name,
-              address: inc?.address,
-              mobileNumber: inc?.mobile_number,
-              description: inc?.description,
-              media: inc?.upload_media,
-              status: inc?.status,
-              dateTime: formatDateTime(inc?.date_reporting),
-            });
-          }
-        })
-        .catch(err => console.log('err', err.response))
-        .finally(() => setLoading(false));
-    };
-
     getIncidentDetails();
   }, []);
 
-  // ==================== IMAGE UPLOAD ============================
-  const handleImageUpload1 = (item: any) => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Failed to pick image');
-          return;
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            dateTime: formatDateTime(inc?.date_reporting),
+            tehsil: inc?.tehsil_name,
+          });
         }
-
-        const newImages =
-          response.assets?.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName,
-            type: asset.type,
-          })) || [];
-
-        setValue('media', [...media, ...newImages]);
-      },
-    );
-  };
-
-  const handleImageUpload = (items: any[]) => {
-    const updated = [...media, ...items];
-    setValue('media', updated);
-  };
-
-  const handleRemoveMedia = (index: number) => {
-    const updated = media.filter((_, i) => i !== index);
-    setValue('media', updated);
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
   };
 
   // ==================== UPDATE INCIDENT ============================
@@ -207,7 +183,7 @@ const IncidentDetails: React.FC = () => {
     ApiManager.updateIncident(body, userToken)
       .then(resp => {
         if (resp.data.status) {
-          Alert.alert('Success', 'Incident updated successfully.');
+          Alert.alert(TEXT.success(), TEXT.incident_update());
         }
       })
       .catch(err => console.log('err', err.response))
@@ -217,8 +193,9 @@ const IncidentDetails: React.FC = () => {
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = () => {
     const body = {
+      user_id: user?.id,
       incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
+      button_type: TEXT.yes(),
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
@@ -227,12 +204,13 @@ const IncidentDetails: React.FC = () => {
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
         if (resp.data.status) {
+          console.log(resp.data.status, 'Response create incident');
           successRef.current.close();
           acceptRef.current.open();
           assignToReviewer();
         }
       })
-      .catch(err => console.log('err', err.response))
+      .catch(err => console.log('err', err))
       .finally(() => hideLoader());
   };
 
@@ -240,7 +218,7 @@ const IncidentDetails: React.FC = () => {
     ApiManager.assignToReviewer(data?.incident_auto_id || data, userToken)
       .then(resp => {
         if (resp.data.status) {
-          console.log('Assigned to reviewer successfully');
+          console.log(TEXT.assigned_reviewer_success());
         }
       })
       .catch(err => console.log('err', err.response));
@@ -283,13 +261,70 @@ const IncidentDetails: React.FC = () => {
       .then(resp => {
         if (resp.data.status) {
           cancelRef.current.open();
+          getIncidentDetails();
         }
       })
       .catch(err => console.log('err', err.response))
       .finally(() => hideLoader());
   };
 
-  const downloadPDF = (item: any) => {};
+  const downloadPDF = async (pdfUrl: string) => {
+    if (!pdfUrl) {
+      snackbar(TEXT.pdf_url_notavailable(), 'error');
+      return;
+    }
+
+    const { fs } = RNBlobUtil;
+    const { dirs } = fs;
+
+    const fileName = `myfile_${Date.now()}.pdf`;
+
+    const downloadPath =
+      Platform.OS === 'android'
+        ? `${dirs.DownloadDir}/${fileName}`
+        : `${dirs.DocumentDir}/${fileName}`;
+
+    try {
+      RNBlobUtil.config(
+        Platform.OS === 'android'
+          ? {
+              fileCache: true,
+              appendExt: 'pdf',
+              path: downloadPath,
+              addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                title: fileName,
+                description: 'Downloading PDF...',
+                mime: 'application/pdf',
+                mediaScannable: true,
+                path: downloadPath,
+              },
+            }
+          : {
+              fileCache: true,
+              path: downloadPath,
+            },
+      )
+        .fetch('GET', pdfUrl)
+        .then(async res => {
+          console.log('File downloaded to:', res.path());
+
+          if (Platform.OS === 'ios') {
+            RNBlobUtil.ios.openDocument(res.path());
+          } else {
+            snackbar('PDF Downloaded Successfully', 'success');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar('Download Failed', 'error');
+        });
+    } catch (e) {
+      console.log(e);
+      snackbar('Something went wrong!', 'error');
+    }
+  };
 
   const onSuccessNo = () => {
     successRef.current.close();
@@ -340,28 +375,35 @@ const IncidentDetails: React.FC = () => {
                 label={TEXT.address()}
                 name="address"
                 control={control}
-                placeholder="Enter address"
+                placeholder={TEXT.enter_address()}
                 editable={
                   incidentData.status === 'New' &&
                   incidentData.user_id == user?.id
                 }
                 multiline
-                rules={{ required: 'Address is required' }}
+                rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
 
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>Tehsil</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
               <FormTextInput
-                label="Mobile Number"
+                label={TEXT.mobile_number()}
                 name="mobileNumber"
                 control={control}
-                placeholder="Enter mobile number"
+                placeholder={TEXT.enter_mobile_number()}
                 keyboardType="phone-pad"
                 editable={
                   incidentData.status === 'New' &&
                   incidentData.user_id == user?.id
                 }
                 rules={{
-                  required: 'Mobile number is required',
+                  required: TEXT.mobile_required(),
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: TEXT.enter_valid_10_digit_number(),
@@ -371,10 +413,10 @@ const IncidentDetails: React.FC = () => {
               />
 
               <FormTextInput
-                label="Description"
+                label={TEXT.description()}
                 name="description"
                 control={control}
-                placeholder="Enter description"
+                placeholder={TEXT.enter_description()}
                 multiline
                 editable={
                   incidentData.status === 'New' &&
@@ -384,16 +426,18 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
-                <View style={{ width: WIDTH(30) }}></View>
+                <View style={{ width: WIDTH(30) }}>
+                  {media?.length && <ImageContainer data={media} />}
+                </View>
 
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.label}>Status</Text>
+                <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                  <Text style={styles.label}>{TEXT.status()}</Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('status')}</Text>
                   </View>
 
                   <Text style={[styles.label, { marginTop: 6 }]}>
-                    Date & Time of Reporting
+                    {TEXT.date_time_reporting()}
                   </Text>
                   <View style={styles.disabledBox}>
                     <Text style={styles.disabledText}>{watch('dateTime')}</Text>
@@ -403,14 +447,14 @@ const IncidentDetails: React.FC = () => {
 
               {incidentData?.reviewers?.length > 0 && (
                 <ReviewerTable
-                  title={'Reviewer'}
+                  title={TEXT.reviewer()}
                   data={incidentData?.reviewers}
                 />
               )}
 
               {incidentData?.responders?.length > 0 && (
                 <ReviewerTable
-                  title={'Responder'}
+                  title={TEXT.responders()}
                   data={incidentData?.responders}
                 />
               )}
@@ -430,14 +474,18 @@ const IncidentDetails: React.FC = () => {
                         style={[styles.submitButton]}
                         onPress={handleSubmit(updateIncedents)}
                       >
-                        <Text style={styles.submitButtonText}>Update</Text>
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.update()}
+                        </Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         style={styles.submitButton}
-                        onPress={() => successRef.current.open()}
+                        onPress={handleSubmit(() => successRef.current.open())}
                       >
-                        <Text style={styles.submitButtonText}>Send</Text>
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.send()}
+                        </Text>
                       </TouchableOpacity>
                     </View>
 
@@ -456,7 +504,7 @@ const IncidentDetails: React.FC = () => {
                         fontFamily: FONT.R_MED_500,
                       }}
                     >
-                      Tap 3 times to cancel Incident
+                      {TEXT.tap_to_cancel()}
                     </Text>
                   </View>
                 )
@@ -470,9 +518,11 @@ const IncidentDetails: React.FC = () => {
                 >
                   <TouchableOpacity
                     style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_id)}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
-                    <Text style={styles.submitButtonText1}>Download PDF</Text>
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -484,9 +534,7 @@ const IncidentDetails: React.FC = () => {
       {/* SEND CONFIRMATION */}
       <SuccessScreen
         ref={successRef}
-        description={
-          'Your disaster report will be sent to the authorities for review and response, and immediate action will be taken. Do you want to proceed?'
-        }
+        description={TEXT.confirm_submission()}
         onNo={onSuccessNo}
         onYes={incidentUpdateStatus}
         height={340}
@@ -497,7 +545,7 @@ const IncidentDetails: React.FC = () => {
       <SuccessScreen
         ref={cancelRef}
         icon={require('../../../assets/cancel1.png')}
-        description={'Your report has been successfully cancelled.'}
+        description={TEXT.report_cancelled()}
         height={240}
       />
 
@@ -605,7 +653,7 @@ const styles = StyleSheet.create({
 
   tableCell: {
     padding: 10,
-    fontSize: 15,
+    fontSize: 12,
     textAlign: 'center',
   },
 });

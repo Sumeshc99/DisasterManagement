@@ -17,6 +17,9 @@ import CreateIncidentScreen from '../screens/citizen/pages/CreateIncidentScreen'
 import IncidentDetails from '../screens/citizen/pages/IncidentDetails';
 import RevIncidentDetails from '../screens/receiver/RevIncidentDetails';
 import ResIncidentDetails from '../screens/responder/ResIncidentDetails';
+import Notification from '../screens/notification/Notification';
+import NotificationIncidentDetails from '../screens/citizen/pages/NotificationIncidentDetails';
+import TermsAndConditions from '../screens/TermsAndConditions';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -61,6 +64,15 @@ const AppNavigation = () => {
           name="resIncidentDetails"
           component={ResIncidentDetails}
         />
+        <Stack.Screen name="notification" component={Notification} />
+        <Stack.Screen
+          name="NotificationIncidentDetails"
+          component={NotificationIncidentDetails}
+        />
+        <Stack.Screen
+          name="termsAndConditions"
+          component={TermsAndConditions}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -70,7 +82,7 @@ export default AppNavigation;
 
 export type AppStackNavigationProp<T extends keyof AppStackParamList> =
   NativeStackNavigationProp<AppStackParamList, T>;
-
+// informetics
 type AppStackParamList = {
   splashScreen: undefined;
   selectLanguage: undefined;
@@ -86,4 +98,7 @@ type AppStackParamList = {
   revIncidentDetails: { data: any };
   incidentRecordsScreen: undefined;
   resIncidentDetails: { data: any };
+  notification: undefined;
+  termsAndConditions: undefined;
+  NotificationIncidentDetails: undefined;
 };

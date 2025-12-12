@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#000',
+    color: COLOR.textGrey,
   },
   phone: {
     color: '#555',
