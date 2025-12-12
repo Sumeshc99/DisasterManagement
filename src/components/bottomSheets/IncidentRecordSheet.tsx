@@ -118,12 +118,22 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
           >
             <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-            {item.status == 'New' && (
+            {item.status === 'New' && (
               <View
-                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: isAssignedTab ? COLOR.blue : COLOR.blue,
+                  },
+                ]}
               >
-                <Text style={[styles.statusText, { color: COLOR.white }]}>
-                  Edit
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: isAssignedTab ? COLOR.white : COLOR.white },
+                  ]}
+                >
+                  {isAssignedTab ? 'View' : 'Edit'}
                 </Text>
               </View>
             )}

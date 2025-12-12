@@ -139,7 +139,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
           {item.status === 'New' && (
             <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
               <Text style={[styles.statusText, { color: COLOR.white }]}>
-                Edit
+                {incType === 1 ? 'View' : 'Edit'}
               </Text>
             </View>
           )}
