@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import DashBoardHeader from '../../components/header/DashBoardHeader';
@@ -30,6 +30,7 @@ import Dis from '../../assets/svg/dis.svg';
 import { TEXT } from '../../i18n/locales/Text';
 import ReviewerSection from '../receiver/ReviewerSection';
 import ResponderSection from '../responder/ResponderSection';
+import ResponderListSheet from '../../components/bottomSheets/ResponderListSheet';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -40,12 +41,25 @@ const CitizenDashboard = () => {
   const [responders, setResponders] = useState<any[]>([]);
   const [showResponders, setShowResponders] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [responderListFromSheet, setResponderListFromSheet] = useState([]);
+
+  const route = useRoute();
+  // const navigation = useNavigation();
+
+  useEffect(() => {
+    if (route?.params?.responders) {
+      setResponderListFromSheet(route?.params?.responders);
+      // OPEN bottom sheet when data arrives
+      responderSheetRef.current?.open();
+    }
+  }, [route.params]);
 
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
   const showHelpRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
+  const responderSheetRef = useRef<any>(null);
 
   GetCurrentLocation();
   useBackExit();
@@ -142,6 +156,15 @@ const CitizenDashboard = () => {
 
       {/* Floating buttons */}
       <View style={styles.sideBtns}>
+        {/* <TouchableOpacity
+          style={styles.btnWrapper}
+          onPress={() => responderSheetRef.current?.open()}
+        >
+          <View style={styles.floatingBtn}>
+            <Text> open here</Text>
+          </View>
+          <Text style={styles.text}>open res sheet</Text>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.btnWrapper}
           onPress={() => setShowResponders(prev => !prev)}
@@ -208,6 +231,12 @@ const CitizenDashboard = () => {
 
       {user?.role === 'reviewer' && <ReviewerSection />}
       {user?.role === 'responder' && <ResponderSection />}
+
+      <ResponderListSheet
+        ref={responderSheetRef}
+        responders={responderListFromSheet}
+        onClose={() => console.log('Sheet closed')}
+      />
     </SafeAreaView>
   );
 };
