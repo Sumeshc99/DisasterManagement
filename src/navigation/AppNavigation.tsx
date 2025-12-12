@@ -100,4 +100,5 @@ type AppStackParamList = {
   resIncidentDetails: { data: any };
   notification: undefined;
   termsAndConditions: undefined;
+  NotificationIncidentDetails: undefined;
 };

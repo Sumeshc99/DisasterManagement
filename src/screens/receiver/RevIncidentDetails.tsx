@@ -7,10 +7,8 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
@@ -35,6 +33,7 @@ interface IncidentDetailsForm {
   incidentId: string;
   incidentType: string;
   address: string;
+  tehsil: string;
   mobileNumber: string;
   description: string;
   media: { uri?: string; name?: string; type?: string }[];
@@ -97,6 +96,7 @@ const RevIncidentDetails: React.FC = () => {
 
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
+  const [assignInc, setassignInc] = useState([]);
 
   const {
     control,
@@ -104,12 +104,12 @@ const RevIncidentDetails: React.FC = () => {
     reset,
     formState: { errors },
     watch,
-    setValue,
   } = useForm<IncidentDetailsForm>({
     defaultValues: {
       incidentId: '',
       incidentType: '',
       address: '',
+      tehsil: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -139,7 +139,6 @@ const RevIncidentDetails: React.FC = () => {
 
   const media = watch('media');
 
-  // ==================== LOAD INCIDENT DETAILS =====================
   useEffect(() => {
     const getIncidentDetails = () => {
       setLoading(true);
@@ -153,6 +152,7 @@ const RevIncidentDetails: React.FC = () => {
               incidentId: inc?.incident_id,
               incidentType: inc.other_incident_type || inc?.incident_type_name,
               address: inc?.address,
+              tehsil: inc?.tehsil_name,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
               media: inc?.media,
@@ -169,59 +169,30 @@ const RevIncidentDetails: React.FC = () => {
     getIncidentDetails();
   }, []);
 
-  // ==================== IMAGE UPLOAD ============================
-  const handleImageUpload1 = (item: any) => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
-          return;
-        }
+  useEffect(() => {
+    const getAssignedResponder = () => {
+      setLoading(true);
+      ApiManager.assignRes(data?.incident_auto_id || data, userToken)
+        .then(resp => {
+          if (resp?.data?.status) {
+            const data = resp?.data?.data;
 
-        const newImages =
-          response.assets?.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName,
-            type: asset.type,
-          })) || [];
-
-        setValue('media', [...media, ...newImages]);
-      },
-    );
-  };
-
-  const handleImageUpload = (items: any[]) => {
-    const updated = [...media, ...items];
-    setValue('media', updated);
-  };
-
-  const handleRemoveMedia = (index: number) => {
-    const updated = media.filter((_, i) => i !== index);
-    setValue('media', updated);
-  };
-
-  // ==================== UPDATE INCIDENT ============================
-  const updateIncedents = (formData: IncidentDetailsForm) => {
-    const body = {
-      incident_id: incidentData?.id,
-      address: formData.address,
-      mobile_number: formData.mobileNumber,
-      description: formData.description,
-      upload_media: formData.media || [],
+            setassignInc(
+              data?.map((i: any) => ({
+                label: i?.contact_name,
+                value: i?.user_id,
+                type: i?.responder_name,
+                typeId: i?.responder_type_id,
+              })),
+            );
+          }
+        })
+        .catch(err => console.log('err', err.response))
+        .finally(() => setLoading(false));
     };
 
-    showLoader();
-    ApiManager.updateIncident(body, userToken)
-      .then(resp => {
-        if (resp.data.status) {
-          Alert.alert(TEXT.success(), TEXT.incident_update());
-        }
-      })
-      .catch(err => console.log('err', err.response))
-      .finally(() => hideLoader());
-  };
+    getAssignedResponder();
+  }, []);
 
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = () => {
@@ -299,6 +270,13 @@ const RevIncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
+              <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>Tehsil</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
               <View style={{ marginBottom: 10, marginTop: -4 }}>
                 <Text style={styles.label}>Tehsil</Text>
                 <View style={styles.disabledBox}>
@@ -441,7 +419,11 @@ const RevIncidentDetails: React.FC = () => {
       />
 
       <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} />
+      <AssignResponderSheet
+        ref={assignRef}
+        data={incidentData}
+        assignRes={assignInc}
+      />
       <SuccessSheet
         ref={successRef}
         message={TEXT.responder_assigned_success()}

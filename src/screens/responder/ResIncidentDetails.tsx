@@ -7,10 +7,8 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
@@ -25,8 +23,6 @@ import SuccessScreen from '../../components/bottomSheets/SuccessScreen';
 import SelfHelpBottomSheet from '../../components/bottomSheets/SelfHelpOptionsSheet';
 import { TEXT } from '../../i18n/locales/Text';
 import ScreenStateHandler from '../../components/ScreenStateHandler';
-import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
-import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import ImageContainer from '../../components/ImageContainer';
 import { downloadPDF } from '../../Utils/downloadPDF';
@@ -35,6 +31,7 @@ interface IncidentDetailsForm {
   incidentId: string;
   incidentType: string;
   address: string;
+  tehsil: string;
   mobileNumber: string;
   description: string;
   media: { uri?: string; name?: string; type?: string }[];
@@ -91,7 +88,7 @@ const ResIncidentDetails: React.FC = () => {
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
-  const { userToken } = useSelector((state: RootState) => state.auth);
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
   const data = (route as { params?: { data?: any } })?.params?.data;
@@ -105,12 +102,12 @@ const ResIncidentDetails: React.FC = () => {
     reset,
     formState: { errors },
     watch,
-    setValue,
   } = useForm<IncidentDetailsForm>({
     defaultValues: {
       incidentId: '',
       incidentType: '',
       address: '',
+      tehsil: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -154,6 +151,7 @@ const ResIncidentDetails: React.FC = () => {
               incidentId: inc?.incident_id,
               incidentType: inc?.incident_type_name,
               address: inc?.address,
+              tehsil: inc?.tehsil_name,
               mobileNumber: inc?.mobile_number,
               description: inc?.description,
               media: inc?.media,
@@ -194,63 +192,10 @@ const ResIncidentDetails: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  // ==================== IMAGE UPLOAD ============================
-  const handleImageUpload1 = (item: any) => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
-          return;
-        }
-
-        const newImages =
-          response.assets?.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName,
-            type: asset.type,
-          })) || [];
-
-        setValue('media', [...media, ...newImages]);
-      },
-    );
-  };
-
-  const handleImageUpload = (items: any[]) => {
-    const updated = [...media, ...items];
-    setValue('media', updated);
-  };
-
-  const handleRemoveMedia = (index: number) => {
-    const updated = media.filter((_, i) => i !== index);
-    setValue('media', updated);
-  };
-
-  // ==================== UPDATE INCIDENT ============================
-  const updateIncedents = (formData: IncidentDetailsForm) => {
-    const body = {
-      incident_id: incidentData?.id,
-      address: formData.address,
-      mobile_number: formData.mobileNumber,
-      description: formData.description,
-      upload_media: formData.media || [],
-    };
-
-    showLoader();
-    ApiManager.updateIncident(body, userToken)
-      .then(resp => {
-        if (resp.data.status) {
-          Alert.alert(TEXT.success(), TEXT.incident_update());
-        }
-      })
-      .catch(err => console.log('err', err.response))
-      .finally(() => hideLoader());
-  };
-
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = (item: any) => {
     const body = {
+      user_id: user?.id,
       incident_id: data?.incident_auto_id || data,
       button_type: item,
       cancel_reason: '',
@@ -268,12 +213,6 @@ const ResIncidentDetails: React.FC = () => {
       })
       .catch(err => console.log('err', err.response))
       .finally(() => hideLoader());
-  };
-
-  const onSuccessNo = () => {
-    successRef.current.close();
-    cancelRef.current.open();
-    cancelRef.current.close();
   };
 
   return (
@@ -323,12 +262,14 @@ const ResIncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
+
               <View style={{ marginBottom: 10, marginTop: -4 }}>
                 <Text style={styles.label}>Tehsil</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
                 </View>
               </View>
+
               <FormTextInput
                 label={TEXT.mobile_number()}
                 name="mobileNumber"
@@ -465,17 +406,6 @@ const ResIncidentDetails: React.FC = () => {
         </ScreenStateHandler>
       </View>
 
-      {/* SEND CONFIRMATION */}
-      {/* <SuccessScreen
-        ref={successRef}
-        description={
-        TEXT.confirm_submission()
-       }
-        onNo={onSuccessNo}
-        onYes={incidentUpdateStatus}
-        height={340}
-      /> */}
-
       {/* CANCEL */}
       <SuccessScreen
         ref={cancelRef}
@@ -495,8 +425,6 @@ const ResIncidentDetails: React.FC = () => {
         data={incidentData}
         getIncidentDetails={getIncidentDetails}
       />
-      {/* <RejectReasonSheet ref={rejectRef} data={incidentData} />
-      <AssignResponderSheet ref={assignRef} data={incidentData} /> */}
     </SafeAreaView>
   );
 };

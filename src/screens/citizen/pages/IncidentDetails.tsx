@@ -11,7 +11,6 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
@@ -130,6 +129,7 @@ const IncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      tehsil: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -169,39 +169,6 @@ const IncidentDetails: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  // ==================== IMAGE UPLOAD ============================
-  const handleImageUpload1 = (item: any) => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 0.8, selectionLimit: 5 },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || TEXT.failed_to_pick());
-          return;
-        }
-
-        const newImages =
-          response.assets?.map(asset => ({
-            uri: asset.uri,
-            name: asset.fileName,
-            type: asset.type,
-          })) || [];
-
-        setValue('media', [...media, ...newImages]);
-      },
-    );
-  };
-
-  const handleImageUpload = (items: any[]) => {
-    const updated = [...media, ...items];
-    setValue('media', updated);
-  };
-
-  const handleRemoveMedia = (index: number) => {
-    const updated = media.filter((_, i) => i !== index);
-    setValue('media', updated);
-  };
-
   // ==================== UPDATE INCIDENT ============================
   const updateIncedents = (formData: IncidentDetailsForm) => {
     const body = {
@@ -226,6 +193,7 @@ const IncidentDetails: React.FC = () => {
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = () => {
     const body = {
+      user_id: user?.id,
       incident_id: data?.incident_auto_id || data,
       button_type: TEXT.yes(),
       cancel_reason: '',

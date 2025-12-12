@@ -19,7 +19,7 @@ interface props {
   data: any;
 }
 
-const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
+const RejectReasonSheet: React.FC<props> = forwardRef(({ data }, ref: any) => {
   const navigation = useNavigation();
   const { userToken } = useSelector((state: RootState) => state.auth);
 
@@ -45,7 +45,11 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
   useEffect(() => {
     const getIncidentIds = async () => {
       try {
-        const resp = await ApiManager.getIncidentIds(userToken);
+        const resp = await ApiManager.getIncidentIds(
+          data.tehsil_id,
+          data.id,
+          userToken,
+        );
 
         if (resp?.data?.status) {
           const list = (resp?.data?.data || [])
@@ -67,7 +71,7 @@ const RejectReasonSheet: React.FC<props> = forwardRef((data, ref: any) => {
 
   const incidentUpdateStatus = (formValues: any) => {
     const body = {
-      incident_id: data.data.id,
+      incident_id: data.id,
       button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
       cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancelled',
       duplicate_incident_id:

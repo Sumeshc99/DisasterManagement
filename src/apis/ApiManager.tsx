@@ -85,11 +85,10 @@ const requestPath = {
   assignToReviewer: 'mobileapis/assignedIncident',
   notifcation: 'mobileapis/getNotifications',
   notificationDetails: 'mobileapis/getNotificationDetails',
-
-  //selfhelp options path
+  assignRes: 'mobileapis/getAcceptResponders',
+  resByTehsil: 'responder/getRespondersByTehsil',
   getRespondersByTehsilAndResource:
     'responder/getRespondersByTehsilAndResource',
-
   getTehsilByCity: 'mobileapis/getTehsilByCity',
 };
 
@@ -118,14 +117,16 @@ const ApiManager = {
     requests.get(`${requestPath.assignedIncident}/${id}`, token),
   acceptIncident: (id: any, userId: number, token: string) =>
     requests.get(`${requestPath.acceptIncident}/${id}/${userId}`, token),
-  getIncidentIds: (token: string) =>
-    requests.get(`${requestPath.getIncidentIds}`, token),
+  getIncidentIds: (tehsil: number, id: number, token: string) =>
+    requests.get(`${requestPath.getIncidentIds}/${tehsil}/${id}`, token),
   assignedToResponder: (id: any, token: string) =>
     requests.get(`${requestPath.assignedToResponder}/${id}`, token),
   assignToReviewer: (id: any, token: string) =>
     requests.get(`${requestPath.assignToReviewer}/${id}`, token),
   notifications: (id: any, token: string) =>
     requests.get(`${requestPath.notifcation}/${id}`, token),
+  assignRes: (id: any, token: string) =>
+    requests.get(`${requestPath.assignRes}/${id}`, token),
 
   getNotificationDetails: (
     incidentId: any,
@@ -160,16 +161,15 @@ const ApiManager = {
     requests.post(requestPath.updateIncident, params, token),
   assignResponders: (params: any, token: string) =>
     requests.post(requestPath.assignResponders, params, token),
-
-  //selfhelp options api
+  resByTehsil: (params: any) => requests.post(requestPath.resByTehsil, params),
   getRespondersByTehsilAndResource: (params: any, token: string) =>
     requests.post(requestPath.getRespondersByTehsilAndResource, params, token),
-
   getTehsilByCity: (stateName: string, cityName: string, token: string) =>
     requests.get(
       `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
       token,
     ),
+
 };
 
 export default ApiManager;
