@@ -55,27 +55,6 @@ const CreateIncidentScreen: React.FC = () => {
 
   const [tahsilList, setTahsilList] = useState([]);
 
-  useEffect(() => {
-    const getTahsil = () => {
-      showLoader();
-      ApiManager.tahsilList()
-        .then(resp => {
-          if (resp?.data?.success) {
-            setTahsilList(
-              (resp?.data?.data?.tehsils || []).map((item: any) => ({
-                label: item.Tehsil,
-                value: item.id,
-              })),
-            );
-          }
-        })
-        .catch(err => console.log('error', err.response))
-        .finally(() => hideLoader());
-    };
-
-    getTahsil();
-  }, []);
-
   const addressRef = useRef<any>(null);
 
   const {
@@ -372,9 +351,39 @@ const CreateIncidentScreen: React.FC = () => {
 
       <IncidentAddressSheet
         ref={addressRef}
-        onSubmit={data => {
+        onSubmit={async data => {
           setValue('address', data?.flat || '', { shouldValidate: true });
           setallAddress(data);
+
+          console.log('Selected State:', data?.state);
+          console.log('Selected City:', data?.city);
+
+          if (data?.state && data?.city) {
+            try {
+              showLoader();
+              const resp = await ApiManager.getTehsilByCity(
+                data.state,
+                data.city,
+                userToken,
+              );
+
+              if (resp?.data?.status) {
+                setTahsilList(
+                  (resp?.data?.data || []).map(item => ({
+                    label: item.tehsil_name,
+                    value: item.id,
+                  })),
+                );
+              } else {
+                snackbar('Failed to load tehsil list', 'error');
+              }
+            } catch (err) {
+              console.log('Tehsil Fetch Error:', err);
+              snackbar('Error fetching tehsil list', 'error');
+            } finally {
+              hideLoader();
+            }
+          }
         }}
       />
     </SafeAreaView>

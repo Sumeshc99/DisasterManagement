@@ -37,6 +37,7 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -156,6 +157,7 @@ const ResIncidentDetails: React.FC = () => {
               media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
+              tehsil: inc?.tehsil_name,
             });
           }
         })

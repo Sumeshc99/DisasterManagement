@@ -87,6 +87,9 @@ const requestPath = {
   notificationDetails: 'mobileapis/getNotificationDetails',
   assignRes: 'mobileapis/getAcceptResponders',
   resByTehsil: 'responder/getRespondersByTehsil',
+  getRespondersByTehsilAndResource:
+    'responder/getRespondersByTehsilAndResource',
+  getTehsilByCity: 'mobileapis/getTehsilByCity',
 };
 
 const ApiManager = {
@@ -159,6 +162,14 @@ const ApiManager = {
   assignResponders: (params: any, token: string) =>
     requests.post(requestPath.assignResponders, params, token),
   resByTehsil: (params: any) => requests.post(requestPath.resByTehsil, params),
+  getRespondersByTehsilAndResource: (params: any, token: string) =>
+    requests.post(requestPath.getRespondersByTehsilAndResource, params, token),
+  getTehsilByCity: (stateName: string, cityName: string, token: string) =>
+    requests.get(
+      `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
+      token,
+    ),
+
 };
 
 export default ApiManager;

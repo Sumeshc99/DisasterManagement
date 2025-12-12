@@ -17,6 +17,9 @@ import PoliceSvg from '../../assets/svg/Police.svg';
 import AmbulanceSvg from '../../assets/svg/Ambulance.svg';
 import FireBrigadesSvg from '../../assets/svg/FireBrigades.svg';
 import { TEXT } from '../../i18n/locales/Text';
+import ApiManager from '../../apis/ApiManager';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
 interface SelfHelpBottomSheetProps {
   onClose: () => void;
@@ -27,6 +30,8 @@ const SelfHelpBottomSheet = forwardRef<
   SelfHelpBottomSheetProps
 >(({ onClose }, ref) => {
   const navigation = useNavigation();
+
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
 
   const makeCall = async (num: string) => {
     try {
@@ -43,7 +48,48 @@ const SelfHelpBottomSheet = forwardRef<
     }
   };
 
-  const getResponders = (type: String) => {};
+  const getResponders = async (type: string) => {
+    try {
+      const resourceMap: any = {
+        clinic: 'Hospital',
+        police: 'Police',
+        ambulance: 'Ambulance',
+        fire: 'Fire Brigade',
+      };
+      // imp note : add dynamic data below in the body
+      const body = {
+        tehsil_id: 3,
+        resource_type: resourceMap[type],
+        latitude: 53,
+        longitude: 53,
+      };
+
+      const token = userToken;
+      const response = await ApiManager.getRespondersByTehsilAndResource(
+        body,
+        token,
+      );
+      console.log('api response', response?.data);
+
+      const responderList = response?.data?.responders || [];
+      console.log('api responder List', responderList);
+
+      (ref as any)?.current?.close();
+
+      navigation.navigate('mainAppSelector', {
+        screen: 'tabNavigation',
+        params: {
+          screen: 'home',
+          params: {
+            responders: responderList,
+            selectedType: resourceMap[type],
+          },
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <RBSheet
