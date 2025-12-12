@@ -38,7 +38,7 @@ const constructApiRequest = (
 
 const Axios = axios.create({
   baseURL: BASE_URL,
-  timeout: 20000,
+  timeout: 50000,
 });
 
 const requests = {
@@ -169,7 +169,6 @@ const ApiManager = {
       `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
       token,
     ),
-
 };
 
 export default ApiManager;

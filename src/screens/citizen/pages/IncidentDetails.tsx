@@ -195,16 +195,17 @@ const IncidentDetails: React.FC = () => {
     const body = {
       user_id: user?.id,
       incident_id: data?.incident_auto_id || data,
-      button_type: TEXT.yes(),
+      button_type: 'Yes',
       cancel_reason: '',
       duplicate_incident_id: '',
       reason_for_cancellation: '',
     };
+
     showLoader();
     ApiManager.incidentStatusUpdate(body, userToken)
       .then(resp => {
-        if (resp.data.status) {
-          console.log(resp.data.status, 'Response create incident');
+        if (resp?.data?.status) {
+          console.log('Response create incident', resp?.data?.status);
           successRef.current.close();
           acceptRef.current.open();
           assignToReviewer();
@@ -427,7 +428,7 @@ const IncidentDetails: React.FC = () => {
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {media?.length && <ImageContainer data={media} />}
+                  <ImageContainer data={media} />
                 </View>
 
                 <View style={{ flex: 1, justifyContent: 'space-between' }}>

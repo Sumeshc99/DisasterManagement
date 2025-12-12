@@ -369,7 +369,7 @@ const CreateIncidentScreen: React.FC = () => {
 
               if (resp?.data?.status) {
                 setTahsilList(
-                  (resp?.data?.data || []).map(item => ({
+                  (resp?.data?.data || []).map((item: any) => ({
                     label: item.tehsil_name,
                     value: item.id,
                   })),
