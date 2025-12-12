@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
     formData.append('mobile', data.mobileNumber || '');
     formData.append('email', data.email || '');
     formData.append('state', data.state || '');
-    formData.append('district', data.district || '');
+    formData.append('district', userData?.district_id || '');
     formData.append('city', data.city || '');
     formData.append('tehsil', data.tehsil || '');
     formData.append('block', data.block);

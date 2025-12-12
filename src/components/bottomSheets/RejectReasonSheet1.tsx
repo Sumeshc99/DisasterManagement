@@ -19,7 +19,7 @@ interface props {
   getIncidentDetails?: () => void;
 }
 
-const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
+const RejectReasonSheet1: React.FC<props> = forwardRef(({ data }, ref: any) => {
   const { userToken } = useSelector((state: RootState) => state.auth);
 
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -44,7 +44,7 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
 
   useEffect(() => {
     const getIncidentIds = () => {
-      ApiManager.getIncidentIds(userToken)
+      ApiManager.getIncidentIds(data.tehsil_id, data.id, userToken)
         .then(resp => {
           if (resp.data.status) {
             setidList(
@@ -64,7 +64,7 @@ const RejectReasonSheet1: React.FC<props> = forwardRef((data, ref: any) => {
 
   const incidentUpdateStatus = (item: any) => {
     const body = {
-      incident_id: data.data.id,
+      incident_id: data.id,
       button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
       cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
       duplicate_incident_id: selectedReason === 'duplicate' ? item?.insId : '',
