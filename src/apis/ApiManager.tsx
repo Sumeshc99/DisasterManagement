@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-// export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
-// export const IMG_URL = 'https://disaster.pixelplanet.in/';
+export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
+export const IMG_URL = 'https://disaster.pixelplanet.in/';
 
-export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
-export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
+// export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
+// export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
@@ -38,7 +38,7 @@ const constructApiRequest = (
 
 const Axios = axios.create({
   baseURL: BASE_URL,
-  timeout: 50000,
+  timeout: 60000,
 });
 
 const requests = {

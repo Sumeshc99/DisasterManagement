@@ -34,7 +34,7 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
       </View>
 
       <Image
-        source={require('../../assets/DDMA LOGO.png')}
+        source={require('../../assets/appLogo1.png')}
         style={styles.logo}
         resizeMode="contain"
       />
