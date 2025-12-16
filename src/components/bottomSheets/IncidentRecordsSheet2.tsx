@@ -62,10 +62,15 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    useEffect(() => {
-      fetchIncidentList();
-      getAssignedIncident();
-    }, [userToken]);
+    const refreshIncidents = async () => {
+      await fetchIncidentList();
+      await getAssignedIncident();
+    };
+
+    // useEffect(() => {
+    //   fetchIncidentList();
+    //   getAssignedIncident();
+    // }, [userToken]);
 
     const onRefresh = async () => {
       setRefreshing(true);
@@ -161,6 +166,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         ref={ref}
         closeOnPressMask
         height={600}
+        onOpen={refreshIncidents}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },

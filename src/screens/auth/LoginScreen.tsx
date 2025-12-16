@@ -123,7 +123,7 @@ const LoginScreen = () => {
             }}
           >
             <Image
-              source={require('../../assets/DDMA LOGO.png')}
+              source={require('../../assets/appLogo1.png')}
               style={styles.logo}
               resizeMode="contain"
             />

@@ -46,13 +46,13 @@ const CitizenDashboard = () => {
   const route = useRoute();
   // const navigation = useNavigation();
 
-  useEffect(() => {
-    if (route?.params?.responders) {
-      setResponderListFromSheet(route?.params?.responders);
-      // OPEN bottom sheet when data arrives
-      responderSheetRef.current?.open();
-    }
-  }, [route.params]);
+  // useEffect(() => {
+  //   if (route?.params?.responders) {
+  //     setResponderListFromSheet(route?.params?.responders);
+  //     // OPEN bottom sheet when data arrives
+  //     responderSheetRef.current?.open();
+  //   }
+  // }, [route.params]);
 
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);

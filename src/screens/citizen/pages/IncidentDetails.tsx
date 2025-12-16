@@ -16,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH, HEIGHT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -191,28 +191,43 @@ const IncidentDetails: React.FC = () => {
   };
 
   // ====================== SEND INCIDENT ============================
-  const incidentUpdateStatus = () => {
-    const body = {
-      user_id: user?.id,
-      incident_id: data?.incident_auto_id || data,
-      button_type: 'Yes',
-      cancel_reason: '',
-      duplicate_incident_id: '',
-      reason_for_cancellation: '',
-    };
+  const incidentUpdateStatus = async () => {
+    try {
+      const body = {
+        user_id: user?.id,
+        incident_id: data?.incident_auto_id ?? data,
+        button_type: 'Yes',
+        cancel_reason: '',
+        duplicate_incident_id: '',
+        reason_for_cancellation: '',
+      };
 
-    showLoader();
-    ApiManager.incidentStatusUpdate(body, userToken)
-      .then(resp => {
-        if (resp?.data?.status) {
-          console.log('Response create incident', resp?.data?.status);
+      showLoader();
+
+      const resp = await ApiManager.incidentStatusUpdate(body, userToken);
+
+      console.log('Incident update response:', resp);
+
+      if (resp?.data?.status === true) {
+        if (successRef?.current?.close) {
           successRef.current.close();
-          acceptRef.current.open();
+        }
+
+        setTimeout(() => {
+          if (acceptRef?.current?.open) {
+            acceptRef.current.open();
+          }
+        }, 300);
+
+        if (typeof assignToReviewer === 'function') {
           assignToReviewer();
         }
-      })
-      .catch(err => console.log('err', err))
-      .finally(() => hideLoader());
+      }
+    } catch (err) {
+      console.log('Incident update error:', err);
+    } finally {
+      hideLoader();
+    }
   };
 
   const assignToReviewer = () => {
@@ -233,14 +248,12 @@ const IncidentDetails: React.FC = () => {
         clearTimeout(tapTimeout.current);
       }
 
-      // If tapped 3 times
       if (newCount >= 3) {
         setTapCount(0);
         cancelIncident();
         return 0;
       }
 
-      // Reset counter if too slow (1.5 sec)
       tapTimeout.current = setTimeout(() => {
         setTapCount(0);
       }, 1500);
