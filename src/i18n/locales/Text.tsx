@@ -406,4 +406,5 @@ export const TEXT = {
   required_latitude: () => t('required_latitude', 'Latitude is required'),
 
   required_longitude: () => t('required_longitude', 'Longitude is required'),
+  media: () => t('media', 'Media'),
 };

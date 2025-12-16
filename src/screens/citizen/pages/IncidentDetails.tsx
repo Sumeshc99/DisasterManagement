@@ -209,19 +209,16 @@ const IncidentDetails: React.FC = () => {
       console.log('Incident update response:', resp);
 
       if (resp?.data?.status === true) {
-        // ✅ SAFE REF CHECKS
         if (successRef?.current?.close) {
           successRef.current.close();
         }
 
-        // Delay avoids modal-on-modal crash (iOS)
         setTimeout(() => {
           if (acceptRef?.current?.open) {
             acceptRef.current.open();
           }
         }, 300);
 
-        // ✅ SAFE FUNCTION CALL
         if (typeof assignToReviewer === 'function') {
           assignToReviewer();
         }
@@ -251,14 +248,12 @@ const IncidentDetails: React.FC = () => {
         clearTimeout(tapTimeout.current);
       }
 
-      // If tapped 3 times
       if (newCount >= 3) {
         setTapCount(0);
         cancelIncident();
         return 0;
       }
 
-      // Reset counter if too slow (1.5 sec)
       tapTimeout.current = setTimeout(() => {
         setTapCount(0);
       }, 1500);
