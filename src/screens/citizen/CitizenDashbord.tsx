@@ -229,8 +229,8 @@ const CitizenDashboard = () => {
       />
       <SuccessScreen ref={successRef} height={220} />
 
-      {user?.role === 'reviewer' && <ReviewerSection />}
-      {user?.role === 'responder' && <ResponderSection />}
+      {/* {user?.role === 'reviewer' && <ReviewerSection />}
+      {user?.role === 'responder' && <ResponderSection />} */}
 
       <ResponderListSheet
         ref={responderSheetRef}

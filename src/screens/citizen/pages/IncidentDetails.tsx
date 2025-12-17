@@ -29,6 +29,7 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ImageContainer from '../../../components/ImageContainer';
 import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
+import ResponderListSheet from '../../../components/bottomSheets/ResponderListSheet';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -105,6 +106,7 @@ const IncidentDetails: React.FC = () => {
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
+  const listRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -112,6 +114,7 @@ const IncidentDetails: React.FC = () => {
   const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setIncidentData] = useState<any>('');
+  const [filteredList, setfilteredList] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [tapCount, setTapCount] = useState(0);
@@ -566,8 +569,16 @@ const IncidentDetails: React.FC = () => {
       {/* ACCEPT */}
       <SelfHelpBottomSheet
         ref={acceptRef}
-        onClose={() => console.log('Closed')}
+        data={incidentData}
+        list={filteredList}
+        setList={(i: any) => setfilteredList(i)}
+        onClose={() => {
+          acceptRef.current.close();
+          listRef.current.open();
+        }}
       />
+
+      <ResponderListSheet ref={listRef} responders={filteredList} />
     </SafeAreaView>
   );
 };
