@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
-export const IMG_URL = 'https://disaster.pixelplanet.in/';
+// export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
+// export const IMG_URL = 'https://disaster.pixelplanet.in/';
 
 // export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
 // export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
-// export const BASE_URL = 'https://api.ddmanagpur.in/api/';
-// export const IMG_URL = 'https://api.ddmanagpur.in/';
+export const BASE_URL = 'https://api.ddmanagpur.in/api/';
+export const IMG_URL = 'https://api.ddmanagpur.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
@@ -93,6 +93,7 @@ const requestPath = {
   getRespondersByTehsilAndResource:
     'responder/getRespondersByTehsilAndResource',
   getTehsilByCity: 'mobileapis/getTehsilByCity',
+  helplineNumber: 'helplineNumber/public/list',
 };
 
 const ApiManager = {
@@ -100,6 +101,7 @@ const ApiManager = {
   language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
+  helplineNumber: () => requests.get(requestPath.helplineNumber),
 
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
