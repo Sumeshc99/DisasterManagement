@@ -31,9 +31,25 @@ const RespondersList: React.FC<props> = ({ responders }) => {
     };
 
     responders.forEach(item => {
-      if (item.resource_type in categories) {
-        const key = item.resource_type as keyof typeof categories;
-        categories[key].push(item);
+      switch (item.resource_type) {
+        case 'Clinic/Hospital':
+          categories.Hospital.push(item);
+          break;
+        case 'Ambulance':
+          categories.Ambulance.push(item);
+          break;
+        case 'Police':
+          categories['Police Station'].push(item);
+          break;
+        case 'Fire Brigade':
+          categories['Fire Brigade'].push(item);
+          break;
+        case 'SDRF Center':
+          categories['SDRF Center'].push(item);
+          break;
+        case 'Boat':
+          categories.Boat.push(item);
+          break;
       }
     });
 
