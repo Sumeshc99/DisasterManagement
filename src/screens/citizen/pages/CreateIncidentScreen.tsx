@@ -272,10 +272,10 @@ const CreateIncidentScreen: React.FC = () => {
 
         <DropDownInput
           name="tehsil"
-          label="Select Tehsil"
+          label={TEXT.select_tehsil()}
           control={control}
-          placeholder="Select Tehsil"
-          rules={{ required: 'Tehsil is required' }}
+          placeholder={TEXT.select_tehsil()}
+          rules={{ required: TEXT.tehsil_is_required() }}
           items={tahsilList}
         />
 
@@ -369,7 +369,7 @@ const CreateIncidentScreen: React.FC = () => {
 
               if (resp?.data?.status) {
                 setTahsilList(
-                  (resp?.data?.data || []).map(item => ({
+                  (resp?.data?.data || []).map((item: any) => ({
                     label: item.tehsil_name,
                     value: item.id,
                   })),

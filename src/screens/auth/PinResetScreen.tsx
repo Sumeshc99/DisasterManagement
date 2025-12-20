@@ -74,7 +74,7 @@ export default function PinResetScreen() {
       >
         {/* Logo */}
         <Image
-          source={require('../../assets/DDMA LOGO.png')}
+          source={require('../../assets/appLogo1.png')}
           resizeMode="contain"
           style={styles.logo}
         />

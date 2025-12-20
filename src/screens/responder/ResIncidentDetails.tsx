@@ -37,7 +37,6 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
-  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -157,7 +156,6 @@ const ResIncidentDetails: React.FC = () => {
               media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
-              tehsil: inc?.tehsil_name,
             });
           }
         })
@@ -252,6 +250,7 @@ const ResIncidentDetails: React.FC = () => {
                   </Text>
                 </View>
               </View>
+
               <FormTextInput
                 label={TEXT.address()}
                 name="address"
@@ -299,7 +298,7 @@ const ResIncidentDetails: React.FC = () => {
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {media?.length && <ImageContainer data={media} />}
+                  <ImageContainer data={media} />
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -328,35 +327,170 @@ const ResIncidentDetails: React.FC = () => {
                   data={incidentData?.responders}
                 />
               )}
-              {/* BUTTONS */}
-              {incidentData?.status == 'Pending Response by Responder' && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => rejectRef.current.open()}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
-                  </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => incidentUpdateStatus('ResponderAccept')}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              {incidentData?.status === 'Pending Response by Responder' &&
+                (() => {
+                  const currentUserClosure =
+                    incidentData?.pending_closure?.find(
+                      (i: any) => i.user_id === user?.id,
+                    );
 
-              {incidentData?.status === 'Pending closure by Responder' ? (
+                  if (currentUserClosure) {
+                    if (currentUserClosure?.pending_closure === 'accept') {
+                      return (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            gap: 20,
+                          }}
+                        >
+                          <TouchableOpacity
+                            style={[
+                              styles.submitButton,
+                              { backgroundColor: COLOR.darkGray },
+                            ]}
+                            onPress={() => incidentUpdateStatus('Complete')}
+                          >
+                            <Text style={styles.submitButtonText}>
+                              {TEXT.complete()}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    } else {
+                      return (
+                        <View style={{ marginTop: 0, alignItems: 'center' }}>
+                          <TouchableOpacity
+                            style={styles.submitButton1}
+                            onPress={() =>
+                              downloadPDF(incidentData?.incident_blob_pdf)
+                            }
+                          >
+                            <Text style={styles.submitButtonText1}>
+                              {TEXT.download_pdf()}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }
+                  } else {
+                    return (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          gap: 20,
+                        }}
+                      >
+                        <TouchableOpacity
+                          style={[
+                            styles.submitButton,
+                            { backgroundColor: COLOR.darkGray },
+                          ]}
+                          onPress={() => rejectRef.current.open()}
+                        >
+                          <Text style={styles.submitButtonText}>
+                            {TEXT.reject()}
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={styles.submitButton}
+                          onPress={() =>
+                            incidentUpdateStatus('ResponderAccept')
+                          }
+                        >
+                          <Text style={styles.submitButtonText}>
+                            {TEXT.accept()}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }
+                })()}
+
+              {incidentData?.status === 'Pending closure by Responder' &&
+                (() => {
+                  const currentUserClosure =
+                    incidentData?.pending_closure?.find(
+                      (i: any) => i.user_id === user?.id,
+                    );
+
+                  if (currentUserClosure) {
+                    if (currentUserClosure?.pending_closure === 'accept') {
+                      return (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            gap: 20,
+                          }}
+                        >
+                          <TouchableOpacity
+                            style={[
+                              styles.submitButton,
+                              { backgroundColor: COLOR.darkGray },
+                            ]}
+                            onPress={() => incidentUpdateStatus('Complete')}
+                          >
+                            <Text style={styles.submitButtonText}>
+                              {TEXT.complete()}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    } else {
+                      return (
+                        <View style={{ marginTop: 0, alignItems: 'center' }}>
+                          <TouchableOpacity
+                            style={styles.submitButton1}
+                            onPress={() =>
+                              downloadPDF(incidentData?.incident_blob_pdf)
+                            }
+                          >
+                            <Text style={styles.submitButtonText1}>
+                              {TEXT.download_pdf()}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }
+                  }
+
+                  return (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        gap: 20,
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={[
+                          styles.submitButton,
+                          { backgroundColor: COLOR.darkGray },
+                        ]}
+                        onPress={() => rejectRef.current.open()}
+                      >
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.reject()}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.submitButton}
+                        onPress={() => incidentUpdateStatus('ResponderAccept')}
+                      >
+                        <Text style={styles.submitButtonText}>
+                          {TEXT.accept()}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })()}
+
+              {/* {incidentData?.status === 'Pending closure by Responder' ? (
                 <View
                   style={{
                     flexDirection: 'row',
@@ -376,30 +510,28 @@ const ResIncidentDetails: React.FC = () => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              ) : (
-                (incidentData?.status === 'Pending closure by Admin' ||
-                  incidentData?.status === 'Closed' ||
-                  incidentData?.status === 'Admin Cancelled' ||
-                  incidentData?.status === 'Reviewer Duplicate') && (
-                  <View
-                    style={{
-                      marginTop: 0,
-                      alignItems: 'center',
-                    }}
+              ) : null} */}
+
+              {(incidentData?.status === 'Pending closure by Admin' ||
+                incidentData?.status === 'Closed' ||
+                incidentData?.status === 'Admin Cancelled' ||
+                incidentData?.status === 'Reviewer Duplicate') && (
+                <View
+                  style={{
+                    marginTop: 0,
+                    alignItems: 'center',
+                  }}
+                >
+                  {/* 🔽 Download PDF button here 🔽 */}
+                  <TouchableOpacity
+                    style={[styles.submitButton1]}
+                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
-                    {/* 🔽 Download PDF button here 🔽 */}
-                    <TouchableOpacity
-                      style={[styles.submitButton1]}
-                      onPress={() =>
-                        downloadPDF(incidentData?.incident_blob_pdf)
-                      }
-                    >
-                      <Text style={styles.submitButtonText1}>
-                        {TEXT.download_pdf()}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
+                    <Text style={styles.submitButtonText1}>
+                      {TEXT.download_pdf()}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
           </ScrollView>

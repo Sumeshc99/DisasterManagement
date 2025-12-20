@@ -16,15 +16,6 @@ import { FONT, WIDTH } from '../../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { COLOR } from '../../themes/Colors';
 
-interface NotificationItem {
-  id: string;
-  notification_text: string;
-  created_at: string;
-  status: string;
-  incident_type_name: string;
-  incident_id: string; // for navigation
-}
-
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr);
   return d.toLocaleDateString('en-GB', {
@@ -42,156 +33,170 @@ const formatDateTime = (dateStr: string) => {
   })}`;
 };
 
-const NotificationSheet = forwardRef((props: any, ref) => {
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
-  const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [expandedItems, setExpandedItems] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const navigation = useNavigation<any>();
+const NotificationSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
+  ({}, ref) => {
+    const navigation = useNavigation<any>();
 
-  useEffect(() => {
-    if (!user?.id) return;
-    ApiManager.notifications(user.id, userToken)
-      .then(resp => {
-        if (resp?.data?.status) {
-          setNotifications(resp.data.data);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    const { user, userToken } = useSelector((state: RootState) => state.auth);
+    const [loading, setLoading] = useState(true);
+    const [notifications, setNotifications] = useState<any>([]);
+    const [expandedItems, setExpandedItems] = useState<{
+      [key: string]: boolean;
+    }>({});
 
-  const toggleExpand = (index: string) => {
-    setExpandedItems(prev => ({ ...prev, [index]: !prev[index] }));
-  };
-  const navigateToIncident = (item: NotificationItem) => {
-    ref?.current?.close();
-    navigation.navigate('NotificationIncidentDetails', {
-      incident_id: item.incident_id, // ⬅️ pass ID here
-      notification_id: item.notification_id,
-    });
-  };
+    useEffect(() => {
+      if (!user?.id) return;
+      ApiManager.notifications(user.id, userToken)
+        .then(resp => {
+          if (resp?.data?.status) {
+            setNotifications(resp.data.data);
+          }
+        })
+        .finally(() => setLoading(false));
+    }, []);
 
-  // Group notifications by date
-  const groupByDate = notifications.reduce(
-    (acc: any, item: NotificationItem) => {
+    const toggleExpand = (index: string) => {
+      setExpandedItems(prev => ({ ...prev, [index]: !prev[index] }));
+    };
+    const navigateToIncident = (item: any) => {
+      (ref as { current: any } | null)?.current?.close();
+      navigation.navigate('NotificationIncidentDetails', {
+        incident_id: item.incident_id,
+        notification_id: item.notification_id,
+      });
+    };
+
+    const groupByDate = notifications.reduce((acc: any, item: any) => {
       const date = formatDate(item.created_at);
       if (!acc[date]) acc[date] = [];
       acc[date].push(item);
       return acc;
-    },
-    {},
-  );
+    }, {});
 
-  const groupedList = Object.entries(groupByDate);
+    const groupedList = Object.entries(groupByDate);
 
-  const renderItem = ([date, items]: [string, NotificationItem[]]) => (
-    <View>
-      <View style={styles.dateLabel}>
-        <Text style={styles.dateLabelText}>{date}</Text>
-      </View>
+    const renderItem = ([date, items]: [string, any]) => (
+      <View>
+        <View style={styles.dateLabel}>
+          <Text style={styles.dateLabelText}>{date}</Text>
+        </View>
 
-      {items.map((item, idx) => {
-        const key = `${date}-${idx}`;
-        const isExpanded = expandedItems[key];
-        return (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => navigateToIncident(item)}
-            style={styles.notificationContainer}
-          >
-            <Text
-              numberOfLines={isExpanded ? undefined : 1}
-              ellipsizeMode="tail"
-              style={styles.notificationText}
+        {items.map((item: any, idx: number) => {
+          const key = `${date}-${idx}`;
+          const isExpanded = expandedItems[key];
+          return (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => navigateToIncident(item)}
+              style={styles.notificationContainer}
             >
-              {item.notification_text}
-            </Text>
-
-            <View style={styles.notificationFooter}>
-              <Text style={styles.notificationTime}>
-                {formatDateTime(item.created_at)}
+              <Text
+                numberOfLines={isExpanded ? undefined : 1}
+                ellipsizeMode="tail"
+                style={styles.notificationText}
+              >
+                {item.notification_text}
               </Text>
 
-              <TouchableOpacity
-                style={styles.viewBtn}
-                onPress={e => {
-                  e.stopPropagation(); // prevent navigation when clicking View
-                  toggleExpand(key);
-                }}
-              >
-                <Text style={styles.viewBtnText}>
-                  {isExpanded ? 'Hide' : 'View'}
+              <View style={styles.notificationFooter}>
+                <Text style={styles.notificationTime}>
+                  {formatDateTime(item.created_at)}
                 </Text>
-              </TouchableOpacity>
-            </View>
 
-            {/* Divider line */}
-            {idx !== items.length - 1 && <View style={styles.divider} />}
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
+                <TouchableOpacity
+                  style={styles.viewBtn}
+                  onPress={e => {
+                    e.stopPropagation();
+                    toggleExpand(key);
+                  }}
+                >
+                  <Text style={styles.viewBtnText}>
+                    {isExpanded ? 'Hide' : 'View'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-  return (
-    <RBSheet
-      ref={ref}
-      height={650}
-      customStyles={{
-        wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
-        container: {
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
-          padding: 18,
-          backgroundColor: '#fff',
-        },
-      }}
-    >
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <Text style={styles.titleHeader}>Notifications</Text>
-
-        <TouchableOpacity
-          style={styles.closeBtn}
-          onPress={() => ref?.current?.close()}
-        >
-          <Image
-            source={require('../../assets/cancel.png')}
-            style={{ width: WIDTH(8), height: WIDTH(8) }}
-          />
-        </TouchableOpacity>
+              {/* Divider line */}
+              {idx !== items.length - 1 && <View style={styles.divider} />}
+            </TouchableOpacity>
+          );
+        })}
       </View>
+    );
 
-      {/* Body */}
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={COLOR.blue}
-          style={{ marginTop: 40 }}
-        />
-      ) : notifications.length === 0 ? (
-        <Text style={styles.emptyText}>No Notifications Found</Text>
-      ) : (
-        <FlatList
-          data={groupedList}
-          renderItem={({ item }) => renderItem(item)}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </RBSheet>
-  );
-});
+    return (
+      <RBSheet
+        ref={ref}
+        height={650}
+        customStyles={{
+          wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
+          container: {
+            borderTopLeftRadius: 25,
+            borderTopRightRadius: 25,
+            padding: 18,
+            backgroundColor: '#fff',
+          },
+        }}
+      >
+        {/* Header */}
+        <View style={styles.content}>
+          <View style={styles.dragIndicator} />
+
+          <View style={styles.headerRow}>
+            <Text style={styles.titleHeader}>Notifications</Text>
+
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => (ref as { current: any } | null)?.current?.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={{ width: WIDTH(8), height: WIDTH(8) }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Body */}
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color={COLOR.blue}
+              style={{ marginTop: 40 }}
+            />
+          ) : notifications.length === 0 ? (
+            <Text style={styles.emptyText}>No Notifications Found</Text>
+          ) : (
+            <FlatList
+              data={groupedList}
+              renderItem={({ item }: any) => renderItem(item)}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </View>
+      </RBSheet>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
     marginTop: 10,
+  },
+  dragIndicator: {
+    alignSelf: 'center',
+    width: 60,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#ddd',
+    marginBottom: 20,
   },
   titleHeader: {
     fontSize: 18,
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
   closeBtn: {
     position: 'absolute',
     right: 0,
-    padding: 5,
+    padding: 0,
   },
 
   dateLabel: {

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>DisasterMgmt</string>
+	<string>Nagpur Aapatti Vyavasthapan</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -34,16 +34,26 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to your camera.</string>
+	<string>
+	  We use the camera to take photos of incidents and upload them as evidence.
+	</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to show your current position on the map.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>The app needs access to save images to your library.</string>
+	<string>
+	  We use your location to detect the incident location and show nearby incidents on the map.
+	</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The app needs access to your photo library.</string>
+	<string>
+	  We use your photo library to select and upload incident images.
+	</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>
+	  We use your photo library to select and upload incident images.
+	</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app requires access to your location always and when in use to provide accurate disaster alerts.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
+	<string>
+	  We use your location to track responder progress to an incident, including in the background.
+	</string>  
+	<key>NSLocationAlwaysUsageDescription</key>
     <string>This app requires access to your location at all times for safety and emergency features.</string>
     <key>NSAppleMusicUsageDescription</key>
     <string>This app needs access to your music library for media features.</string>

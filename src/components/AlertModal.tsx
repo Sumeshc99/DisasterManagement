@@ -33,10 +33,15 @@ const AlertModal: React.FC<AlertModalProps> = ({
   const soundRef = useRef<Sound | null>(null);
 
   useEffect(() => {
-    if (visible) {
-      SystemSetting.setVolume(1.0);
-      Sound.setCategory('Playback', true);
+    if (!visible) {
+      stopSound();
+      return;
+    }
 
+    SystemSetting.setVolume(1.0);
+    Sound.setCategory('Playback', true);
+
+    const playSound = () => {
       const s = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {
         if (error) {
           console.log(TEXT.failed_load_sound(), error);
@@ -45,19 +50,20 @@ const AlertModal: React.FC<AlertModalProps> = ({
 
         soundRef.current = s;
 
-        s.play(() => {
-          s.release();
-          soundRef.current = null;
+        s.play(success => {
+          if (success && visible) {
+            s.release();
+            soundRef.current = null;
+
+            playSound();
+          }
         });
       });
-    } else {
-      // Stop sound when modal closes
-      if (soundRef.current) {
-        soundRef.current.stop();
-        soundRef.current.release();
-        soundRef.current = null;
-      }
-    }
+    };
+
+    playSound();
+
+    return () => stopSound();
   }, [visible]);
 
   const stopSound = () => {
