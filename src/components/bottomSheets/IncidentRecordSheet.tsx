@@ -15,7 +15,7 @@ import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
-import TimelineSheet from './TimeLineSheet';
+import TimelineSheet from './TimelineSheet';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {

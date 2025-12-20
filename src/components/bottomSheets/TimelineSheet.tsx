@@ -29,7 +29,7 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
     return (
       <RBSheet
         ref={ref}
-        height={500}
+        height={520}
         openDuration={250}
         customStyles={{
           wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
@@ -41,55 +41,59 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
         }}
       >
         <View style={{ flex: 1 }}>
+          <View style={styles.dragIndicator} />
           {/* Header */}
           <View style={styles.header}>
+            <View style={{ width: 32 }} />
+
             <Text style={styles.title}>Incident Timeline</Text>
-            <TouchableOpacity onPress={() => ref?.current?.close()}>
-              <Text style={styles.closeIcon}>✕</Text>
+
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => {
+                ref?.current?.close();
+                onClose && onClose();
+              }}
+            >
+              <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Timeline Scroll */}
-          <ScrollView contentContainerStyle={{ paddingVertical: 10 }}>
+          {/* Timeline */}
+          <ScrollView showsVerticalScrollIndicator>
             {timelineData.map((item, index) => (
               <View key={index} style={styles.timelineItem}>
-                {/* Dot and Line */}
+                {/* Left Column */}
                 <View style={styles.dotContainer}>
-                  <View style={styles.dot} />
+                  <View style={styles.circle}>
+                    <Text style={styles.circleText}>{item.role}</Text>
+                  </View>
+
                   {index < timelineData.length - 1 && (
                     <View style={styles.verticalLine} />
                   )}
                 </View>
 
-                {/* Content */}
+                {/* Right Content */}
                 <View style={styles.content}>
-                  <Text style={styles.role}>{item.role}</Text>
                   <Text style={styles.status}>{item.status}</Text>
-                  <Text style={styles.incidentType}>{item.incidentType}</Text>
-                  <Text style={styles.date}>{item.date}</Text>
+
+                  <Text style={styles.incidentType}>
+                    {item.incidentType} · {item.date}
+                  </Text>
+
                   <Text style={styles.location}>{item.location}</Text>
 
                   {item.details?.map((d, i) => (
-                    <Text key={i} style={styles.detail}>
-                      <Text style={{ fontWeight: 'bold' }}>{d.title}: </Text>
-                      {d.name}
-                    </Text>
+                    <View key={i} style={{ marginTop: 6 }}>
+                      <Text style={styles.detailTitle}>{d.title}</Text>
+                      <Text style={styles.detailValue}>{d.name}</Text>
+                    </View>
                   ))}
                 </View>
               </View>
             ))}
           </ScrollView>
-
-          {/* Close Button */}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => {
-              ref?.current?.close();
-              onClose && onClose();
-            }}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
         </View>
       </RBSheet>
     );
@@ -99,37 +103,106 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
 export default TimelineSheet;
 
 const styles = StyleSheet.create({
+  /* HEADER */
   header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '700' },
-  closeIcon: { fontSize: 20, color: COLOR.blue },
-  timelineItem: { flexDirection: 'row', marginBottom: 20 },
-  dotContainer: { alignItems: 'center', width: 30 },
-  dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.blue,
+    marginVertical: 4,
+  },
+  closeBtn: {
+    width: 25,
+    height: 25,
+    borderRadius: 16,
     backgroundColor: COLOR.blue,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  /* TIMELINE */
+  timelineItem: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    gap: 12,
+  },
+  dotContainer: {
+    width: 70,
+    alignItems: 'center',
+  },
+  circle: {
+    width: 58,
+    height: 58,
+    borderRadius: 34,
+    borderWidth: 3,
+    borderColor: COLOR.blue,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  circleText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLOR.blue,
+    textAlign: 'center',
+    lineHeight: 12,
+  },
+  verticalLine: {
+    width: 1,
+    flex: 1,
+    borderStyle: 'dashed',
+    borderWidth: 1.5,
+    borderColor: '#D0D0D0',
+    // marginTop: 6,
+  },
+
+  /* CONTENT */
+  content: {
+    flex: 1,
+    paddingBottom: 10,
+  },
+  status: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLOR.blue,
+  },
+  incidentType: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginTop: 2,
+    color: '#333',
+  },
+  location: {
+    fontSize: 12,
+    color: '#888',
     marginTop: 2,
   },
-  verticalLine: { width: 2, flex: 1, backgroundColor: '#ccc', marginTop: 2 },
-  content: { flex: 1, paddingLeft: 10 },
-  role: { fontWeight: '700', color: COLOR.blue },
-  status: { fontWeight: '600', marginTop: 2 },
-  incidentType: { marginTop: 2, fontStyle: 'italic' },
-  date: { marginTop: 2, color: '#555' },
-  location: { marginTop: 2, color: '#555' },
-  detail: { marginTop: 2, color: '#333' },
-  closeButton: {
-    backgroundColor: COLOR.blue,
-    paddingVertical: 12,
-    width: WIDTH(50),
-    borderRadius: 25,
-    alignSelf: 'center',
-    marginTop: 10,
+  detailTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#333',
   },
-  closeButtonText: { color: '#fff', fontWeight: '600', textAlign: 'center' },
+  detailValue: {
+    fontSize: 13,
+    color: '#555',
+    marginTop: 2,
+  },
+  dragIndicator: {
+    alignSelf: 'center',
+    width: 60,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#ddd',
+    marginBottom: 20,
+  },
 });

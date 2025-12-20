@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,9 @@ import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import { TEXT } from '../../../i18n/locales/Text';
 import ReuseButton from '../../../components/UI/ReuseButton';
+import CommentSheet from '../../../components/bottomSheets/CommentSheet';
+
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 const formatDateTime = (dateString: string) => {
   if (!dateString) return '';
@@ -82,6 +85,8 @@ const NotificationIncidentDetails: React.FC = () => {
 
   const [incidentData, setIncidentData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  const commentRef = useRef<RBSheet>(null);
 
   useEffect(() => {
     getIncidentDetails();
@@ -284,11 +289,18 @@ const NotificationIncidentDetails: React.FC = () => {
                 <ReuseButton
                   text="Comment"
                   style={{ width: WIDTH(50), alignSelf: 'center' }}
+                  onPress={() => commentRef.current?.open()}
                 />
               </View>
             )}
           </ScrollView>
         </ScreenStateHandler>
+
+        <CommentSheet
+          ref={commentRef}
+          incidentId={incident_id}
+          userToken={userToken}
+        />
       </View>
     </SafeAreaView>
   );
