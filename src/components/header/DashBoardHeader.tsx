@@ -1,8 +1,6 @@
 import React, { useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLOR } from '../../themes/Colors';
-import { useNavigation } from '@react-navigation/native';
-import { AppStackNavigationProp } from '../../navigation/AppNavigation';
 import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
@@ -16,12 +14,10 @@ interface props {
 }
 
 const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
-  const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
   const sheetRef = useRef<any>(null);
-
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
-
   const notificationSheetRef = useRef<any>(null);
+
+  const { user } = useSelector((state: RootState) => state.auth);
 
   return (
     <View style={styles.container}>
@@ -34,7 +30,7 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
       </View>
 
       <Image
-        source={require('../../assets/DDMA LOGO.png')}
+        source={require('../../assets/appLogo1.png')}
         style={styles.logo}
         resizeMode="contain"
       />

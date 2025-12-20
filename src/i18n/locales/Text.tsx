@@ -406,4 +406,24 @@ export const TEXT = {
   required_latitude: () => t('required_latitude', 'Latitude is required'),
 
   required_longitude: () => t('required_longitude', 'Longitude is required'),
+  media: () => t('media', 'Media'),
+
+  nagpur: () => t('nagpur', 'Nagpur'),
+  nagpur_collector_office: () =>
+    t(
+      'nagpur_collector_office',
+      'Nagpur District Collector Office COVID Control Room:',
+    ),
+  covid_helpline: () => t('covid_helpline', 'COVID Helpline:'),
+  corona: () => t('corona', 'Corona'),
+  corona_helpline: () => t('corona_helpline', 'Corona (COVID-19) Helpline:'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
+  media: () => t('media', 'Media'),
 };

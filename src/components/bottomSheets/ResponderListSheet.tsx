@@ -8,14 +8,11 @@ import {
   Image,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { COLOR } from '../../themes/Colors';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/RootReducer';
 
 interface Responder {
   id: string;
   name: string;
-  distance: string; // e.g., "100 meters" or "1.3 km"
+  distance: string;
   address: string;
 }
 
@@ -28,7 +25,6 @@ const ResponderListSheet = forwardRef<
   React.ComponentRef<typeof RBSheet>,
   Props
 >(({ responders, onClose }, ref) => {
-  const { user, userToken } = useSelector((state: RootState) => state.auth);
   return (
     <RBSheet
       ref={ref}
@@ -62,12 +58,12 @@ const ResponderListSheet = forwardRef<
           keyExtractor={item => item.id}
           style={{ width: '100%' }}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-          renderItem={({ item }) => (
+          renderItem={({ item }: any) => (
             <View style={styles.responderItem}>
               <Text style={styles.responderName}>
-                {item.name} ({item.distance})
+                {item.owner_full_name} ({item.distance_km} km)
               </Text>
-              <Text style={styles.responderAddress}>{item.address}</Text>
+              <Text style={styles.responderAddress}>{item.resource_type}</Text>
             </View>
           )}
         />
@@ -98,13 +94,13 @@ const styles = StyleSheet.create({
   },
   closeIconContainer: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 20,
+    right: 20,
     borderRadius: 20,
   },
   closeIcon: {
-    width: 25,
-    height: 25,
+    width: 30,
+    height: 30,
   },
   headerText: {
     fontSize: 18,
