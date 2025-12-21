@@ -26,6 +26,7 @@ import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import ImageContainer from '../../components/ImageContainer';
 import { downloadPDF } from '../../Utils/downloadPDF';
+import DetailsAndLog from './DetailsAndLog';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -230,113 +231,152 @@ const ResIncidentDetails: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
-      {/* CONTENT */}
-      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
-        <ScreenStateHandler loading={loading} isEmpty={!incidentData}>
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.form}>
-              <Text style={styles.label}>{TEXT.incident_id()}</Text>
-              <View style={styles.disabledBox}>
-                <Text style={styles.disabledText}>{watch('incidentId')}</Text>
-              </View>
-              <View style={{ marginVertical: 10 }}>
-                <Text style={styles.label}>{TEXT.incident_type()}</Text>
+      {/* <>
+        <View style={{ flex: 1, backgroundColor: COLOR.white }}>
+          <ScreenStateHandler loading={loading} isEmpty={!incidentData}>
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.form}>
+                <Text style={styles.label}>{TEXT.incident_id()}</Text>
                 <View style={styles.disabledBox}>
-                  <Text style={styles.disabledText}>
-                    {watch('incidentType')}
-                  </Text>
+                  <Text style={styles.disabledText}>{watch('incidentId')}</Text>
                 </View>
-              </View>
-
-              <FormTextInput
-                label={TEXT.address()}
-                name="address"
-                control={control}
-                placeholder={TEXT.enter_address()}
-                multiline
-                editable={false}
-                rules={{ required: TEXT.address_required() }}
-                error={errors.address?.message}
-              />
-
-              <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
-                <View style={styles.disabledBox}>
-                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
-                </View>
-              </View>
-
-              <FormTextInput
-                label={TEXT.mobile_number()}
-                name="mobileNumber"
-                control={control}
-                placeholder={TEXT.enter_mobile_number()}
-                keyboardType="phone-pad"
-                editable={false}
-                rules={{
-                  required: TEXT.mobile_required(),
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: TEXT.enter_valid_10_digit_number(),
-                  },
-                }}
-                error={errors.mobileNumber?.message}
-              />
-              <FormTextInput
-                label={TEXT.description()}
-                name="description"
-                control={control}
-                placeholder="Enter description"
-                editable={false}
-                multiline
-                rules={{ required: TEXT.description_required() }}
-                error={errors.description?.message}
-              />
-              {/* MEDIA + STATUS */}
-              <View style={{ flexDirection: 'row', gap: 14 }}>
-                <View style={{ width: WIDTH(30) }}>
-                  <ImageContainer data={media} />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.label}>{TEXT.status()}</Text>
+                <View style={{ marginVertical: 10 }}>
+                  <Text style={styles.label}>{TEXT.incident_type()}</Text>
                   <View style={styles.disabledBox}>
-                    <Text style={styles.disabledText}>{watch('status')}</Text>
-                  </View>
-
-                  <Text style={[styles.label, { marginTop: 6 }]}>
-                    {TEXT.date_time_reporting()}
-                  </Text>
-                  <View style={styles.disabledBox}>
-                    <Text style={styles.disabledText}>{watch('dateTime')}</Text>
+                    <Text style={styles.disabledText}>
+                      {watch('incidentType')}
+                    </Text>
                   </View>
                 </View>
-              </View>
-              {incidentData?.reviewers?.length > 0 && (
-                <ReviewerTable
-                  title={TEXT.reviewer()}
-                  data={incidentData?.reviewers}
-                />
-              )}
-              {incidentData?.responders?.length > 0 && (
-                <ReviewerTable
-                  title={TEXT.responders()}
-                  data={incidentData?.responders}
-                />
-              )}
 
-              {incidentData?.status === 'Pending Response by Responder' &&
-                (() => {
-                  const currentUserClosure =
-                    incidentData?.pending_closure?.find(
-                      (i: any) => i.user_id === user?.id,
-                    );
+                <FormTextInput
+                  label={TEXT.address()}
+                  name="address"
+                  control={control}
+                  placeholder={TEXT.enter_address()}
+                  multiline
+                  editable={false}
+                  rules={{ required: TEXT.address_required() }}
+                  error={errors.address?.message}
+                />
 
-                  if (currentUserClosure) {
-                    if (currentUserClosure?.pending_closure === 'accept') {
+                <View style={{ marginBottom: 10, marginTop: -4 }}>
+                  <Text style={styles.label}>Tehsil</Text>
+                  <View style={styles.disabledBox}>
+                    <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                  </View>
+                </View>
+
+                <FormTextInput
+                  label={TEXT.mobile_number()}
+                  name="mobileNumber"
+                  control={control}
+                  placeholder={TEXT.enter_mobile_number()}
+                  keyboardType="phone-pad"
+                  editable={false}
+                  rules={{
+                    required: TEXT.mobile_required(),
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: TEXT.enter_valid_10_digit_number(),
+                    },
+                  }}
+                  error={errors.mobileNumber?.message}
+                />
+                <FormTextInput
+                  label={TEXT.description()}
+                  name="description"
+                  control={control}
+                  placeholder="Enter description"
+                  editable={false}
+                  multiline
+                  rules={{ required: TEXT.description_required() }}
+                  error={errors.description?.message}
+                />
+                <View style={{ flexDirection: 'row', gap: 14 }}>
+                  <View style={{ width: WIDTH(30) }}>
+                    <ImageContainer data={media} />
+                  </View>
+
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.label}>{TEXT.status()}</Text>
+                    <View style={styles.disabledBox}>
+                      <Text style={styles.disabledText}>{watch('status')}</Text>
+                    </View>
+
+                    <Text style={[styles.label, { marginTop: 6 }]}>
+                      {TEXT.date_time_reporting()}
+                    </Text>
+                    <View style={styles.disabledBox}>
+                      <Text style={styles.disabledText}>
+                        {watch('dateTime')}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                {incidentData?.reviewers?.length > 0 && (
+                  <ReviewerTable
+                    title={TEXT.reviewer()}
+                    data={incidentData?.reviewers}
+                  />
+                )}
+                {incidentData?.responders?.length > 0 && (
+                  <ReviewerTable
+                    title={TEXT.responders()}
+                    data={incidentData?.responders}
+                  />
+                )}
+
+                {incidentData?.status === 'Pending Response by Responder' &&
+                  (() => {
+                    const currentUserClosure =
+                      incidentData?.pending_closure?.find(
+                        (i: any) => i.user_id === user?.id,
+                      );
+
+                    if (currentUserClosure) {
+                      if (currentUserClosure?.pending_closure === 'accept') {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              gap: 20,
+                            }}
+                          >
+                            <TouchableOpacity
+                              style={[
+                                styles.submitButton,
+                                { backgroundColor: COLOR.darkGray },
+                              ]}
+                              onPress={() => incidentUpdateStatus('Complete')}
+                            >
+                              <Text style={styles.submitButtonText}>
+                                {TEXT.complete()}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View style={{ marginTop: 0, alignItems: 'center' }}>
+                            <TouchableOpacity
+                              style={styles.submitButton1}
+                              onPress={() =>
+                                downloadPDF(incidentData?.incident_blob_pdf)
+                              }
+                            >
+                              <Text style={styles.submitButtonText1}>
+                                {TEXT.download_pdf()}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      }
+                    } else {
                       return (
                         <View
                           style={{
@@ -350,31 +390,76 @@ const ResIncidentDetails: React.FC = () => {
                               styles.submitButton,
                               { backgroundColor: COLOR.darkGray },
                             ]}
-                            onPress={() => incidentUpdateStatus('Complete')}
+                            onPress={() => rejectRef.current.open()}
                           >
                             <Text style={styles.submitButtonText}>
-                              {TEXT.complete()}
+                              {TEXT.reject()}
                             </Text>
                           </TouchableOpacity>
-                        </View>
-                      );
-                    } else {
-                      return (
-                        <View style={{ marginTop: 0, alignItems: 'center' }}>
+
                           <TouchableOpacity
-                            style={styles.submitButton1}
+                            style={styles.submitButton}
                             onPress={() =>
-                              downloadPDF(incidentData?.incident_blob_pdf)
+                              incidentUpdateStatus('ResponderAccept')
                             }
                           >
-                            <Text style={styles.submitButtonText1}>
-                              {TEXT.download_pdf()}
+                            <Text style={styles.submitButtonText}>
+                              {TEXT.accept()}
                             </Text>
                           </TouchableOpacity>
                         </View>
                       );
                     }
-                  } else {
+                  })()}
+
+                {incidentData?.status === 'Pending closure by Responder' &&
+                  (() => {
+                    const currentUserClosure =
+                      incidentData?.pending_closure?.find(
+                        (i: any) => i.user_id === user?.id,
+                      );
+
+                    if (currentUserClosure) {
+                      if (currentUserClosure?.pending_closure === 'accept') {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              gap: 20,
+                            }}
+                          >
+                            <TouchableOpacity
+                              style={[
+                                styles.submitButton,
+                                { backgroundColor: COLOR.darkGray },
+                              ]}
+                              onPress={() => incidentUpdateStatus('Complete')}
+                            >
+                              <Text style={styles.submitButtonText}>
+                                {TEXT.complete()}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View style={{ marginTop: 0, alignItems: 'center' }}>
+                            <TouchableOpacity
+                              style={styles.submitButton1}
+                              onPress={() =>
+                                downloadPDF(incidentData?.incident_blob_pdf)
+                              }
+                            >
+                              <Text style={styles.submitButtonText1}>
+                                {TEXT.download_pdf()}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        );
+                      }
+                    }
+
                     return (
                       <View
                         style={{
@@ -407,156 +492,55 @@ const ResIncidentDetails: React.FC = () => {
                         </TouchableOpacity>
                       </View>
                     );
-                  }
-                })()}
+                  })()}
 
-              {incidentData?.status === 'Pending closure by Responder' &&
-                (() => {
-                  const currentUserClosure =
-                    incidentData?.pending_closure?.find(
-                      (i: any) => i.user_id === user?.id,
-                    );
-
-                  if (currentUserClosure) {
-                    if (currentUserClosure?.pending_closure === 'accept') {
-                      return (
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            gap: 20,
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={[
-                              styles.submitButton,
-                              { backgroundColor: COLOR.darkGray },
-                            ]}
-                            onPress={() => incidentUpdateStatus('Complete')}
-                          >
-                            <Text style={styles.submitButtonText}>
-                              {TEXT.complete()}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      );
-                    } else {
-                      return (
-                        <View style={{ marginTop: 0, alignItems: 'center' }}>
-                          <TouchableOpacity
-                            style={styles.submitButton1}
-                            onPress={() =>
-                              downloadPDF(incidentData?.incident_blob_pdf)
-                            }
-                          >
-                            <Text style={styles.submitButtonText1}>
-                              {TEXT.download_pdf()}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      );
-                    }
-                  }
-
-                  return (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        gap: 20,
-                      }}
+                {(incidentData?.status === 'Pending closure by Admin' ||
+                  incidentData?.status === 'Closed' ||
+                  incidentData?.status === 'Admin Cancelled' ||
+                  incidentData?.status === 'Reviewer Duplicate') && (
+                  <View
+                    style={{
+                      marginTop: 0,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={[styles.submitButton1]}
+                      onPress={() =>
+                        downloadPDF(incidentData?.incident_blob_pdf)
+                      }
                     >
-                      <TouchableOpacity
-                        style={[
-                          styles.submitButton,
-                          { backgroundColor: COLOR.darkGray },
-                        ]}
-                        onPress={() => rejectRef.current.open()}
-                      >
-                        <Text style={styles.submitButtonText}>
-                          {TEXT.reject()}
-                        </Text>
-                      </TouchableOpacity>
+                      <Text style={styles.submitButtonText1}>
+                        {TEXT.download_pdf()}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          </ScreenStateHandler>
+        </View>
 
-                      <TouchableOpacity
-                        style={styles.submitButton}
-                        onPress={() => incidentUpdateStatus('ResponderAccept')}
-                      >
-                        <Text style={styles.submitButtonText}>
-                          {TEXT.accept()}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })()}
+        <SuccessScreen
+          ref={cancelRef}
+          icon={require('../../assets/cancel1.png')}
+          description={TEXT.report_cancelled()}
+          height={240}
+        />
 
-              {/* {incidentData?.status === 'Pending closure by Responder' ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => incidentUpdateStatus('Complete')}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      {TEXT.complete()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null} */}
+        <SelfHelpBottomSheet
+          ref={acceptRef}
+          onClose={() => console.log('Closed')}
+        />
 
-              {(incidentData?.status === 'Pending closure by Admin' ||
-                incidentData?.status === 'Closed' ||
-                incidentData?.status === 'Admin Cancelled' ||
-                incidentData?.status === 'Reviewer Duplicate') && (
-                <View
-                  style={{
-                    marginTop: 0,
-                    alignItems: 'center',
-                  }}
-                >
-                  {/* 🔽 Download PDF button here 🔽 */}
-                  <TouchableOpacity
-                    style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
-                  >
-                    <Text style={styles.submitButtonText1}>
-                      {TEXT.download_pdf()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </ScreenStateHandler>
-      </View>
+        <RejectReasonSheet1
+          ref={rejectRef}
+          data={incidentData}
+          getIncidentDetails={getIncidentDetails}
+        />
+      </> */}
 
-      {/* CANCEL */}
-      <SuccessScreen
-        ref={cancelRef}
-        icon={require('../../assets/cancel1.png')}
-        description={TEXT.report_cancelled()}
-        height={240}
-      />
-
-      {/* ACCEPT */}
-      <SelfHelpBottomSheet
-        ref={acceptRef}
-        onClose={() => console.log('Closed')}
-      />
-
-      <RejectReasonSheet1
-        ref={rejectRef}
-        data={incidentData}
-        getIncidentDetails={getIncidentDetails}
-      />
+      <DetailsAndLog data={incidentData} />
     </SafeAreaView>
   );
 };
