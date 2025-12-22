@@ -26,6 +26,7 @@ import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import ImageContainer from '../../components/ImageContainer';
 import { downloadPDF } from '../../Utils/downloadPDF';
+import DetailsAndLog from './DetailsAndLog';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -230,8 +231,7 @@ const ResIncidentDetails: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
-      {/* CONTENT */}
-      <View style={{ flex: 1, backgroundColor: COLOR.white }}>
+      {/* <View style={{ flex: 1, backgroundColor: COLOR.white }}>
         <ScreenStateHandler loading={loading} isEmpty={!incidentData}>
           <ScrollView
             style={styles.content}
@@ -295,7 +295,6 @@ const ResIncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.description_required() }}
                 error={errors.description?.message}
               />
-              {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
                   <ImageContainer data={media} />
@@ -490,28 +489,6 @@ const ResIncidentDetails: React.FC = () => {
                   );
                 })()}
 
-              {/* {incidentData?.status === 'Pending closure by Responder' ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => incidentUpdateStatus('Complete')}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      {TEXT.complete()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null} */}
-
               {(incidentData?.status === 'Pending closure by Admin' ||
                 incidentData?.status === 'Closed' ||
                 incidentData?.status === 'Admin Cancelled' ||
@@ -522,7 +499,6 @@ const ResIncidentDetails: React.FC = () => {
                     alignItems: 'center',
                   }}
                 >
-                  {/* 🔽 Download PDF button here 🔽 */}
                   <TouchableOpacity
                     style={[styles.submitButton1]}
                     onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
@@ -536,7 +512,9 @@ const ResIncidentDetails: React.FC = () => {
             </View>
           </ScrollView>
         </ScreenStateHandler>
-      </View>
+      </View> */}
+
+      <DetailsAndLog data={incidentData} />
 
       {/* CANCEL */}
       <SuccessScreen

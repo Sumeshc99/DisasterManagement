@@ -39,6 +39,7 @@
     "react-native-google-places-autocomplete": "^2.5.7",
     "react-native-image-picker": "^8.2.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.26.14",
     "react-native-otp-inputs": "^7.4.0",
     "react-native-otp-textinput": "^1.1.7",

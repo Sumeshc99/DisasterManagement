@@ -154,6 +154,14 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
               value="NAG-060825-CT-970"
               rightNode={<StatusBadge />}
             />
+            <View
+              style={{
+                marginTop: -8,
+                marginBottom: 14,
+                borderBottomWidth: 0.5,
+                borderColor: COLOR.textGrey,
+              }}
+            />
             <InfoRow label="Date & Time" value="08/04/2025, 05:10 PM" />
             <InfoRow label="Incident Type" value="Fire" />
             <InfoRow
@@ -262,6 +270,23 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
             {data?.responders?.length > 0 && (
               <ReviewerTable title={TEXT.responders()} data={data.responders} />
             )}
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 20,
+              marginBottom: 20,
+            }}
+          >
+            <TouchableOpacity style={[styles.submitButton]} onPress={() => ''}>
+              <Text style={styles.submitButtonText}>Save</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.submitButton} onPress={() => ''}>
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -475,6 +500,21 @@ const styles = StyleSheet.create({
   addText: {
     color: '#FFF',
     fontSize: 22,
+    fontWeight: '700',
+  },
+
+  submitButton: {
+    backgroundColor: COLOR.blue,
+    paddingVertical: 12,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+    width: 160,
+  },
+
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
     fontWeight: '700',
   },
 });
