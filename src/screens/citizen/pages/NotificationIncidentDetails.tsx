@@ -247,20 +247,6 @@ const NotificationIncidentDetails: React.FC = () => {
                   />
                 )}
 
-                {incidentData?.reviewers?.length > 0 && (
-                  <ReviewerTable
-                    title={TEXT.reviewer()}
-                    data={incidentData?.reviewers}
-                  />
-                )}
-
-                {incidentData?.responders?.length > 0 && (
-                  <ReviewerTable
-                    title={TEXT.responders()}
-                    data={incidentData?.responders}
-                  />
-                )}
-
                 {incidentData?.incident_blob_pdf && (
                   <TouchableOpacity
                     style={styles.submitButton1}

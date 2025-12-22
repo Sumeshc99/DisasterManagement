@@ -10,14 +10,19 @@ import {
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Geolocation from '@react-native-community/geolocation';
-import { HEIGHT, WIDTH } from '../../themes/AppConst';
+import LinearGradient from 'react-native-linear-gradient';
+import { FONT, HEIGHT, WIDTH } from '../../themes/AppConst';
 import { COLOR } from '../../themes/Colors';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
 
-interface Props {}
+const API_KEY = 'a418225781f74bc8b4365504252212';
 
 const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   (_, ref) => {
-    const [daily, setDaily] = useState<any>(null);
+    const language = useSelector((state: RootState) => state.language.language);
+
+    const [forecast, setForecast] = useState<any>(null);
     const [location, setLocation] = useState('');
     const [alerts, setAlerts] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -26,45 +31,44 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       fetchWeather();
     }, []);
 
-    const fetchWeather = async () => {
+    const fetchWeather = () => {
       setLoading(true);
 
       Geolocation.getCurrentPosition(async pos => {
         try {
           const { latitude, longitude } = pos.coords;
 
-          const locRes = await fetch(
-            `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}`,
-          );
-          const locData = await locRes.json();
-          setLocation(locData?.results?.[0]?.name || 'Current Location');
-
           const res = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,weathercode&alerts=weather&timezone=auto`,
+            `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latitude},${longitude}&days=7&alerts=yes&lang=${language}`,
           );
+
           const data = await res.json();
 
-          setDaily(data.daily);
-          setAlerts(data.alerts || []);
+          setForecast(data.forecast.forecastday);
+          setLocation(data.location.name);
+          setAlerts(data.alerts?.alert || []);
           setLoading(false);
-        } catch {
+        } catch (e) {
           setLoading(false);
         }
       });
     };
 
+    const today = forecast?.[0];
+
     return (
       <RBSheet
         ref={ref}
-        height={600}
+        height={720}
         closeOnPressMask
         customStyles={{ container: styles.container }}
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
+
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.location}>Nagpur</Text>
+            <Text style={styles.location}>{location}</Text>
             <TouchableOpacity
               style={styles.closeIconContainer}
               onPress={() => (ref as any)?.current?.close()}
@@ -77,67 +81,80 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
           </View>
 
           {loading ? (
-            <ActivityIndicator style={{ marginTop: HEIGHT(25) }} size="large" />
+            <ActivityIndicator size="large" style={{ marginTop: HEIGHT(25) }} />
           ) : (
             <>
-              {/* Today Card */}
-              <View style={styles.todayCard}>
-                <Image
-                  source={require('../../assets/cancel.png')}
-                  style={styles.todayIcon}
-                />
-                <View>
-                  <Text style={styles.todayLabel}>Today</Text>
-                  <Text style={styles.todayTemp}>
-                    {daily?.temperature_2m_max?.[0]}°C
-                  </Text>
-                  <Text style={styles.todayDesc}>
-                    Sunny {daily?.temperature_2m_min?.[0]}° /
-                    {daily?.temperature_2m_max?.[0]}°
-                  </Text>
+              {/* Today Card with Gradient */}
+              <LinearGradient
+                colors={['#1E3A8A', '#2563EB']}
+                style={styles.todayCard}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    margin: 10,
+                  }}
+                >
+                  <Image
+                    source={{ uri: `https:${today?.day.condition.icon}` }}
+                    style={styles.todayIcon}
+                  />
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.todayLabel}>Today</Text>
+                    <Text style={styles.todayTemp}>
+                      {today?.day.avgtemp_c}°C
+                    </Text>
+                    <Text style={styles.todayDesc}>
+                      {today?.day.condition.text} {today?.day.mintemp_c}° /{' '}
+                      {today?.day.maxtemp_c}°
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              </LinearGradient>
 
               {/* Wind */}
               <Text style={styles.windText}>
-                → {daily?.windspeed_10m_max?.[0]} km/h
+                → {today?.day.maxwind_kph} km/h
               </Text>
 
-              {/* Daily List */}
+              {/* 7 Day Forecast */}
               <FlatList
-                data={daily?.time?.slice(1)}
+                data={forecast?.slice(1)}
                 keyExtractor={(_, i) => i.toString()}
-                renderItem={({ item, index }) => (
+                renderItem={({ item }) => (
                   <View style={styles.dayRow}>
                     <Text style={styles.dayText}>
-                      {new Date(item).toLocaleDateString('en', {
+                      {new Date(item.date).toLocaleDateString('en', {
                         weekday: 'short',
                       })}
                     </Text>
 
+                    <Image
+                      source={{ uri: `https:${item.day.condition.icon}` }}
+                      style={styles.rowIcon}
+                    />
+
                     <View style={styles.centerRow}>
-                      <Image
-                        source={require('../../assets/cancel.png')}
-                        style={styles.rowIcon}
-                      />
-                      <Text style={styles.cloudy}>Cloudy</Text>
+                      <Text style={styles.cloudy}>
+                        {item.day.condition.text}
+                      </Text>
                       <Text style={styles.speed}>
-                        {daily.windspeed_10m_max[index + 1]} km/h
+                        {item.day.maxwind_kph} km/h
                       </Text>
                     </View>
 
                     <Text style={styles.tempRange}>
-                      {daily.temperature_2m_min[index + 1]}°{' '}
-                      {daily.temperature_2m_max[index + 1]}°
+                      {item.day.mintemp_c}° - {item.day.maxtemp_c}°
                     </Text>
                   </View>
                 )}
               />
 
-              {/* Alert */}
+              {/* Alerts */}
               {alerts.length > 0 && (
                 <View style={styles.alertBar}>
-                  <Text style={styles.alertText}>⚠ Heavy Rainfall Warning</Text>
+                  <Text style={styles.alertText}>⚠ {alerts[0].headline}</Text>
                 </View>
               )}
             </>
@@ -157,7 +174,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 22,
   },
 
-  content: { flex: 1, padding: 16 },
+  content: { flex: 1, padding: WIDTH(4) },
   dragIndicator: {
     width: 60,
     height: 6,
@@ -190,14 +207,13 @@ const styles = StyleSheet.create({
   },
 
   todayCard: {
-    backgroundColor: COLOR.blue,
-    borderRadius: 20,
-    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 16,
     width: WIDTH(70),
     alignSelf: 'center',
+    backgroundColor: COLOR.blue,
+    borderRadius: 14,
   },
 
   todayIcon: { width: 60, height: 60, marginRight: 12 },
@@ -222,24 +238,29 @@ const styles = StyleSheet.create({
   dayRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
-    padding: 14,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: WIDTH(2),
+    paddingHorizontal: WIDTH(4),
     borderRadius: 14,
     marginBottom: 10,
     alignItems: 'center',
   },
 
-  dayText: { fontWeight: '700', color: COLOR.blue },
+  dayText: {
+    color: COLOR.blue,
+    fontFamily: FONT.R_BOLD_700,
+    width: WIDTH(10),
+  },
 
-  centerRow: { alignItems: 'center' },
+  centerRow: { alignItems: 'center', width: WIDTH(30) },
 
-  rowIcon: { width: 26, height: 26 },
+  rowIcon: { width: WIDTH(10), height: WIDTH(10) },
 
   cloudy: { fontSize: 13 },
 
   speed: { fontSize: 12, color: '#6B7280' },
 
-  tempRange: { fontWeight: '600' },
+  tempRange: { fontWeight: '600', width: WIDTH(24) },
 
   alertBar: {
     backgroundColor: '#EF4444',
