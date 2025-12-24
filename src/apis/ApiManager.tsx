@@ -94,6 +94,10 @@ const requestPath = {
     'responder/getRespondersByTehsilAndResource',
   getTehsilByCity: 'mobileapis/getTehsilByCity',
   helplineNumber: 'helplineNumber/public/list',
+  getTimeline: 'mobileapis/getTimeline',
+  getComments: 'mobileapis/getComments',
+  createComment: 'mobileapis/createComment',
+  deleteCommentById: 'mobileapis/deleteCommentById',
 };
 
 const ApiManager = {
@@ -143,6 +147,18 @@ const ApiManager = {
       token,
     ),
 
+  getTimeline: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getTimeline}/${incidentId}`, token),
+
+  getComments: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getComments}/${incidentId}`, token),
+
+  deleteCommentById: (commentId: number, userId: number, token: string) =>
+    requests.get(
+      `${requestPath.deleteCommentById}/${commentId}/${userId}`,
+      token,
+    ),
+
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
     requests.post(requestPath.verifyPin, params, token),
@@ -174,6 +190,9 @@ const ApiManager = {
       `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
       token,
     ),
+
+  createComment: (params: any, token: string) =>
+    requests.post(requestPath.createComment, params, token),
 };
 
 export default ApiManager;

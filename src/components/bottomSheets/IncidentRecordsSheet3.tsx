@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
 import Filter from '../../assets/filter.svg';
+import TimelineSheet from './TimelineSheet';
 
 const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -27,11 +28,16 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const [assignedIncident, setAssignedIncident] = useState([]);
     const [assignedInc, setAssignedInc] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+    const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
+      null,
+    );
 
     const [showFilter, setShowFilter] = useState(false);
     const [incType, setIncType] = useState<0 | 1>(0);
 
     const [refreshing, setRefreshing] = useState(false);
+
+    const timelineRef = useRef<RBSheet>(null);
 
     const fetchIncidentList = async () => {
       try {
@@ -114,45 +120,67 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       );
     };
 
-    const renderItem = ({ item }: any) => (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          (ref as { current: any } | null)?.current?.close();
-          navigation.navigate(
-            !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
-            {
-              data: item.id,
-            },
-          );
-        }}
-        style={styles.card}
-      >
-        <View style={styles.headerRow1}>
-          <Text style={styles.incidentId}>
-            {TEXT.incident_id()} - {item.incident_id}
-          </Text>
-          {renderStatus(item.status)}
-        </View>
+    const renderItem = ({ item }: any) => {
+      const isMyIncident = item.user_id === user?.id;
+      const isDraft = item.status === 'New';
 
-        <Text style={styles.cardTitle}>{item.incident_type_name}</Text>
-        <Text style={styles.cardLocation}>{item.address}</Text>
+      return (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            (ref as { current: any } | null)?.current?.close();
+            navigation.navigate(
+              !isAssignedTab ? 'incidentDetails' : 'revIncidentDetails',
+              {
+                data: item.id,
+              },
+            );
+          }}
+          style={styles.card}
+        >
+          <View style={styles.headerRow1}>
+            <Text style={styles.incidentId}>
+              {TEXT.incident_id()} - {item.incident_id}
+            </Text>
+            {renderStatus(item.status)}
+          </View>
 
-        <View style={styles.rowBetween}>
-          <Text style={styles.cardDate}>{formatDateTime(item.created_on)}</Text>
+          <Text style={styles.title}>{item.incident_type_name}</Text>
+          <Text style={styles.location}>{item.address}</Text>
 
-          {item.status === 'New' && (
-            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
-              <Text style={[styles.statusText, { color: COLOR.white }]}>
-                {incType === 1 ? 'View' : 'Edit'}
-              </Text>
-            </View>
-          )}
-        </View>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-        <View style={styles.divider} />
-      </TouchableOpacity>
-    );
+            {/* ACTION BUTTON LOGIC */}
+            {isDraft && isMyIncident ? (
+              /* Draft + My Incident → Edit */
+              <View
+                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+              >
+                <Text style={[styles.statusText, { color: COLOR.white }]}>
+                  Edit
+                </Text>
+              </View>
+            ) : !isDraft ? (
+              /* Created Incident → Timeline */
+              <TouchableOpacity
+                style={[styles.timelineBadge]}
+                onPress={() => {
+                  setSelectedIncidentId(item.id);
+                  timelineRef.current?.open();
+                }}
+              >
+                <Text style={styles.timelineText}>Timeline</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          <View style={styles.divider} />
+        </TouchableOpacity>
+      );
+    };
 
     const listData = isAssignedTab
       ? assignedInc
@@ -273,6 +301,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
             onRefresh={onRefresh}
           />
         </View>
+        <TimelineSheet ref={timelineRef} incidentId={selectedIncidentId} />
       </RBSheet>
     );
   },
@@ -463,5 +492,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     padding: 5,
+  },
+  timelineText: {
+    color: COLOR.blue,
+    fontSize: 11,
+    fontWeight: '600',
+    maxWidth: 120,
+  },
+  timelineBadge: {
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
 });
