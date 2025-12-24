@@ -28,6 +28,9 @@ import AssignResponderSheet from '../../components/bottomSheets/AssignResponderS
 import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
 import { downloadPDF } from '../../Utils/downloadPDF';
+import CommentSheet from '../../components/bottomSheets/CommentSheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import ReuseButton from '../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -96,6 +99,9 @@ const RevIncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
   const [assignInc, setassignInc] = useState([]);
+
+  const commentRef = useRef<RBSheet>(null);
+  const incidentId = data?.incident_auto_id || data;
 
   const {
     control,
