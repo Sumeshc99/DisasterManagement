@@ -19,6 +19,7 @@ import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
 import { setUser, userToken } from '../../store/slices/authSlice';
 import { TEXT } from '../../i18n/locales/Text';
+import BiometricAuth from '../../components/BiometricAuth';
 
 export default function OTPVerification() {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -40,39 +41,60 @@ export default function OTPVerification() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleNext = async () => {
-    if (otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
+  const handleNext = async (type?: string) => {
+    if (type !== 'biometric') {
+      if (otp.length !== 6) {
+        setError('Please enter a valid 6-digit OTP');
+      } else {
+        getUserData();
+      }
     } else {
-      const body = {
-        mobile: userData.data.mobile_no,
-        pin: otp,
-      };
-      showLoader();
-      ApiManager.verifyPin(body, userData.token)
-        .then(resp => {
-          if (resp?.data?.status) {
-            showSnackbar(TEXT.pin_verified(), 'success');
-            dispatch(
-              setUser({
-                id: resp?.data?.data?.id,
-                full_name: userData?.data?.full_name,
-                mobile_no: resp?.data?.data?.mobile_no,
-                email: resp?.data?.data?.email,
-                role: resp?.data?.data?.role,
-                tehsil: userData?.data?.tehsil,
-                is_registered: resp?.data?.data?.is_registered,
-              }),
-            );
-            dispatch(userToken(userData?.token));
-            navigation.replace('mainAppSelector');
-          } else {
-            showSnackbar('Please enter correct pin', 'error');
-          }
-        })
-        .catch(err => showSnackbar('Please enter correct pin', 'error'))
-        .finally(() => hideLoader());
+      showSnackbar(TEXT.pin_verified(), 'success');
+      dispatch(
+        setUser({
+          id: userData?.data?.id,
+          full_name: userData?.data?.full_name,
+          mobile_no: userData?.data?.mobile_no,
+          email: userData?.data?.email,
+          role: userData?.data?.role,
+          tehsil: userData?.data?.tehsil,
+          is_registered: userData?.data?.is_registered,
+        }),
+      );
+      dispatch(userToken(userData?.token));
+      navigation.replace('mainAppSelector');
     }
+  };
+
+  const getUserData = async () => {
+    const body = {
+      mobile: userData.data.mobile_no,
+      pin: otp,
+    };
+    showLoader();
+    ApiManager.verifyPin(body, userData.token)
+      .then(resp => {
+        if (resp?.data?.status) {
+          showSnackbar(TEXT.pin_verified(), 'success');
+          dispatch(
+            setUser({
+              id: resp?.data?.data?.id,
+              full_name: userData?.data?.full_name,
+              mobile_no: resp?.data?.data?.mobile_no,
+              email: resp?.data?.data?.email,
+              role: resp?.data?.data?.role,
+              tehsil: userData?.data?.tehsil,
+              is_registered: resp?.data?.data?.is_registered,
+            }),
+          );
+          dispatch(userToken(userData?.token));
+          navigation.replace('mainAppSelector');
+        } else {
+          showSnackbar('Please enter correct pin', 'error');
+        }
+      })
+      .catch(err => showSnackbar('Please enter correct pin', 'error'))
+      .finally(() => hideLoader());
   };
 
   const handleForgotPin = () => {
@@ -130,7 +152,7 @@ export default function OTPVerification() {
             otp.length === 6 && styles.nextButtonActive,
           ]}
           disabled={otp.length < 6 && true}
-          onPress={handleNext}
+          onPress={() => handleNext('otp')}
         >
           <Text
             style={[
@@ -141,6 +163,16 @@ export default function OTPVerification() {
             {TEXT.next()}
           </Text>
         </TouchableOpacity>
+
+        {/* <TouchableOpacity style={{ marginTop: 40 }}>
+          <Image
+            style={{ width: 80, height: 80 }}
+            source={require('../../assets/fingerPrint.png')}
+          />
+        </TouchableOpacity> */}
+        <View style={{ flex: 1, marginTop: 30 }}>
+          <BiometricAuth response={() => handleNext('biometric')} />
+        </View>
       </ScrollView>
     </ImageBackground>
   );

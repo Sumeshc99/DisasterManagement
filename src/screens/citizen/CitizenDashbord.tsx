@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import OpenStreetMap from '../../components/OpenStreetMap';
 import RespondersList from './pages/RespondersList';
 import RightDrawer from '../../components/RightDrawer';
+import WeatherSheet from '../../components/bottomSheets/WeatherSheet';
 
 import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
 import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
@@ -30,7 +31,6 @@ import Dis from '../../assets/svg/dis.svg';
 import { TEXT } from '../../i18n/locales/Text';
 import ReviewerSection from '../receiver/ReviewerSection';
 import ResponderSection from '../responder/ResponderSection';
-import WeatherSheet from '../../components/bottomSheets/WeatherSheet';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -42,23 +42,11 @@ const CitizenDashboard = () => {
   const [showResponders, setShowResponders] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const route = useRoute();
-  // const navigation = useNavigation();
-
-  // useEffect(() => {
-  //   if (route?.params?.responders) {
-  //     setResponderListFromSheet(route?.params?.responders);
-  //     // OPEN bottom sheet when data arrives
-  //     responderSheetRef.current?.open();
-  //   }
-  // }, [route.params]);
-
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
   const showHelpRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
-  const responderSheetRef = useRef<any>(null);
   const weatherSheetRef = useRef<any>(null);
 
   GetCurrentLocation();
@@ -75,14 +63,6 @@ const CitizenDashboard = () => {
 
     return () => clearTimeout(timer);
   }, [user]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     GetCurrentLocation();
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
 
   const fetchIncidentsAndResponders = useCallback(async () => {
     try {

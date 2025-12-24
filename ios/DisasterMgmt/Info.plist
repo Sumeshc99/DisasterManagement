@@ -62,6 +62,9 @@
     <key>NSMediaLibraryUsageDescription</key>
     <string>This app needs access to your media library to select and manage media files.</string>
 
+	<key>NSFaceIDUsageDescription</key>
+    <string>Authenticate using biometrics</string>
+
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>
