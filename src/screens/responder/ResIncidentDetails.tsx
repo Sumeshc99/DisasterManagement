@@ -261,7 +261,7 @@ const ResIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
+                <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
                 </View>

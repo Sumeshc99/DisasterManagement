@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -28,6 +28,7 @@ const RespondersList: React.FC<props> = ({ responders }) => {
       'Police Station': [] as ResponderItem[],
       'SDRF Center': [] as ResponderItem[],
       Boat: [] as ResponderItem[],
+      'Fire Brigrade': [] as ResponderItem[],
     };
 
     responders.forEach(item => {
@@ -41,8 +42,8 @@ const RespondersList: React.FC<props> = ({ responders }) => {
         case 'Police':
           categories['Police Station'].push(item);
           break;
-        case 'Fire Brigade':
-          categories['Fire Brigade'].push(item);
+        case 'Fire Brigrade':
+          categories['Fire Brigrade'].push(item);
           break;
         case 'SDRF Center':
           categories['SDRF Center'].push(item);
@@ -86,11 +87,12 @@ const RespondersList: React.FC<props> = ({ responders }) => {
       >
         <Text style={styles.pageTitle}>{TEXT.on_duty_responders()}</Text>
 
-        {renderSection(TEXT.ambulance_service(), categorized.Ambulance)}
-        {renderSection(TEXT.hospital(), categorized.Hospital)}
-        {renderSection(TEXT.police_stations(), categorized['Police Station'])}
-        {renderSection(TEXT.sdrf_center(), categorized['SDRF Center'])}
-        {renderSection(TEXT.boat(), categorized['Boat'])}
+        {renderSection('Ambulence service', categorized.Ambulance)}
+        {renderSection('Hospital', categorized.Hospital)}
+        {renderSection('Police Station', categorized['Police Station'])}
+        {renderSection('SDRF Center', categorized['SDRF Center'])}
+        {renderSection('Boat', categorized['Boat'])}
+        {renderSection('Fire Brigade', categorized['Fire Brigrade'])}
       </ScrollView>
     </View>
   );
