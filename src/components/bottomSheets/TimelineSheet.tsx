@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
 import { WIDTH } from '../../themes/AppConst';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/RootReducer';
+import ApiManager from '../../apis/ApiManager';
 
 interface TimelineItem {
   role: string;
@@ -20,17 +23,52 @@ interface TimelineItem {
 }
 
 interface Props {
-  timelineData: TimelineItem[];
+  incidentId: number | null;
   onClose?: () => void;
 }
 
 const TimelineSheet = forwardRef<RBSheet, Props>(
-  ({ timelineData, onClose }, ref) => {
+  ({ incidentId, onClose }: any, ref) => {
+    const { userToken } = useSelector((state: RootState) => state.auth);
+    const [timelineData, setTimelineData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    console.log('The timeline day', timelineData);
+
+    useEffect(() => {
+      if (incidentId) {
+        console.log('Incident Id/////// ', incidentId);
+        fetchTimeline();
+      }
+    }, [incidentId]);
+
+    const fetchTimeline = async () => {
+      try {
+        setLoading(true);
+
+        const resp = await ApiManager.getTimeline(incidentId, userToken);
+        console.log('Full response', JSON.stringify(resp.data, null, 2));
+
+        if (resp?.data?.status) {
+          console.log('Yeahhhhh we are getting daa');
+          setTimelineData(resp.data.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching timeline:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
       <RBSheet
         ref={ref}
         height={520}
         openDuration={250}
+        onOpen={() => {
+          if (incidentId) {
+            fetchTimeline();
+          }
+        }}
         customStyles={{
           wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
           container: {
