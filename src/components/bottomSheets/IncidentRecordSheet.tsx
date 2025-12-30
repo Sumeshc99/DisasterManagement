@@ -186,8 +186,19 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
               </View>
             )}
 
-            <TouchableOpacity onPress={() => timelineRef.current?.open()}>
-              <Text>Timeline button</Text>
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: COLOR.textGrey,
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                paddingVertical: 3,
+              }}
+              onPress={() => timelineRef.current?.open()}
+            >
+              <Text style={{ fontSize: 11, fontFamily: FONT.R_MED_500 }}>
+                Timeline
+              </Text>
             </TouchableOpacity>
           </View>
 
