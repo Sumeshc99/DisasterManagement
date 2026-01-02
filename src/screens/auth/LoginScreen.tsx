@@ -25,11 +25,18 @@ import { useTranslation } from 'react-i18next';
 import { TEXT } from '../../i18n/locales/Text';
 import '../../../i18n';
 import { useSnackbar } from '../../hooks/SnackbarProvider';
+import {
+  getMessaging,
+  getToken,
+  registerDeviceForRemoteMessages,
+} from '@react-native-firebase/messaging';
 
 interface LoginFormData {
   phone: string;
   tehsil: string;
 }
+
+const messaging = getMessaging();
 
 const LoginScreen = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -38,6 +45,8 @@ const LoginScreen = () => {
   const snackbar = useSnackbar();
 
   const [tahsilList, settahsilList] = useState([]);
+  const [fcmToken, setfcmToken] = useState('');
+  console.log('fcmToken', fcmToken);
 
   const {
     control,
@@ -70,6 +79,20 @@ const LoginScreen = () => {
 
     getTahsil();
   }, []);
+
+  useEffect(() => {
+    getFCMToken();
+  }, []);
+
+  const getFCMToken = async () => {
+    try {
+      await registerDeviceForRemoteMessages(messaging);
+      const token = await getToken(messaging);
+      setfcmToken(token);
+    } catch (error) {
+      console.log('FCM Token Error:', error);
+    }
+  };
 
   const handleLogin = async (data: LoginFormData) => {
     const { phone, tehsil } = data;
@@ -123,7 +146,7 @@ const LoginScreen = () => {
             }}
           >
             <Image
-              source={require('../../assets/DDMA LOGO.png')}
+              source={require('../../assets/appLogo1.png')}
               style={styles.logo}
               resizeMode="contain"
             />

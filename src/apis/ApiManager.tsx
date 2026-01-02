@@ -6,6 +6,9 @@ export const IMG_URL = 'https://disaster.pixelplanet.in/';
 // export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
 // export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
+// export const BASE_URL = 'https://api.ddmanagpur.in/api/';
+// export const IMG_URL = 'https://api.ddmanagpur.in/';
+
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -38,7 +41,7 @@ const constructApiRequest = (
 
 const Axios = axios.create({
   baseURL: BASE_URL,
-  timeout: 20000,
+  timeout: 60000,
 });
 
 const requests = {
@@ -90,6 +93,7 @@ const requestPath = {
   getRespondersByTehsilAndResource:
     'responder/getRespondersByTehsilAndResource',
   getTehsilByCity: 'mobileapis/getTehsilByCity',
+  helplineNumber: 'helplineNumber/public/list',
 };
 
 const ApiManager = {
@@ -97,6 +101,7 @@ const ApiManager = {
   language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
+  helplineNumber: () => requests.get(requestPath.helplineNumber),
 
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
@@ -169,7 +174,6 @@ const ApiManager = {
       `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
       token,
     ),
-
 };
 
 export default ApiManager;

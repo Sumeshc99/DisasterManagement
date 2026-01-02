@@ -37,7 +37,6 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
-  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -157,7 +156,6 @@ const ResIncidentDetails: React.FC = () => {
               media: inc?.media,
               status: inc?.status,
               dateTime: formatDateTime(inc?.date_reporting),
-              tehsil: inc?.tehsil_name,
             });
           }
         })
@@ -232,7 +230,6 @@ const ResIncidentDetails: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
-      {/* CONTENT */}
       <View style={{ flex: 1, backgroundColor: COLOR.white }}>
         <ScreenStateHandler loading={loading} isEmpty={!incidentData}>
           <ScrollView
@@ -264,7 +261,7 @@ const ResIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
+                <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
                 </View>
@@ -299,7 +296,7 @@ const ResIncidentDetails: React.FC = () => {
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {media?.length && <ImageContainer data={media} />}
+                  <ImageContainer data={media} />
                 </View>
 
                 <View style={{ flex: 1 }}>

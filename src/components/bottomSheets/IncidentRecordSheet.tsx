@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
+import TimelineSheet from './TimelineSheet';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -26,6 +27,49 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
 
     const [refreshing, setRefreshing] = useState(false);
+
+    const timelineRef = useRef<RBSheet>(null);
+
+    const timelineData = [
+      {
+        role: 'Guest',
+        status: 'Incident Registered',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:12 PM',
+        location: 'Sitabardi, Nagpur',
+      },
+      {
+        role: 'Reviewer',
+        status: 'Incident Accepted',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:14 PM',
+        location: 'Sitabardi, Nagpur',
+        details: [
+          { title: 'Disaster Management Officer', name: 'Akshay Shinde' },
+        ],
+      },
+      {
+        role: 'Responder',
+        status: 'Incident Accepted',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:16 PM',
+        location: 'Sitabardi, Nagpur',
+        details: [
+          { title: 'Police officer', name: 'Avinash Kakade, Kiran Kamat' },
+          {
+            title: 'Ambulance',
+            name: 'Vijay Satpute, Government Hospital, Sitabardi',
+          },
+        ],
+      },
+      {
+        role: 'Responder',
+        status: 'Incident Resolved',
+        incidentType: 'Fire',
+        date: '10 April 2025, 6:20 PM',
+        location: 'Sitabardi, Nagpur',
+      },
+    ];
 
     // --- Fetch API ---
     const fetchIncidentList = async () => {
@@ -44,9 +88,13 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    useEffect(() => {
-      fetchIncidentList();
-    }, [userToken]);
+    // useEffect(() => {
+    //   fetchIncidentList();
+    // }, [userToken]);
+
+    const refreshIncidents = async () => {
+      await fetchIncidentList();
+    };
 
     const onRefresh = async () => {
       setRefreshing(true);
@@ -118,15 +166,40 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
           >
             <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-            {item.status == 'New' && (
+            {item.status === 'New' && (
               <View
-                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: isAssignedTab ? COLOR.blue : COLOR.blue,
+                  },
+                ]}
               >
-                <Text style={[styles.statusText, { color: COLOR.white }]}>
-                  Edit
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: isAssignedTab ? COLOR.white : COLOR.white },
+                  ]}
+                >
+                  {isAssignedTab ? 'View' : 'Edit'}
                 </Text>
               </View>
             )}
+
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: COLOR.textGrey,
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                paddingVertical: 3,
+              }}
+              onPress={() => timelineRef.current?.open()}
+            >
+              <Text style={{ fontSize: 11, fontFamily: FONT.R_MED_500 }}>
+                Timeline
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.divider} />
@@ -141,6 +214,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         ref={ref}
         closeOnPressMask
         height={600}
+        onOpen={refreshIncidents}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },
@@ -229,6 +303,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             }
           />
         </View>
+        <TimelineSheet ref={timelineRef} timelineData={timelineData} />
       </RBSheet>
     );
   },

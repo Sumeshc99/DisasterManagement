@@ -61,10 +61,15 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    useEffect(() => {
-      fetchIncidentList();
-      getAssignedIncident();
-    }, [userToken]);
+    const refreshIncidents = async () => {
+      await fetchIncidentList();
+      await getAssignedIncident();
+    };
+
+    // useEffect(() => {
+    //   fetchIncidentList();
+    //   getAssignedIncident();
+    // }, [userToken]);
 
     const onRefresh = async () => {
       setRefreshing(true);
@@ -139,7 +144,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
           {item.status === 'New' && (
             <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
               <Text style={[styles.statusText, { color: COLOR.white }]}>
-                Edit
+                {incType === 1 ? 'View' : 'Edit'}
               </Text>
             </View>
           )}
@@ -160,6 +165,7 @@ const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         ref={ref}
         closeOnPressMask
         height={600}
+        onOpen={refreshIncidents}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },
