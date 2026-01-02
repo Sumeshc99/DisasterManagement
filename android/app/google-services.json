@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "30320695182",
+    "project_id": "nagpur-aapatti-vyavasthapan",
+    "storage_bucket": "nagpur-aapatti-vyavasthapan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30320695182:android:d82d69d5957cbaa1e676df",
+        "android_client_info": {
+          "package_name": "com.disastermgt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB184OOtaL0TLL76z35m8oV2fpgM-uFD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
