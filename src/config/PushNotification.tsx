@@ -14,18 +14,13 @@ import notifee, {
 } from '@notifee/react-native';
 
 const PushNotification = () => {
-  /**
-   * 🔐 REQUEST NOTIFICATION PERMISSIONS
-   */
   useEffect(() => {
     const requestPermissions = async () => {
       const app = getApp();
       const messaging = getMessaging(app);
 
-      /** ---------------- iOS ---------------- */
       if (Platform.OS === 'ios') {
         try {
-          // Firebase (APNs) permission
           const authStatus = await requestPermission(messaging, {
             alert: true,
             badge: true,
@@ -54,10 +49,8 @@ const PushNotification = () => {
         }
       }
 
-      /** ---------------- Android ---------------- */
       if (Platform.OS === 'android') {
         try {
-          // Android 13+
           if (Platform.Version >= 33) {
             await PermissionsAndroid.request(
               PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
@@ -77,9 +70,6 @@ const PushNotification = () => {
     requestPermissions();
   }, []);
 
-  /**
-   * 📩 SHOW FOREGROUND ALERT + SYSTEM NOTIFICATION
-   */
   const showForegroundNotification = async (remoteMessage: any) => {
     try {
       const title =
@@ -92,10 +82,8 @@ const PushNotification = () => {
         remoteMessage.data?.body ||
         'You have received a message';
 
-      /** 🔔 SHOW ALERT (iOS + Android) */
       Alert.alert(title, body, [{ text: 'OK' }], { cancelable: true });
 
-      /** 🔔 CREATE ANDROID CHANNEL */
       const channelId =
         Platform.OS === 'android'
           ? await notifee.createChannel({
@@ -107,7 +95,6 @@ const PushNotification = () => {
             })
           : undefined;
 
-      /** 🔔 DISPLAY SYSTEM NOTIFICATION */
       await notifee.displayNotification({
         title,
         body,
@@ -135,25 +122,19 @@ const PushNotification = () => {
     }
   };
 
-  /**
-   * 📡 LISTEN FOR MESSAGES & EVENTS
-   */
   useEffect(() => {
     const app = getApp();
     const messaging = getMessaging(app);
 
-    /** Foreground FCM message */
     const unsubscribeMessage = onMessage(messaging, async remoteMessage => {
       if (remoteMessage) {
         await showForegroundNotification(remoteMessage);
       }
     });
 
-    /** Notification press (foreground) */
     const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
       if (type === EventType.PRESS) {
         console.log('🔔 Notification pressed:', detail.notification?.data);
-        // 👉 Navigation logic here
       }
     });
 
