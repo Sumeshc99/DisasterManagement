@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  backText: { color: COLOR.primary },
+  backText: { color: COLOR.blue },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 6,
     color: COLOR.textGrey,
     fontFamily: FONT.R_MED_500,
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
 
   primaryBtn: {
     flex: 1,
-    backgroundColor: COLOR.primary,
+    backgroundColor: COLOR.blue,
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
   secondaryBtn: {
     flex: 1,
     borderWidth: 1,
-    borderColor: COLOR.primary,
+    borderColor: COLOR.blue,
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   },
 
   primaryText: { color: '#fff', fontWeight: '600' },
-  secondaryText: { color: COLOR.primary, fontWeight: '600' },
+  secondaryText: { color: COLOR.blue, fontWeight: '600' },
   countRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -592,15 +592,15 @@ const styles = StyleSheet.create({
   },
 
   countInput: {
-    width: 64, // 👈 IMPORTANT (small box)
+    width: 64,
     height: 36,
     borderWidth: 1,
-    borderColor: '#D1D5DB', // 👈 Grey border like Figma
+    borderColor: '#D1D5DB',
     borderRadius: 6,
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 16,
     color: '#111827',
-    paddingVertical: 0, // 👈 prevents vertical misalignment
+    paddingVertical: 0,
   },
 
   footer: {

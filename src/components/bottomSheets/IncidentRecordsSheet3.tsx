@@ -351,6 +351,15 @@ const styles = StyleSheet.create({
     width: WIDTH(92),
   },
 
+  title: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 5,
+  },
+  location: { color: '#666', fontSize: 14 },
+  date: { fontSize: 12, color: '#777', marginTop: 2 },
+
   tabButton: {
     paddingVertical: 10,
     width: WIDTH(43),
