@@ -30,6 +30,9 @@ import ImageContainer from '../../../components/ImageContainer';
 import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ResponderListSheet from '../../../components/bottomSheets/ResponderListSheet';
+import CommentSheet from '../../../components/bottomSheets/CommentSheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import ReuseButton from '../../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -119,6 +122,9 @@ const IncidentDetails: React.FC = () => {
 
   const [tapCount, setTapCount] = useState(0);
   const tapTimeout = useRef<number | null>(null);
+  const commentRef = useRef<RBSheet>(null);
+  const incidentId = data?.incident_auto_id || data;
+  console.log(user, 'I am hihi 2 nd user');
 
   const {
     control,
@@ -543,6 +549,26 @@ const IncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               )}
+
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: '#6E6E6E',
+                  textAlign: 'center',
+                  marginTop: 18,
+                  lineHeight: 18,
+                }}
+              >
+                If you have more information to share on this incident, please
+                feel free to post a comment by clicking on "Comment" button
+                below.
+              </Text>
+
+              <ReuseButton
+                text="Comment"
+                style={{ width: WIDTH(50), alignSelf: 'center', marginTop: 12 }}
+                onPress={() => commentRef.current?.open()}
+              />
             </View>
           </ScrollView>
         </ScreenStateHandler>
@@ -579,6 +605,12 @@ const IncidentDetails: React.FC = () => {
       />
 
       <ResponderListSheet ref={listRef} responders={filteredList} />
+      <CommentSheet
+        ref={commentRef}
+        incidentId={incidentId}
+        userToken={userToken}
+        userId={user?.id}
+      />
     </SafeAreaView>
   );
 };

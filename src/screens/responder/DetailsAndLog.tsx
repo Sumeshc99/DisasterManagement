@@ -154,6 +154,7 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
               value="NAG-060825-CT-970"
               rightNode={<StatusBadge />}
             />
+
             <View
               style={{
                 marginTop: -8,
@@ -162,6 +163,7 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
                 borderColor: COLOR.textGrey,
               }}
             />
+
             <InfoRow label="Date & Time" value="08/04/2025, 05:10 PM" />
             <InfoRow label="Incident Type" value="Fire" />
             <InfoRow
@@ -502,7 +504,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
   },
-
   submitButton: {
     backgroundColor: COLOR.blue,
     paddingVertical: 12,
@@ -517,4 +518,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+
 });

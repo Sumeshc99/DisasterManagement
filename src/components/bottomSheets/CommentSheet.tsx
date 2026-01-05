@@ -13,14 +13,18 @@ import { COLOR } from '../../themes/Colors';
 import ImageContainer from '../ImageContainer';
 import CommentMediaPicker from '../inputs/CommentMediaPicker';
 import ApiManager from '../../apis/ApiManager';
+import { Alert } from 'react-native';
+import CommentImageContainer from '../UI/CommentImageContainer';
+import ScreenLoader from '../ScreenLoader';
 
 interface Props {
   incidentId: number;
   userToken: string;
+  userId: number;
 }
 
 const CommentSheet = forwardRef<RBSheet, Props>(
-  ({ incidentId, userToken }, ref) => {
+  ({ incidentId, userToken, userId }, ref) => {
     const { control, reset } = useForm();
     const [comment, setComment] = useState('');
     const [media, setMedia] = useState<any[]>([]);
@@ -28,6 +32,54 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
     const [incidentStatus, setIncidentStatus] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    console.log('Selected media:', media);
+
+    const [comments, setComments] = useState<any[]>([]);
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingCommentId, setEditingCommentId] = useState<number | null>(
+      null,
+    );
+
+    const [selectedComment, setSelectedComment] = useState<any>(null);
+    const [menuVisibleFor, setMenuVisibleFor] = useState<number | null>(null);
+
+    useEffect(() => {
+      if (!incidentId) return;
+
+      setLoading(true);
+
+      Promise.all([
+        ApiManager.incidentDetails(incidentId, userToken),
+        getComments(),
+      ])
+        .then(([incidentResp]) => {
+          if (incidentResp?.data?.status) {
+            setIncidentStatus(incidentResp.data.data.status);
+          }
+        })
+        .catch(err => console.log(err))
+        .finally(() => setLoading(false));
+    }, [incidentId]);
+
+    const getComments = async () => {
+      try {
+        const resp = await ApiManager.getComments(incidentId, userToken);
+
+        if (resp?.data?.status) {
+          setComments(resp.data.data);
+        }
+      } catch (error: any) {
+        const message = error?.response?.data?.message;
+
+        if (message === 'Comments not found') {
+          // ✅ No comments → valid case
+          setComments([]);
+        } else {
+          console.log('Get comments error:', error?.response);
+        }
+      }
+    };
 
     useEffect(() => {
       if (!incidentId) return;
@@ -52,77 +104,105 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
     const canComment = ALLOWED_COMMENT_STATUSES.includes(incidentStatus);
 
-    const comments = [
-      {
-        id: 1,
-        name: 'Vikas Kumar',
-        time: '1 hour ago',
-        text: 'My family member lives in the same area.',
-        images: [],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-      {
-        id: 2,
-        name: 'Rakesh Kadke',
-        time: '2 hours ago',
-        text: 'Fire on the third floor.',
-        images: [{ blob_url: 'https://via.placeholder.com/300' }],
-      },
-    ];
-
-    const postComment = () => {
+    const postComment = async () => {
       if (!comment.trim()) return;
 
-      console.log({
-        incidentId,
-        comment,
-        media,
+      const formData = new FormData();
+
+      formData.append('incident_id', String(incidentId));
+      formData.append('user_id', String(userId));
+      formData.append('comments', comment);
+      formData.append(
+        'comment_id',
+        isEditing && editingCommentId ? String(editingCommentId) : '',
+      );
+
+      // ✅ append images correctly
+      media.forEach((item, index) => {
+        formData.append('upload_media[]', {
+          uri: item.uri,
+          name: item.name || `image_${index}.jpg`,
+          type: item.type || 'image/jpeg',
+        });
       });
 
-      setComment('');
+      try {
+        setLoading(true);
+
+        const resp = await ApiManager.createComment(formData, userToken);
+
+        if (resp?.data?.status) {
+          setComment('');
+          setMedia([]);
+          setIsEditing(false);
+          setEditingCommentId(null);
+          reset();
+          getComments(); // refresh list
+        }
+      } catch (err) {
+        console.log('Create comment error', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const onEditPress = (item: any) => {
+      setIsEditing(true);
+      setEditingCommentId(item.comment_id);
+      setComment(item.comments); // prefill text
       setMedia([]);
-      reset();
+    };
+
+    useEffect(() => {
+      if (!selectedComment) return;
+
+      Alert.alert(
+        'Comment Options',
+        '',
+        [
+          {
+            text: 'Edit',
+            onPress: () => {
+              onEditPress(selectedComment);
+              setSelectedComment(null);
+            },
+          },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              deleteComment(selectedComment.comment_id);
+              setSelectedComment(null);
+            },
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => setSelectedComment(null),
+          },
+        ],
+        { cancelable: true },
+      );
+    }, [selectedComment]);
+
+    const deleteComment = async (commentId: number) => {
+      try {
+        setLoading(true);
+
+        const resp = await ApiManager.deleteCommentById(
+          commentId,
+          userId,
+          userToken,
+        );
+
+        if (resp?.data?.status) {
+          getComments(); // refresh list
+        }
+      } catch (error) {
+        console.log('Delete comment error', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (
@@ -145,8 +225,8 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
           {/* Header */}
           <View style={styles.header}>
-            <View style={{ width: 30 }} />
             <Text style={styles.title}>Comments</Text>
+
             <TouchableOpacity
               style={styles.closeBtn}
               onPress={() => ref?.current?.close()}
@@ -155,74 +235,157 @@ const CommentSheet = forwardRef<RBSheet, Props>(
             </TouchableOpacity>
           </View>
 
-          {/* Comment List */}
-          <FlatList
-            data={comments}
-            inverted
-            keyExtractor={item => item.id.toString()}
-            style={{ flex: 1 }}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View>
-                <View style={styles.commentCard}>
-                  <View style={styles.row}>
-                    <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.time}>{item.time}</Text>
-                  </View>
-
-                  <Text style={styles.commentText}>{item.text}</Text>
-
-                  {item.images?.length > 0 && (
-                    <ImageContainer data={item.images} />
-                  )}
-                </View>
-
-                {/* Divider */}
-                <View style={styles.divider} />
-              </View>
-            )}
-          />
-
-          {/* Input Area */}
-          {canComment && (
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder="Enter comment"
-                value={comment}
-                onChangeText={setComment}
-                style={styles.input}
-                multiline
-              />
-
-              {/* Hidden Media Picker */}
-              <CommentMediaPicker
-                ref={mediaRef}
-                media={media}
-                onChange={setMedia}
-              />
-
-              {/* Actions Row */}
-              <View style={styles.actionRow}>
-                <TouchableOpacity
-                  style={[styles.uploadBtn, { flex: 1, marginRight: 8 }]} // takes left space
-                  onPress={() => mediaRef.current?.pickImages()}
-                >
-                  <Text style={styles.uploadText}>Upload Image</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.sendBtn,
-                    { flex: 1, marginLeft: 8 },
-                    !comment && { opacity: 0.5 },
-                  ]} // takes right space
-                  disabled={!comment}
-                  onPress={postComment}
-                >
-                  <Text style={styles.sendText}>Comment</Text>
-                </TouchableOpacity>
-              </View>
+          {!loading && comments.length === 0 && (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ color: '#888' }}>No comments yet</Text>
             </View>
+          )}
+
+          {/* Comment List */}
+          {loading ? (
+            <ScreenLoader />
+          ) : (
+            <>
+              <FlatList
+                data={comments}
+                keyExtractor={(item, index) =>
+                  item?.comment_id
+                    ? item.comment_id.toString()
+                    : index.toString()
+                }
+                style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <View>
+                    <View style={styles.commentCard}>
+                      <View style={styles.commentHeader}>
+                        <View>
+                          <Text style={styles.name}>{item.user_name}</Text>
+                          <Text style={styles.time}>{item.date_reporting}</Text>
+                        </View>
+
+                        {item.user_id === userId && (
+                          <TouchableOpacity
+                            style={styles.dotsBtn}
+                            onPress={() =>
+                              setMenuVisibleFor(
+                                menuVisibleFor === item.comment_id
+                                  ? null
+                                  : item.comment_id,
+                              )
+                            }
+                          >
+                            <Text style={styles.dots}>⋮</Text>
+                          </TouchableOpacity>
+                        )}
+
+                        {menuVisibleFor === item.comment_id && (
+                          <View style={styles.menuContainer}>
+                            <TouchableOpacity
+                              style={styles.menuItem}
+                              onPress={() => {
+                                setMenuVisibleFor(null);
+                                onEditPress(item);
+                              }}
+                            >
+                              <Text style={styles.menuText}>Edit</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              style={styles.menuItem}
+                              onPress={() => {
+                                setMenuVisibleFor(null);
+                                deleteComment(item.comment_id);
+                              }}
+                            >
+                              <Text style={[styles.menuText]}>Delete</Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+
+                      <Text style={styles.commentText}>{item.comments}</Text>
+
+                      {item.media?.length > 0 && (
+                        <View style={{ marginTop: 10 }}>
+                          <CommentImageContainer
+                            data={item.media.map(m => ({
+                              blob_url: m.media_url,
+                            }))}
+                          />
+                        </View>
+                      )}
+                    </View>
+
+                    {/* Divider */}
+                    <View style={styles.divider} />
+                  </View>
+                )}
+              />
+
+              {/* Input Area */}
+              {canComment && (
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    placeholder="Enter comment"
+                    value={comment}
+                    onChangeText={setComment}
+                    style={styles.input}
+                    multiline
+                  />
+
+                  {/* Hidden Media Picker */}
+                  <CommentMediaPicker
+                    ref={mediaRef}
+                    media={media}
+                    onChange={setMedia}
+                  />
+
+                  {isEditing && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsEditing(false);
+                        setEditingCommentId(null);
+                        setComment('');
+                        setMedia([]);
+                      }}
+                    >
+                      <Text style={{ color: 'red', marginBottom: 10 }}>
+                        Cancel Editing
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* Actions Row */}
+                  <View style={styles.actionRow}>
+                    <TouchableOpacity
+                      style={[styles.uploadBtn, { flex: 1, marginRight: 8 }]} // takes left space
+                      onPress={() => mediaRef.current?.pickImages()}
+                    >
+                      <Text style={styles.uploadText}>Upload Image</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.sendBtn,
+                        { flex: 1, marginLeft: 8 },
+                        (!comment || loading) && { opacity: 0.5 },
+                      ]}
+                      disabled={!comment || loading}
+                      onPress={postComment}
+                    >
+                      <Text style={styles.sendText}>
+                        {loading
+                          ? 'Posting...'
+                          : isEditing
+                          ? 'Update'
+                          : 'Comment'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </>
           )}
         </View>
       </RBSheet>
@@ -244,7 +407,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    paddingBottom: 16,
+    position: 'relative',
   },
   title: {
     fontSize: 18,
@@ -252,9 +417,11 @@ const styles = StyleSheet.create({
     color: COLOR.blue,
   },
   closeBtn: {
-    width: 25,
-    height: 25,
-    borderRadius: 16,
+    position: 'absolute',
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: COLOR.blue,
     justifyContent: 'center',
     alignItems: 'center',
@@ -277,8 +444,9 @@ const styles = StyleSheet.create({
   },
   commentText: {
     fontSize: 14,
-    color: '#333',
-    marginTop: 4,
+    color: COLOR.textGrey,
+    marginTop: 8,
+    lineHeight: 20,
   },
   divider: {
     height: 1,
@@ -296,7 +464,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     textAlignVertical: 'top',
-    marginBottom: 10,
   },
   uploadedImagesContainer: {
     flexDirection: 'row',
@@ -316,6 +483,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 20,
+    alignItems: 'center',
   },
   uploadText: {
     color: COLOR.blue,
@@ -332,5 +500,47 @@ const styles = StyleSheet.create({
   sendText: {
     color: '#fff',
     fontWeight: '700',
+  },
+  dots: {
+    fontSize: 18,
+    color: '#333',
+  },
+  commentCard: {
+    paddingVertical: 12,
+    position: 'relative',
+  },
+
+  commentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  dotsBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 28,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 6, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    zIndex: 1000,
+    width: 120,
+  },
+
+  menuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+
+  menuText: {
+    fontSize: 14,
+    color: '#333',
   },
 });

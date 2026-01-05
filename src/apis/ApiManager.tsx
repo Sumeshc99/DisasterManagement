@@ -94,6 +94,12 @@ const requestPath = {
     'responder/getRespondersByTehsilAndResource',
   getTehsilByCity: 'mobileapis/getTehsilByCity',
   helplineNumber: 'helplineNumber/public/list',
+  getTimeline: 'mobileapis/getTimeline',
+  getComments: 'mobileapis/getComments',
+  createComment: 'mobileapis/createComment',
+  deleteCommentById: 'mobileapis/deleteCommentById',
+  getLogReport: 'mobileapis/getLogReport',
+  createIncidentLogReport: 'mobileapis/createIncidentLogReport',
 };
 
 const ApiManager = {
@@ -143,6 +149,21 @@ const ApiManager = {
       token,
     ),
 
+  getTimeline: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getTimeline}/${incidentId}`, token),
+
+  getComments: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getComments}/${incidentId}`, token),
+
+  deleteCommentById: (commentId: number, userId: number, token: string) =>
+    requests.get(
+      `${requestPath.deleteCommentById}/${commentId}/${userId}`,
+      token,
+    ),
+
+  getLogReport: (incidentId: number, token: string) =>
+    requests.get(`${requestPath.getLogReport}/${incidentId}`, token),
+
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
     requests.post(requestPath.verifyPin, params, token),
@@ -174,6 +195,12 @@ const ApiManager = {
       `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
       token,
     ),
+
+  createComment: (params: any, token: string) =>
+    requests.post(requestPath.createComment, params, token),
+
+  createIncidentLogReport: (params: any, token: string) =>
+    requests.post(requestPath.createIncidentLogReport, params, token),
 };
 
 export default ApiManager;
