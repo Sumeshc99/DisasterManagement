@@ -91,7 +91,7 @@ const RevIncidentDetails: React.FC = () => {
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
-  const { userToken } = useSelector((state: RootState) => state.auth);
+  const { userToken, user } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
   const data = (route as { params?: { data?: any } })?.params?.data;
@@ -224,6 +224,16 @@ const RevIncidentDetails: React.FC = () => {
     cancelRef.current.open();
     cancelRef.current.close();
   };
+
+  const LOG_REPORT_ALLOWED_STATUS = [
+    'Pending Response by Responder',
+    'Pending Log Report Update',
+    'Pending closure by Admin',
+  ];
+
+  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.includes(
+    incidentData?.status,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -375,17 +385,35 @@ const RevIncidentDetails: React.FC = () => {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
-                    gap: 20,
+                    gap: 16,
+                    marginTop: 24,
                   }}
                 >
+                  {/* Download PDF */}
                   <TouchableOpacity
-                    style={[styles.submitButton1]}
+                    style={styles.submitButton1}
                     onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
                   >
                     <Text style={styles.submitButtonText1}>
                       {TEXT.download_pdf()}
                     </Text>
                   </TouchableOpacity>
+
+                  {/* Log Report – Reviewer only + status based */}
+                  {canShowLogReport && (
+                    <TouchableOpacity
+                      style={styles.submitButton1}
+                      onPress={() =>
+                        navigation.navigate('HumanImpactScreen', {
+                          incidentId: incidentId,
+                        })
+                      }
+                    >
+                      <Text style={styles.submitButtonText1}>
+                        {TEXT.log_report?.() || 'Log Report'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -525,6 +553,20 @@ const styles = StyleSheet.create({
   },
   submitButtonText1: {
     color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  logButton: {
+    backgroundColor: COLOR.orange, // or COLOR.blue
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    alignItems: 'center',
+    width: 180,
+  },
+
+  logButtonText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
   },

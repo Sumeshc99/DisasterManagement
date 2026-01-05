@@ -298,9 +298,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                                 deleteComment(item.comment_id);
                               }}
                             >
-                              <Text style={[styles.menuText, { color: 'red' }]}>
-                                Delete
-                              </Text>
+                              <Text style={[styles.menuText]}>Delete</Text>
                             </TouchableOpacity>
                           </View>
                         )}

@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
     paddingVertical: WIDTH(4),
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
 
     // Shadow (iOS)
     shadowColor: '#000',
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    fontSize: WIDTH(4),
+    fontSize: WIDTH(3.5),
     fontWeight: '600',
   },
 });

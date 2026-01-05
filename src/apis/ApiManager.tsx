@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-// export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
-// export const IMG_URL = 'https://disaster.pixelplanet.in/';
+export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
+export const IMG_URL = 'https://disaster.pixelplanet.in/';
 
 // export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
 // export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
-export const BASE_URL = 'https://api.ddmanagpur.in/api/';
-export const IMG_URL = 'https://api.ddmanagpur.in/';
+// export const BASE_URL = 'https://api.ddmanagpur.in/api/';
+// export const IMG_URL = 'https://api.ddmanagpur.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
@@ -98,6 +98,8 @@ const requestPath = {
   getComments: 'mobileapis/getComments',
   createComment: 'mobileapis/createComment',
   deleteCommentById: 'mobileapis/deleteCommentById',
+  getLogReport: 'mobileapis/getLogReport',
+  createIncidentLogReport: 'mobileapis/createIncidentLogReport',
 };
 
 const ApiManager = {
@@ -159,6 +161,9 @@ const ApiManager = {
       token,
     ),
 
+  getLogReport: (incidentId: number, token: string) =>
+    requests.get(`${requestPath.getLogReport}/${incidentId}`, token),
+
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
     requests.post(requestPath.verifyPin, params, token),
@@ -193,6 +198,9 @@ const ApiManager = {
 
   createComment: (params: any, token: string) =>
     requests.post(requestPath.createComment, params, token),
+
+  createIncidentLogReport: (params: any, token: string) =>
+    requests.post(requestPath.createIncidentLogReport, params, token),
 };
 
 export default ApiManager;
