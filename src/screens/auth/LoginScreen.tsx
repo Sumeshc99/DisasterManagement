@@ -100,6 +100,7 @@ const LoginScreen = () => {
     const body = {
       mobile: phone,
       tehsil: tehsil,
+      fcmtoken: fcmToken,
     };
 
     showLoader();
