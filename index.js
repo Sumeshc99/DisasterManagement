@@ -9,13 +9,13 @@ import messaging from '@react-native-firebase/messaging';
 import { backgroundMessageHandler } from './src/config/backgroundHandler';
 import notifee, { EventType } from '@notifee/react-native';
 
-messaging().setBackgroundMessageHandler(backgroundMessageHandler);
+// messaging().setBackgroundMessageHandler(backgroundMessageHandler);
 
-/* 🔥 NOTIFEE BG EVENTS (PRESS, DISMISS) */
-notifee.onBackgroundEvent(async ({ type, detail }) => {
-  if (type === EventType.PRESS) {
-    console.log('🔔 BG notification pressed', detail.notification?.data);
-  }
-});
+// /* 🔥 NOTIFEE BG EVENTS (PRESS, DISMISS) */
+// notifee.onBackgroundEvent(async ({ type, detail }) => {
+//   if (type === EventType.PRESS) {
+//     console.log('🔔 BG notification pressed', detail.notification?.data);
+//   }
+// });
 
 AppRegistry.registerComponent(appName, () => App);

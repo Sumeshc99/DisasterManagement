@@ -400,7 +400,7 @@ const RevIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
 
                   {/* Log Report – Reviewer only + status based */}
-                  {canShowLogReport && (
+                  {/* {canShowLogReport && (
                     <TouchableOpacity
                       style={styles.submitButton1}
                       onPress={() =>
@@ -413,7 +413,7 @@ const RevIncidentDetails: React.FC = () => {
                         {TEXT.log_report?.() || 'Log Report'}
                       </Text>
                     </TouchableOpacity>
-                  )}
+                  )} */}
                 </View>
               )}
             </View>

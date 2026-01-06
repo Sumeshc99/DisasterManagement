@@ -258,7 +258,7 @@ const NotificationIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 )}
 
-                <Text
+                {/* <Text
                   style={{
                     fontSize: 14,
                     color: '#6E6E6E',
@@ -276,7 +276,7 @@ const NotificationIncidentDetails: React.FC = () => {
                   text="Comment"
                   style={{ width: WIDTH(50), alignSelf: 'center' }}
                   onPress={() => commentRef.current?.open()}
-                />
+                /> */}
               </View>
             )}
           </ScrollView>
