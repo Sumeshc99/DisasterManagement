@@ -7,6 +7,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { clearUser } from '../../store/slices/authSlice';
 import BlinkingIcon from '../../components/UI/BlinkingIcon';
+import { FONT } from '../../themes/AppConst';
 
 const Community = () => {
   const navigation = useNavigation();
@@ -34,8 +35,11 @@ const Community = () => {
           justifyContent: 'center',
         }}
       >
-        <BlinkingIcon size={120} />
+        {/* <BlinkingIcon size={120} /> */}
         {/* <Button title="Log out" onPress={() => logOut()} /> */}
+        <Text style={{ fontSize: 20, fontFamily: FONT.R_SBD_600 }}>
+          Coming Soon...
+        </Text>
       </View>
     </SafeAreaView>
   );
