@@ -550,7 +550,7 @@ const IncidentDetails: React.FC = () => {
                 </View>
               )}
 
-              {/* <Text
+              <Text
                 style={{
                   fontSize: 14,
                   color: '#6E6E6E',
@@ -568,7 +568,7 @@ const IncidentDetails: React.FC = () => {
                 text="Comment"
                 style={{ width: WIDTH(50), alignSelf: 'center', marginTop: 12 }}
                 onPress={() => commentRef.current?.open()}
-              /> */}
+              />
             </View>
           </ScrollView>
         </ScreenStateHandler>

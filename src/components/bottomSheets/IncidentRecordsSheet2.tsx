@@ -163,17 +163,18 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   Edit
                 </Text>
               </View>
-            ) : !isDraft ? /* Created Incident → Timeline */
-            // <TouchableOpacity
-            //   style={[styles.timelineBadge]}
-            //   onPress={() => {
-            //     setSelectedIncidentId(item.id);
-            //     timelineRef.current?.open();
-            //   }}
-            // >
-            //   <Text style={styles.timelineText}>Timeline</Text>
-            // </TouchableOpacity>
-            null : null}
+            ) : !isDraft ? (
+              /* Created Incident → Timeline */
+              <TouchableOpacity
+                style={[styles.timelineBadge]}
+                onPress={() => {
+                  setSelectedIncidentId(item.id);
+                  timelineRef.current?.open();
+                }}
+              >
+                <Text style={styles.timelineText}>Timeline</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
 
           <View style={styles.divider} />

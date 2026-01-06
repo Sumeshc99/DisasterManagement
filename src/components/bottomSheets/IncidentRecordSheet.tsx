@@ -178,16 +178,17 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   Edit
                 </Text>
               </View>
-            ) : // <TouchableOpacity
-            //   style={[styles.timelineBadge]}
-            //   onPress={() => {
-            //     setSelectedIncidentId(item.id);
-            //     timelineRef.current?.open();
-            //   }}
-            // >
-            //   <Text style={[styles.timelineText]}>Timeline</Text>
-            // </TouchableOpacity>
-            null}
+            ) : (
+              <TouchableOpacity
+                style={[styles.timelineBadge]}
+                onPress={() => {
+                  setSelectedIncidentId(item.id);
+                  timelineRef.current?.open();
+                }}
+              >
+                <Text style={[styles.timelineText]}>Timeline</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View style={styles.divider} />

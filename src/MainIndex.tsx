@@ -23,7 +23,7 @@ const MainIndex = () => {
       <I18nProvider>
         <GlobalLoaderProvider>
           <SnackbarProvider>
-            {/* <PushNotification /> */}
+            <PushNotification />
             <AppNavigation />
             <GlobalLoader />
           </SnackbarProvider>
