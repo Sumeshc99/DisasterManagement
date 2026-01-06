@@ -84,7 +84,7 @@ export default function OTPVerification() {
               email: resp?.data?.data?.email,
               role: resp?.data?.data?.role,
               tehsil: userData?.data?.tehsil,
-              is_registered: resp?.data?.data?.is_registered,
+              is_registered: userData?.data?.is_registered,
             }),
           );
           dispatch(userToken(userData?.token));

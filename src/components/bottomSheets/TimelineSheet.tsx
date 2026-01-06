@@ -99,7 +99,7 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
 
           {/* Timeline */}
           <ScrollView showsVerticalScrollIndicator>
-            {timelineData.map((item, index) => (
+            {timelineData.map((item: any, index) => (
               <View key={index} style={styles.timelineItem}>
                 {/* Left Column */}
                 <View style={styles.dotContainer}>
@@ -122,7 +122,7 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
 
                   <Text style={styles.location}>{item.location}</Text>
 
-                  {item.details?.map((d, i) => (
+                  {item.details?.map((d: any, i: number) => (
                     <View key={i} style={{ marginTop: 6 }}>
                       <Text style={styles.detailTitle}>{d.title}</Text>
                       <Text style={styles.detailValue}>{d.name}</Text>
