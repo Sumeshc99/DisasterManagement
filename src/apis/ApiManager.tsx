@@ -94,7 +94,7 @@ const requestPath = {
     'responder/getRespondersByTehsilAndResource',
   getTehsilByCity: 'mobileapis/getTehsilByCity',
   helplineNumber: 'helplineNumber/public/list',
-  getTimeline: 'mobileapis/getTimeline',
+  getTimelineNew: 'mobileapis/getTimelineNew',
   getComments: 'mobileapis/getComments',
   createComment: 'mobileapis/createComment',
   deleteCommentById: 'mobileapis/deleteCommentById',
@@ -149,8 +149,8 @@ const ApiManager = {
       token,
     ),
 
-  getTimeline: (incidentId: any, token: string) =>
-    requests.get(`${requestPath.getTimeline}/${incidentId}`, token),
+  getTimelineNew: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getTimelineNew}/${incidentId}`, token),
 
   getComments: (incidentId: any, token: string) =>
     requests.get(`${requestPath.getComments}/${incidentId}`, token),

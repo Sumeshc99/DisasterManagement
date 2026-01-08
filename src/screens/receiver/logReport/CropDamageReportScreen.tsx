@@ -20,6 +20,7 @@ import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
 import { FONT } from '../../../themes/AppConst';
 import RevResTable from '../../../components/UI/RevResTable';
+import { TEXT } from '../../../i18n/locales/Text';
 /* ---------------- TYPES ---------------- */
 interface CropDamageItem {
   name_of_village: string;
@@ -149,31 +150,29 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <BackArrow />
         </TouchableOpacity>
-        <Text style={styles.title}>Log Report</Text>
+        <Text style={styles.title}>{TEXT.log_report()}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>Crop Damage Report</Text>
+          <Text style={styles.sectionTitle}>{TEXT.crop_damage_report()}</Text>
 
           {cropList.map((item, index) => (
             <View key={index} style={{ marginBottom: 16 }}>
-              <Text style={styles.label}>Name of Village</Text>
+              <Text style={styles.label}>{TEXT.name_of_village()}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Name of Village"
+                placeholder={TEXT.name_of_village()}
                 value={item.name_of_village}
                 onChangeText={t => updateField(index, 'name_of_village', t)}
               />
 
-              <Text style={styles.label}>
-                Number of Affected Farmers (Approx.)
-              </Text>
+              <Text style={styles.label}>{TEXT.no_of_affected_farmers()}</Text>
 
               <TextInput
                 style={styles.input}
-                placeholder="Number of Affected Farmers (Approx.)"
+                placeholder={TEXT.no_of_affected_farmers()}
                 keyboardType="number-pad"
                 value={item.no_of_affected_farmers}
                 onChangeText={t =>
@@ -182,13 +181,13 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
               />
 
               <Text style={styles.label}>
-                Area of Agricultural Damage (Hectare)
+                {TEXT.area_of_agricultural_damage()}
               </Text>
 
               <View style={styles.row}>
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
-                  placeholder="Area of Agricultural Damage (Hectare)"
+                  placeholder={TEXT.area_of_agricultural_damage()}
                   keyboardType="number-pad"
                   value={item.area_of_damage_hecter}
                   onChangeText={t =>
@@ -230,12 +229,12 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
           {/* Save + Submit */}
           <View style={styles.topButtonRow}>
             <ReuseButton
-              text="Save"
+              text={TEXT.save()}
               style={styles.half}
               onPress={() => saveReport('pending')}
             />
             <ReuseButton
-              text="Submit"
+              text={TEXT.submit()}
               style={styles.half}
               onPress={() => saveReport('submitted')}
             />
@@ -244,7 +243,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
           {/* Close button */}
           <View style={styles.closeBtnWrapper}>
             <ReuseButton
-              text="Close"
+              text={TEXT.close()}
               style={styles.closeBtn}
               onPress={() => navigation.goBack()}
             />

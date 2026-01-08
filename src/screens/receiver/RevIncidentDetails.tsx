@@ -229,10 +229,26 @@ const RevIncidentDetails: React.FC = () => {
     'Pending Response by Responder',
     'Pending Log Report Update',
     'Pending closure by Admin',
+    'Pending Closure By Responder',
+    'Pending Log Report Review',
+    'Pending Log Report Update',
   ];
 
   const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.includes(
     incidentData?.status,
+  );
+
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+    'pending log report review',
+    'pending log report update',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
   );
 
   return (
@@ -381,38 +397,67 @@ const RevIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               ) : (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 16,
-                    marginTop: 24,
-                  }}
-                >
-                  {/* Download PDF */}
-                  <TouchableOpacity
-                    style={styles.submitButton1}
-                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+                <View style={{ marginTop: 24 }}>
+                  {/* ROW: Download PDF + Log Report */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      gap: 16,
+                      flexWrap: 'wrap', // ✅ prevents overflow
+                    }}
                   >
-                    <Text style={styles.submitButtonText1}>
-                      {TEXT.download_pdf()}
-                    </Text>
-                  </TouchableOpacity>
-
-                  {/* Log Report – Reviewer only + status based */}
-                  {canShowLogReport && (
                     <TouchableOpacity
                       style={styles.submitButton1}
                       onPress={() =>
-                        navigation.navigate('HumanImpactScreen', {
-                          incidentId: incidentId,
-                        })
+                        downloadPDF(incidentData?.incident_blob_pdf)
                       }
                     >
                       <Text style={styles.submitButtonText1}>
-                        {TEXT.log_report?.() || 'Log Report'}
+                        {TEXT.download_pdf()}
                       </Text>
                     </TouchableOpacity>
+
+                    {canShowLogReport && (
+                      <TouchableOpacity
+                        style={styles.submitButton1}
+                        onPress={() =>
+                          navigation.navigate('HumanImpactScreen', {
+                            incidentId: incidentId,
+                          })
+                        }
+                      >
+                        <Text style={styles.submitButtonText1}>
+                          {TEXT.log_report()}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* COLUMN: Comment alert + button */}
+                  {isCommentVisible && (
+                    <View style={{ alignItems: 'center', marginTop: 18 }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: '#6E6E6E',
+                          textAlign: 'center',
+                          lineHeight: 18,
+                          marginHorizontal: 20, // ✅ prevents text cutoff
+                        }}
+                      >
+                        {TEXT.comment_alert()}
+                      </Text>
+
+                      <ReuseButton
+                        text="Comment"
+                        style={{
+                          width: WIDTH(50),
+                          marginTop: 12,
+                        }}
+                        onPress={() => commentRef.current?.open()}
+                      />
+                    </View>
                   )}
                 </View>
               )}
@@ -453,6 +498,13 @@ const RevIncidentDetails: React.FC = () => {
       <SuccessSheet
         ref={successRef}
         message={TEXT.responder_assigned_success()}
+      />
+
+      <CommentSheet
+        ref={commentRef}
+        incidentId={incidentId}
+        userToken={userToken}
+        userId={user?.id}
       />
     </SafeAreaView>
   );

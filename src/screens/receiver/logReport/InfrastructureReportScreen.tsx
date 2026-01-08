@@ -18,6 +18,7 @@ import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
 import { FONT } from '../../../themes/AppConst';
+import { TEXT } from '../../../i18n/locales/Text';
 
 interface InfrastructureItem {
   name_of_village: string;
@@ -147,49 +148,49 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <BackArrow />
         </TouchableOpacity>
-        <Text style={styles.title}>Log Report</Text>
+        <Text style={styles.title}>{TEXT.log_report()}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.sectionTitle}>
-            Infrastructure / Property Damage Report
+            {TEXT.property_damage_report()}
           </Text>
 
           {infraList.map((item, index) => (
             <View key={index} style={{ marginBottom: 16 }}>
-              <Text style={styles.label}>Name of Village</Text>
+              <Text style={styles.label}>{TEXT.name_of_village()}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Name of Village"
+                placeholder={TEXT.name_of_village()}
                 value={item.name_of_village}
                 onChangeText={t => updateField(index, 'name_of_village', t)}
               />
 
-              <Text style={styles.label}>Type of Property</Text>
+              <Text style={styles.label}>{TEXT.type_of_property()}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Type of Property"
+                placeholder={TEXT.type_of_property()}
                 value={item.type_of_property}
                 onChangeText={t => updateField(index, 'type_of_property', t)}
               />
-              <Text style={styles.label}>Count of Partial Damage</Text>
+              <Text style={styles.label}>{TEXT.count_of_partial_damage()}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Count of Partial Damage"
+                placeholder={TEXT.count_of_partial_damage()}
                 keyboardType="number-pad"
                 value={item.count_of_partial_damaged}
                 onChangeText={t =>
                   updateField(index, 'count_of_partial_damaged', t)
                 }
               />
-              <Text style={styles.label}>Count of Fully Damage</Text>
+              <Text style={styles.label}>{TEXT.count_of_fully_damage()}</Text>
 
               <View style={styles.inlineRow}>
                 <TextInput
                   style={[styles.input, styles.flexInput]}
-                  placeholder="Count of Fully Damage"
+                  placeholder={TEXT.count_of_fully_damage()}
                   keyboardType="number-pad"
                   value={item.count_of_fully_damaged}
                   onChangeText={t =>
@@ -221,13 +222,21 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
 
         <View style={styles.footer}>
           <View style={styles.topButtonRow}>
-            <ReuseButton text="Save" onPress={handleSave} style={styles.half} />
-            <ReuseButton text="Next" onPress={handleNext} style={styles.half} />
+            <ReuseButton
+              text={TEXT.save()}
+              onPress={handleSave}
+              style={styles.half}
+            />
+            <ReuseButton
+              text={TEXT.next()}
+              onPress={handleNext}
+              style={styles.half}
+            />
           </View>
 
           <View style={styles.closeWrapper}>
             <ReuseButton
-              text="Close"
+              text={TEXT.close()}
               bgColor="#E5E7EB"
               textColor={COLOR.white}
               onPress={() => navigation.goBack()}

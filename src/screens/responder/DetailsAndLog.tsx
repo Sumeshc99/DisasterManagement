@@ -206,7 +206,7 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
 
           <View style={styles.rowTwo}>
             <InputBox
-              label="Number of injured"
+              label={TEXT.no_of_injured()}
               value={logs.injuredCount}
               onChangeText={(v: string) => updateLog('injuredCount', v)}
             />
@@ -220,7 +220,7 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
 
           <View style={styles.rowTwo}>
             <InputBox
-              label="Number of deceased"
+              label={TEXT.no_of_deceased()}
               value={logs.deceasedCount}
               onChangeText={(v: string) => updateLog('deceasedCount', v)}
             />
@@ -232,7 +232,7 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
             <AddButton />
           </View>
 
-          <Text style={styles.logTitle}>Impact on Animal Population</Text>
+          <Text style={styles.logTitle}>{TEXT.impact_animal_population()}</Text>
 
           <View style={styles.grid}>
             {['cow', 'cat', 'buffalo', 'horse', 'goat', 'dog'].map(key => (
@@ -283,11 +283,11 @@ const DetailsAndLog: React.FC<Props> = ({ data }) => {
             }}
           >
             <TouchableOpacity style={[styles.submitButton]} onPress={() => ''}>
-              <Text style={styles.submitButtonText}>Save</Text>
+              <Text style={styles.submitButtonText}>{TEXT.save()}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.submitButton} onPress={() => ''}>
-              <Text style={styles.submitButtonText}>Submit</Text>
+              <Text style={styles.submitButtonText}>{TEXT.submit()}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -518,5 +518,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-
 });
