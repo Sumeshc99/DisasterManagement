@@ -1,133 +1,71 @@
+import { Alert, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
-import { getApp } from '@react-native-firebase/app';
-import {
-  getMessaging,
-  requestPermission,
-  onMessage,
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+
+import messaging, {
   AuthorizationStatus,
 } from '@react-native-firebase/messaging';
-import notifee, {
-  AndroidImportance,
-  EventType,
-  AuthorizationStatus as NotifeeAuthStatus,
-} from '@notifee/react-native';
 
 const PushNotification = () => {
+  notifee.onForegroundEvent(({ type, detail }) => {
+    if (type === EventType.PRESS) {
+    }
+  });
+
   useEffect(() => {
-    const init = async () => {
-      const app = getApp();
-      const messaging = getMessaging(app);
-
-      /* ---------- iOS Permission ---------- */
-      if (Platform.OS === 'ios') {
-        const status = await requestPermission(messaging, {
-          alert: true,
-          badge: true,
-          sound: true,
-        });
-
-        if (
-          status === AuthorizationStatus.AUTHORIZED ||
-          status === AuthorizationStatus.PROVISIONAL
-        ) {
-          console.log('✅ iOS FCM permission granted');
-        }
-
-        await notifee.requestPermission();
-      }
-
-      /* ---------- Android Permission ---------- */
-      if (Platform.OS === 'android') {
-        if (Platform.Version >= 33) {
-          await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-          );
-        }
-        await notifee.requestPermission();
-      }
-
-      /* ---------- ANDROID CHANNELS (ONLY ONCE) ---------- */
-      if (Platform.OS === 'android') {
-        await notifee.createChannel({
-          id: 'alert_channel',
-          name: 'Alert Channel',
-          importance: AndroidImportance.HIGH,
-          sound: 'sound', // res/raw/sound.mp3
-          vibration: true,
-        });
-
-        await notifee.createChannel({
-          id: 'default_channel',
-          name: 'Default Channel',
-          importance: AndroidImportance.HIGH,
-          sound: 'default',
-          vibration: true,
-        });
-      }
-    };
-
-    init();
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      onDisplayNotification(remoteMessage);
+    });
+    return unsubscribe;
   }, []);
 
-  /* ---------- FOREGROUND NOTIFICATION ---------- */
-  const showForegroundNotification = async (remoteMessage: any) => {
-    const title =
-      remoteMessage.data?.title ||
-      remoteMessage.notification?.title ||
-      'New Notification';
+  useEffect(() => {
+    requestUserPermission();
+  }, []);
 
-    const body =
-      remoteMessage.data?.body ||
-      remoteMessage.notification?.body ||
-      'You have received a message';
+  const requestUserPermission = async () => {
+    const settings = await notifee.requestPermission();
 
-    const isAlert = title === 'Incident Alert';
-
-    await notifee.displayNotification({
-      title,
-      body,
-      android:
-        Platform.OS === 'android'
-          ? {
-              channelId: isAlert ? 'alert_channel' : 'default_channel',
-              smallIcon: 'ic_launcher',
-              pressAction: { id: 'default' },
-            }
-          : undefined,
-      ios:
-        Platform.OS === 'ios'
-          ? {
-              sound: isAlert ? 'sound.mp3' : 'default',
-              foregroundPresentationOptions: {
-                alert: true,
-                badge: true,
-                sound: true,
-              },
-            }
-          : undefined,
-    });
+    if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+      // await notifee.createChannel({
+      //   id: 'default',
+      //   name: 'Default Channel',
+      //   importance: AndroidImportance.HIGH,
+      // });
+    } else {
+      console.log('User has notification permissions disabled');
+      Alert.alert(
+        'Permissions required',
+        'This app requires notification permissions to function properly. Please enable them in settings.',
+      );
+    }
   };
 
-  useEffect(() => {
-    const app = getApp();
-    const messaging = getMessaging(app);
+  const onDisplayNotification = async (data: any) => {
+    console.log('notification', data);
 
-    const unsubMsg = onMessage(messaging, showForegroundNotification);
-
-    const unsubNotifee = notifee.onForegroundEvent(({ type }) => {
-      if (type === EventType.PRESS) {
-        console.log('🔔 Notification pressed');
-      }
+    const channelId = await notifee.createChannel({
+      id: 'custom_sound_channel_v5',
+      name: 'Alert Sound Channel',
+      importance: AndroidImportance.HIGH,
+      sound: 'alert',
     });
 
-    return () => {
-      unsubMsg();
-      unsubNotifee();
-    };
-  }, []);
-
-  return null;
+    await notifee.displayNotification({
+      title: data?.notification?.title,
+      body: data?.notification?.body,
+      android: {
+        channelId,
+        ongoing: data?.data.ongoing == 'true' ? true : false,
+        pressAction: {
+          id: 'default',
+        },
+        smallIcon: '@mipmap/ic_launcher',
+      },
+    });
+  };
 };
 
 export default PushNotification;
+
+const styles = StyleSheet.create({});
