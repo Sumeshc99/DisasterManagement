@@ -186,7 +186,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   timelineRef.current?.open();
                 }}
               >
-                <Text style={[styles.timelineText]}>Timeline</Text>
+                <Text style={[styles.timelineText]}>{TEXT.timeline()}</Text>
               </TouchableOpacity>
             )}
           </View>

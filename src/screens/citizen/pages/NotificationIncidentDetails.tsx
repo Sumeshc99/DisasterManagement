@@ -134,6 +134,17 @@ const NotificationIncidentDetails: React.FC = () => {
       .catch(err => console.log(err));
   };
 
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -258,25 +269,31 @@ const NotificationIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 )}
 
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: '#6E6E6E',
-                    textAlign: 'center',
-                    marginTop: 18,
-                    lineHeight: 18,
-                  }}
-                >
-                  If you have more information to share on this incident, please
-                  feel free to post a comment by clicking on "Comment" button
-                  below.
-                </Text>
+                {isCommentVisible && (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: '#6E6E6E',
+                        textAlign: 'center',
+                        marginTop: 18,
+                        lineHeight: 18,
+                      }}
+                    >
+                      {TEXT.comment_alert()}
+                    </Text>
 
-                <ReuseButton
-                  text="Comment"
-                  style={{ width: WIDTH(50), alignSelf: 'center' }}
-                  onPress={() => commentRef.current?.open()}
-                />
+                    <ReuseButton
+                      text="Comment"
+                      style={{
+                        width: WIDTH(50),
+                        alignSelf: 'center',
+                        marginTop: 12,
+                      }}
+                      onPress={() => commentRef.current?.open()}
+                    />
+                  </>
+                )}
               </View>
             )}
           </ScrollView>

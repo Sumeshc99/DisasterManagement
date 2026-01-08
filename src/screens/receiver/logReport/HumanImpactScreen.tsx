@@ -18,6 +18,8 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
 import { FONT, WIDTH } from '../../../themes/AppConst';
+import { TEXT } from '../../../i18n/locales/Text';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
 
 interface Person {
   name: string;
@@ -45,6 +47,8 @@ const HumanImpactScreen = ({ navigation }: any) => {
   const [missingCount, setMissingCount] = useState('0');
   const [missingList, setMissingList] = useState<Person[]>([]);
 
+  const snackbar = useSnackbar();
+
   type HumanImpactRouteParams = {
     HumanImpactScreen: {
       incidentId: number;
@@ -54,7 +58,6 @@ const HumanImpactScreen = ({ navigation }: any) => {
     useRoute<RouteProp<HumanImpactRouteParams, 'HumanImpactScreen'>>();
 
   const incidentId = route.params?.incidentId;
-  console.log(incidentId, 'on Humannnnnn');
 
   const userId = user?.id;
   const token = userToken;
@@ -230,7 +233,8 @@ const HumanImpactScreen = ({ navigation }: any) => {
       const res = await ApiManager.createIncidentLogReport(payload, token);
 
       if (res?.data?.status) {
-        console.log('Saved successfully');
+        console.log(res?.data?.status, 'Saved successfully');
+        snackbar('success');
 
         // save returned id for future updates
         setLogReportId(res.data.data.id);
@@ -276,7 +280,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               <View style={styles.row}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Name"
+                  placeholder={TEXT.name()}
                   value={item.name}
                   onChangeText={text =>
                     updatePerson(list, setList, index, 'name', text)
@@ -284,7 +288,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="Address"
+                  placeholder={TEXT.address()}
                   value={item.address}
                   onChangeText={text =>
                     updatePerson(list, setList, index, 'address', text)
@@ -295,7 +299,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               <View style={styles.row}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Gender"
+                  placeholder={TEXT.gender()}
                   value={item.gender}
                   onChangeText={text =>
                     updatePerson(list, setList, index, 'gender', text)
@@ -303,7 +307,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 />
                 <TextInput
                   style={[styles.input, { width: 60 }]}
-                  placeholder="Age"
+                  placeholder={TEXT.age()}
                   keyboardType="numeric"
                   value={item.age}
                   onChangeText={text =>
@@ -353,7 +357,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
           <BackArrow />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Log Report</Text>
+        <Text style={styles.title}>{TEXT.log_report()}</Text>
 
         <View style={styles.backButton} />
       </View>
@@ -365,11 +369,13 @@ const HumanImpactScreen = ({ navigation }: any) => {
               marginBottom: 10,
             }}
           >
-            <Text style={styles.sectionTitle}>Impact on Human Population</Text>
+            <Text style={styles.sectionTitle}>
+              {TEXT.impact_human_population()}
+            </Text>
           </View>
 
           {renderSection(
-            'Number of Deceased',
+            TEXT.no_of_deceased(),
             deceasedList,
             setDeceasedList,
             deceasedCount,
@@ -377,7 +383,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
           )}
 
           {renderSection(
-            'Number of Injured',
+            TEXT.no_of_injured(),
             injuredList,
             setInjuredList,
             injuredCount,
@@ -385,7 +391,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
           )}
 
           {renderSection(
-            'Number of Missing',
+            TEXT.no_of_missing(),
             missingList,
             setMissingList,
             missingCount,
@@ -399,13 +405,13 @@ const HumanImpactScreen = ({ navigation }: any) => {
           {/* Save + Next row */}
           <View style={styles.topButtonRow}>
             <ReuseButton
-              text="Save"
+              text={TEXT.save()}
               onPress={handleSave}
               style={{ width: WIDTH(40), alignSelf: 'center' }}
             />
 
             <ReuseButton
-              text="Next"
+              text={TEXT.next()}
               onPress={handleNext}
               style={{ width: WIDTH(40), alignSelf: 'center' }}
             />
@@ -413,7 +419,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
 
           {/* Close button center */}
           <ReuseButton
-            text="Close"
+            text={TEXT.close()}
             bgColor="#E5E7EB"
             textColor={COLOR.white}
             onPress={handleClose}

@@ -18,6 +18,7 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
+import { TEXT } from '../../../i18n/locales/Text';
 
 interface AnimalItem {
   name_of_village: string;
@@ -144,38 +145,40 @@ const AnimalImpactScreen = ({ navigation }: any) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <BackArrow />
         </TouchableOpacity>
-        <Text style={styles.title}>Log Report</Text>
+        <Text style={styles.title}>{TEXT.log_report()}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>Impact on Animals Population</Text>
+          <Text style={styles.sectionTitle}>
+            {TEXT.impact_animal_population()}
+          </Text>
 
           {animals.map((item, index) => (
             <View key={index} style={{ marginBottom: 16 }}>
               <TextInput
                 style={styles.input}
-                placeholder="Name of Village"
+                placeholder={TEXT.name_of_village()}
                 value={item.name_of_village}
                 onChangeText={t => updateField(index, 'name_of_village', t)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Type of Animal"
+                placeholder={TEXT.type_of_animal()}
                 value={item.type_of_animal}
                 onChangeText={t => updateField(index, 'type_of_animal', t)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Count of Injured"
+                placeholder={TEXT.count_of_injured()}
                 keyboardType="number-pad"
                 value={item.count_of_injured}
                 onChangeText={t => updateField(index, 'count_of_injured', t)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Count of Deceased"
+                placeholder={TEXT.count_of_deceased()}
                 keyboardType="number-pad"
                 value={item.count_of_deceased}
                 onChangeText={t => updateField(index, 'count_of_deceased', t)}
@@ -185,7 +188,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
               <View style={styles.inlineRow}>
                 <TextInput
                   style={[styles.input, styles.flexInput]}
-                  placeholder="Count of Missing"
+                  placeholder={TEXT.count_of_missing()}
                   keyboardType="number-pad"
                   value={item.count_of_missing}
                   onChangeText={t => updateField(index, 'count_of_missing', t)}
@@ -216,12 +219,20 @@ const AnimalImpactScreen = ({ navigation }: any) => {
         {/* FOOTER */}
         <View style={styles.footer}>
           <View style={styles.topButtonRow}>
-            <ReuseButton text="Save" onPress={handleSave} style={styles.half} />
-            <ReuseButton text="Next" onPress={handleNext} style={styles.half} />
+            <ReuseButton
+              text={TEXT.save()}
+              onPress={handleSave}
+              style={styles.half}
+            />
+            <ReuseButton
+              text={TEXT.next()}
+              onPress={handleNext}
+              style={styles.half}
+            />
           </View>
           <View style={styles.closeWrapper}>
             <ReuseButton
-              text="Close"
+              text={TEXT.close()}
               bgColor="#E5E7EB"
               textColor={COLOR.white}
               onPress={() => navigation.goBack()}

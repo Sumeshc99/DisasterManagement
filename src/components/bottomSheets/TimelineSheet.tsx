@@ -19,7 +19,8 @@ interface TimelineItem {
   incidentType: string;
   date: string;
   location: string;
-  details?: { title: string; name: string }[];
+  title?: string | null;
+  name?: string | null;
 }
 
 interface Props {
@@ -45,7 +46,7 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
       try {
         setLoading(true);
 
-        const resp = await ApiManager.getTimeline(incidentId, userToken);
+        const resp = await ApiManager.getTimelineNew(incidentId, userToken);
         console.log('Full response', JSON.stringify(resp.data, null, 2));
 
         if (resp?.data?.status) {
@@ -122,12 +123,14 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
 
                   <Text style={styles.location}>{item.location}</Text>
 
-                  {item.details?.map((d: any, i: number) => (
-                    <View key={i} style={{ marginTop: 6 }}>
-                      <Text style={styles.detailTitle}>{d.title}</Text>
-                      <Text style={styles.detailValue}>{d.name}</Text>
-                    </View>
-                  ))}
+                  {item.title && (
+                    <Text style={styles.detailTitle}>{item.title}</Text>
+                  )}
+
+                  {item.name && (
+                    <Text style={styles.detailValue}>{item.name}</Text>
+                  )}
+
                 </View>
               </View>
             ))}

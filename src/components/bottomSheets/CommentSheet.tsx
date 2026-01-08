@@ -16,6 +16,8 @@ import ApiManager from '../../apis/ApiManager';
 import { Alert } from 'react-native';
 import CommentImageContainer from '../UI/CommentImageContainer';
 import ScreenLoader from '../ScreenLoader';
+import { TEXT } from '../../i18n/locales/Text';
+import GallaryIcon from '../../assets/svg/Group.svg';
 
 interface Props {
   incidentId: number;
@@ -205,6 +207,24 @@ const CommentSheet = forwardRef<RBSheet, Props>(
       }
     };
 
+    const timeAgo = (dateString: string) => {
+      // Backend sends UTC but without timezone
+      // Convert: "YYYY-MM-DD HH:mm:ss" → "YYYY-MM-DDTHH:mm:ssZ"
+      const utcDate = new Date(dateString.replace(' ', 'T') + 'Z');
+
+      const now = new Date();
+      const diffMs = now.getTime() - utcDate.getTime();
+
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMinutes < 1) return 'Just now';
+      if (diffMinutes < 60) return `${diffMinutes} min ago`;
+      if (diffHours < 24) return `${diffHours} hr ago`;
+      return `${diffDays} day ago`;
+    };
+
     return (
       <RBSheet
         ref={ref}
@@ -255,13 +275,20 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                 }
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                   <View>
                     <View style={styles.commentCard}>
                       <View style={styles.commentHeader}>
-                        <View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            gap: 10,
+                          }}
+                        >
                           <Text style={styles.name}>{item.user_name}</Text>
-                          <Text style={styles.time}>{item.date_reporting}</Text>
+                          <Text style={styles.time}>
+                            {timeAgo(item.date_reporting)}
+                          </Text>
                         </View>
 
                         {item.user_id === userId && (
@@ -280,7 +307,14 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                         )}
 
                         {menuVisibleFor === item.comment_id && (
-                          <View style={styles.menuContainer}>
+                          <View
+                            style={[
+                              styles.menuContainer,
+                              index >= comments.length - 2
+                                ? { bottom: 28 } // ⬆️ open upward
+                                : { top: 28 }, // ⬇️ open downward
+                            ]}
+                          >
                             <TouchableOpacity
                               style={styles.menuItem}
                               onPress={() => {
@@ -362,7 +396,12 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                       style={[styles.uploadBtn, { flex: 1, marginRight: 8 }]} // takes left space
                       onPress={() => mediaRef.current?.pickImages()}
                     >
-                      <Text style={styles.uploadText}>Upload Image</Text>
+                      <View style={styles.uploadContent}>
+                        <GallaryIcon width={20} height={20} />
+                        <Text style={styles.uploadText}>
+                          {TEXT.upload_image()}
+                        </Text>
+                      </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -437,10 +476,13 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: '700',
     color: COLOR.blue,
+    fontSize: 14,
+    textAlignVertical: 'center',
   },
   time: {
     fontSize: 12,
     color: '#888',
+    textAlignVertical: 'center',
   },
   commentText: {
     fontSize: 14,
@@ -521,12 +563,11 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: 'absolute',
-    top: 28,
     right: 0,
     backgroundColor: '#fff',
     borderRadius: 8,
-    elevation: 6, // Android shadow
-    shadowColor: '#000', // iOS shadow
+    elevation: 6,
+    shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
@@ -542,5 +583,11 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 14,
     color: '#333',
+  },
+  uploadContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
   },
 });
