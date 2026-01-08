@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
-export const IMG_URL = 'https://disaster.pixelplanet.in/';
+// export const BASE_URL = 'https://disaster.pixelplanet.in/api/';
+// export const IMG_URL = 'https://disaster.pixelplanet.in/';
 
 // export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
 // export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
-// export const BASE_URL = 'https://api.ddmanagpur.in/api/';
-// export const IMG_URL = 'https://api.ddmanagpur.in/';
+export const BASE_URL = 'https://api.ddmanagpur.in/api/';
+export const IMG_URL = 'https://api.ddmanagpur.in/';
 
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
