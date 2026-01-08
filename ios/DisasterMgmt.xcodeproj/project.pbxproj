@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0402C9982EE94EEE00BBFA23 /* sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0402C9972EE94EEE00BBFA23 /* sound.mp3 */; };
+		041129BC2F0F8214007BA3C6 /* alert.caf in Resources */ = {isa = PBXBuildFile; fileRef = 041129BB2F0F8214007BA3C6 /* alert.caf */; };
 		043D2D512F07A10800740C7C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 043D2D502F07A10800740C7C /* GoogleService-Info.plist */; };
 		055E310EA93643C6AEB903E3 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2DB9FFBC22E494CAB2DB66A /* Roboto-Thin.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -35,8 +35,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0402C9972EE94EEE00BBFA23 /* sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sound.mp3; sourceTree = "<group>"; };
 		0404AD352F05488300D5D074 /* DisasterMgmt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DisasterMgmt.entitlements; path = DisasterMgmt/DisasterMgmt.entitlements; sourceTree = "<group>"; };
+		041129BB2F0F8214007BA3C6 /* alert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = alert.caf; sourceTree = "<group>"; };
 		043D2D502F07A10800740C7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		088342B94FD640B580ECEEE1 /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		0C382B7F31FB47098274393B /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				0402C9972EE94EEE00BBFA23 /* sound.mp3 */,
+				041129BB2F0F8214007BA3C6 /* alert.caf */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
@@ -233,7 +233,6 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				7492B9BC6ECECC6ECDE9D024 /* PrivacyInfo.xcprivacy in Resources */,
 				54F6CED7B5854B199D7E7322 /* Roboto-Black.ttf in Resources */,
-				0402C9982EE94EEE00BBFA23 /* sound.mp3 in Resources */,
 				5DC5B778D960497283372055 /* Roboto-BlackItalic.ttf in Resources */,
 				BE867FA871E9432FB438C761 /* Roboto-Bold.ttf in Resources */,
 				CE3C5E7F91E34E38B5FCF3B2 /* Roboto-BoldItalic.ttf in Resources */,
@@ -249,6 +248,7 @@
 				C7841858E70B45148B9E2EFF /* Roboto-Regular.ttf in Resources */,
 				802C627A3ADE40E2A7016F4A /* Roboto-SemiBold.ttf in Resources */,
 				043D2D512F07A10800740C7C /* GoogleService-Info.plist in Resources */,
+				041129BC2F0F8214007BA3C6 /* alert.caf in Resources */,
 				9BBCF45A47EA45D09893C160 /* Roboto-SemiBoldItalic.ttf in Resources */,
 				055E310EA93643C6AEB903E3 /* Roboto-Thin.ttf in Resources */,
 				4566196D96534E2CA8A19CFD /* Roboto-ThinItalic.ttf in Resources */,

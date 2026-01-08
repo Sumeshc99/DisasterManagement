@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import SystemSetting from 'react-native-system-setting';
@@ -32,6 +33,8 @@ const AlertModal: React.FC<AlertModalProps> = ({
 }) => {
   const soundRef = useRef<Sound | null>(null);
 
+  const fileName = Platform.OS === 'ios' ? 'alert.caf' : 'alert.mp3';
+
   useEffect(() => {
     if (!visible) {
       stopSound();
@@ -41,7 +44,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
     SystemSetting.setVolume(1.0);
     Sound.setCategory('Playback', true);
 
-    const sound = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {
+    const sound = new Sound(fileName, Sound.MAIN_BUNDLE, error => {
       if (error) {
         console.log(TEXT.failed_load_sound(), error);
         return;
