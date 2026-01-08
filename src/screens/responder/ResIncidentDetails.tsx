@@ -213,6 +213,64 @@ const ResIncidentDetails: React.FC = () => {
       .finally(() => hideLoader());
   };
 
+  const showActionBtns = () => {
+    const data = incidentData?.pending_closure?.find(
+      (i: any) => i.user_id === user?.id,
+    );
+
+    if (!data?.pending_closure) {
+      return (
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+        >
+          <TouchableOpacity
+            style={[styles.submitButton, { backgroundColor: COLOR.darkGray }]}
+            onPress={() => rejectRef.current.open()}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => incidentUpdateStatus('ResponderAccept')}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (data.pending_closure === 'accept') {
+      return (
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+        >
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => incidentUpdateStatus('Complete')}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.complete()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (data.pending_closure === 'complete') {
+      return (
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            style={styles.submitButton1}
+            onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+          >
+            <Text style={styles.submitButtonText1}>{TEXT.download_pdf()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -326,78 +384,26 @@ const ResIncidentDetails: React.FC = () => {
                 />
               )}
               {/* BUTTONS */}
-              {incidentData?.status == 'Pending Response by Responder' && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => rejectRef.current.open()}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => incidentUpdateStatus('ResponderAccept')}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {incidentData?.status === 'Pending closure by Responder' ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => incidentUpdateStatus('Complete')}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      {TEXT.complete()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                (incidentData?.status === 'Pending closure by Admin' ||
-                  incidentData?.status === 'Closed' ||
-                  incidentData?.status === 'Admin Cancelled' ||
-                  incidentData?.status === 'Reviewer Duplicate') && (
-                  <View
-                    style={{
-                      marginTop: 0,
-                      alignItems: 'center',
-                    }}
-                  >
-                    {/* 🔽 Download PDF button here 🔽 */}
-                    <TouchableOpacity
-                      style={[styles.submitButton1]}
-                      onPress={() =>
-                        downloadPDF(incidentData?.incident_blob_pdf)
-                      }
-                    >
-                      <Text style={styles.submitButtonText1}>
-                        {TEXT.download_pdf()}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              )}
+              {incidentData?.status === 'Pending Response by Responder' ||
+              incidentData?.status === 'Pending closure by Responder'
+                ? showActionBtns()
+                : (incidentData?.status === 'Pending closure by Admin' ||
+                    incidentData?.status === 'Closed' ||
+                    incidentData?.status === 'Admin Cancelled' ||
+                    incidentData?.status === 'Reviewer Duplicate') && (
+                    <View style={{ alignItems: 'center' }}>
+                      <TouchableOpacity
+                        style={styles.submitButton1}
+                        onPress={() =>
+                          downloadPDF(incidentData?.incident_blob_pdf)
+                        }
+                      >
+                        <Text style={styles.submitButtonText1}>
+                          {TEXT.download_pdf()}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
             </View>
           </ScrollView>
         </ScreenStateHandler>

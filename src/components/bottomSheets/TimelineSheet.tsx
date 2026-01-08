@@ -130,7 +130,6 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
                   {item.name && (
                     <Text style={styles.detailValue}>{item.name}</Text>
                   )}
-
                 </View>
               </View>
             ))}
