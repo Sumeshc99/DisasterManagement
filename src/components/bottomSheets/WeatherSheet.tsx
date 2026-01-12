@@ -16,15 +16,25 @@ import { COLOR } from '../../themes/Colors';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 
-const API_KEY = 'a418225781f74bc8b4365504252212';
+const WEATHER_MAP: any = {
+  0: { text: 'Clear sky', icon: '☀️' },
+  1: { text: 'Mainly clear', icon: '🌤️' },
+  2: { text: 'Partly cloudy', icon: '⛅' },
+  3: { text: 'Overcast', icon: '☁️' },
+  45: { text: 'Fog', icon: '🌫️' },
+  48: { text: 'Fog', icon: '🌫️' },
+  51: { text: 'Drizzle', icon: '🌦️' },
+  61: { text: 'Rain', icon: '🌧️' },
+  71: { text: 'Snow', icon: '❄️' },
+  95: { text: 'Thunderstorm', icon: '⛈️' },
+};
 
 const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   (_, ref) => {
     const language = useSelector((state: RootState) => state.language.language);
 
-    const [forecast, setForecast] = useState<any>(null);
-    const [location, setLocation] = useState('');
-    const [alerts, setAlerts] = useState<any[]>([]);
+    const [forecast, setForecast] = useState<any[]>([]);
+    const [location, setLocation] = useState('Current Location');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -34,27 +44,39 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const fetchWeather = () => {
       setLoading(true);
 
-      Geolocation.getCurrentPosition(async pos => {
-        try {
-          const { latitude, longitude } = pos.coords;
+      Geolocation.getCurrentPosition(
+        async pos => {
+          try {
+            const { latitude, longitude } = pos.coords;
 
-          const res = await fetch(
-            `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latitude},${longitude}&days=7&alerts=yes&lang=${language}`,
-          );
+            const res = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max&timezone=Asia/Kolkata`,
+            );
 
-          const data = await res.json();
+            const data = await res.json();
+            // console.log('weather', data);
 
-          setForecast(data.forecast.forecastday);
-          setLocation(data.location.name);
-          setAlerts(data.alerts?.alert || []);
-          setLoading(false);
-        } catch (e) {
-          setLoading(false);
-        }
-      });
+            const days = data.daily.time.map((date: string, i: number) => ({
+              date,
+              code: data.daily.weathercode[i],
+              min: data.daily.temperature_2m_min[i],
+              max: data.daily.temperature_2m_max[i],
+              wind: data.daily.windspeed_10m_max[i],
+            }));
+
+            setForecast(days);
+            setLoading(false);
+          } catch (e) {
+            setLoading(false);
+          }
+        },
+        () => setLoading(false),
+        { enableHighAccuracy: true },
+      );
     };
 
-    const today = forecast?.[0];
+    const today = forecast[0];
+    const todayWeather = WEATHER_MAP[today?.code] || {};
 
     return (
       <RBSheet
@@ -84,79 +106,53 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             <ActivityIndicator size="large" style={{ marginTop: HEIGHT(25) }} />
           ) : (
             <>
-              {/* Today Card with Gradient */}
+              {/* TODAY CARD */}
               <LinearGradient
                 colors={['#1E3A8A', '#2563EB']}
                 style={styles.todayCard}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    margin: 10,
-                  }}
-                >
-                  <Image
-                    source={{ uri: `https:${today?.day.condition.icon}` }}
-                    style={styles.todayIcon}
-                  />
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.todayLabel}>Today</Text>
-                    <Text style={styles.todayTemp}>
-                      {today?.day.avgtemp_c}°C
-                    </Text>
-                    <Text style={styles.todayDesc}>
-                      {today?.day.condition.text} {today?.day.mintemp_c}° /{' '}
-                      {today?.day.maxtemp_c}°
-                    </Text>
-                  </View>
+                <Text style={styles.todayIcon}>{todayWeather.icon}</Text>
+
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={styles.todayLabel}>Today</Text>
+                  <Text style={styles.todayTemp}>{today?.max}°C</Text>
+                  <Text style={styles.todayDesc}>
+                    {todayWeather.text} {today?.min}° / {today?.max}°
+                  </Text>
                 </View>
               </LinearGradient>
 
-              {/* Wind */}
-              <Text style={styles.windText}>
-                → {today?.day.maxwind_kph} km/h
-              </Text>
+              {/* WIND */}
+              <Text style={styles.windText}>→ {today?.wind} km/h</Text>
 
-              {/* 7 Day Forecast */}
+              {/* 7 DAY FORECAST */}
               <FlatList
-                data={forecast?.slice(1)}
+                data={forecast.slice(1)}
                 keyExtractor={(_, i) => i.toString()}
-                renderItem={({ item }) => (
-                  <View style={styles.dayRow}>
-                    <Text style={styles.dayText}>
-                      {new Date(item.date).toLocaleDateString('en', {
-                        weekday: 'short',
-                      })}
-                    </Text>
-
-                    <Image
-                      source={{ uri: `https:${item.day.condition.icon}` }}
-                      style={styles.rowIcon}
-                    />
-
-                    <View style={styles.centerRow}>
-                      <Text style={styles.cloudy}>
-                        {item.day.condition.text}
+                renderItem={({ item }) => {
+                  const weather = WEATHER_MAP[item.code] || {};
+                  return (
+                    <View style={styles.dayRow}>
+                      <Text style={styles.dayText}>
+                        {new Date(item.date).toLocaleDateString('en', {
+                          weekday: 'short',
+                        })}
                       </Text>
-                      <Text style={styles.speed}>
-                        {item.day.maxwind_kph} km/h
+
+                      <Text style={styles.rowEmoji}>{weather.icon}</Text>
+
+                      <View style={styles.centerRow}>
+                        <Text style={styles.cloudy}>{weather.text}</Text>
+                        <Text style={styles.speed}>{item.wind} km/h</Text>
+                      </View>
+
+                      <Text style={styles.tempRange}>
+                        {item.min}° - {item.max}°
                       </Text>
                     </View>
-
-                    <Text style={styles.tempRange}>
-                      {item.day.mintemp_c}° - {item.day.maxtemp_c}°
-                    </Text>
-                  </View>
-                )}
+                  );
+                }}
               />
-
-              {/* Alerts */}
-              {alerts.length > 0 && (
-                <View style={styles.alertBar}>
-                  <Text style={styles.alertText}>⚠ {alerts[0].headline}</Text>
-                </View>
-              )}
             </>
           )}
         </View>
@@ -194,31 +190,35 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: COLOR.blue,
-    textAlign: 'center',
   },
 
-  closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLOR.blue,
-    alignItems: 'center',
-    justifyContent: 'center',
+  closeIconContainer: {
+    position: 'absolute',
+    right: 4,
+  },
+
+  closeIcon: {
+    width: 30,
+    height: 30,
   },
 
   todayCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 16,
-    width: WIDTH(70),
+    width: WIDTH(86),
     alignSelf: 'center',
-    backgroundColor: COLOR.blue,
     borderRadius: 14,
+    padding: 10,
+    alignItems: 'center',
   },
 
-  todayIcon: { width: 60, height: 60, marginRight: 12 },
+  todayIcon: {
+    fontSize: 42,
+  },
 
-  todayLabel: { color: '#fff', fontSize: 16 },
+  todayLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
 
   todayTemp: {
     color: '#fff',
@@ -226,7 +226,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  todayDesc: { color: '#E5E7EB' },
+  todayDesc: {
+    color: '#E5E7EB',
+  },
 
   windText: {
     textAlign: 'center',
@@ -252,34 +254,26 @@ const styles = StyleSheet.create({
     width: WIDTH(10),
   },
 
-  centerRow: { alignItems: 'center', width: WIDTH(30) },
-
-  rowIcon: { width: WIDTH(10), height: WIDTH(10) },
-
-  cloudy: { fontSize: 13 },
-
-  speed: { fontSize: 12, color: '#6B7280' },
-
-  tempRange: { fontWeight: '600', width: WIDTH(24) },
-
-  alertBar: {
-    backgroundColor: '#EF4444',
-    padding: 14,
-    borderRadius: 12,
+  centerRow: {
     alignItems: 'center',
-    marginTop: 10,
+    width: WIDTH(30),
   },
 
-  closeIconContainer: {
-    position: 'absolute',
-    right: 4,
-    borderRadius: 20,
+  rowEmoji: {
+    fontSize: 22,
   },
 
-  closeIcon: {
-    width: 30,
-    height: 30,
+  cloudy: {
+    fontSize: 13,
   },
 
-  alertText: { color: '#fff', fontWeight: '700' },
+  speed: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+
+  tempRange: {
+    fontWeight: '600',
+    width: WIDTH(24),
+  },
 });
