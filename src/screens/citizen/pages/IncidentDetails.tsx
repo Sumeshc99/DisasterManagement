@@ -124,7 +124,6 @@ const IncidentDetails: React.FC = () => {
   const tapTimeout = useRef<number | null>(null);
   const commentRef = useRef<RBSheet>(null);
   const incidentId = data?.incident_auto_id || data;
-  console.log(user, 'I am hihi 2 nd user');
 
   const {
     control,

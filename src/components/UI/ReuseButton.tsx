@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     borderRadius: WIDTH(100) * 0.08, // responsive pill-like radius
-    paddingVertical: WIDTH(4),
+    paddingVertical: WIDTH(3.5),
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,

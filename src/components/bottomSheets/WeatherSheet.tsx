@@ -37,12 +37,14 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       Geolocation.getCurrentPosition(async pos => {
         try {
           const { latitude, longitude } = pos.coords;
+          console.log('jekkkkooooooo', pos.coords);
 
           const res = await fetch(
             `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latitude},${longitude}&days=7&alerts=yes&lang=${language}`,
           );
 
           const data = await res.json();
+          console.log('Hi data ', data);
 
           setForecast(data.forecast.forecastday);
           setLocation(data.location.name);

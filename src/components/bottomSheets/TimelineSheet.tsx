@@ -33,11 +33,9 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
     const { userToken } = useSelector((state: RootState) => state.auth);
     const [timelineData, setTimelineData] = useState([]);
     const [loading, setLoading] = useState(false);
-    console.log('The timeline day', timelineData);
 
     useEffect(() => {
       if (incidentId) {
-        console.log('Incident Id/////// ', incidentId);
         fetchTimeline();
       }
     }, [incidentId]);
@@ -50,7 +48,6 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
         console.log('Full response', JSON.stringify(resp.data, null, 2));
 
         if (resp?.data?.status) {
-          console.log('Yeahhhhh we are getting daa');
           setTimelineData(resp.data.data || []);
         }
       } catch (error) {
@@ -130,7 +127,6 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
                   {item.name && (
                     <Text style={styles.detailValue}>{item.name}</Text>
                   )}
-
                 </View>
               </View>
             ))}
