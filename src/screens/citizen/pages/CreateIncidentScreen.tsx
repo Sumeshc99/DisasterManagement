@@ -39,7 +39,9 @@ interface IncidentForm {
   mobileNumber: string;
   description: string;
   media: MediaAsset[];
+  // ru_ban: string;
   tehsil: string;
+  // area: string;
 }
 
 const CreateIncidentScreen: React.FC = () => {
@@ -74,7 +76,9 @@ const CreateIncidentScreen: React.FC = () => {
       mobileNumber: '',
       description: '',
       media: [],
+      // ru_ban: '',
       tehsil: '',
+      // area: '',
     },
   });
 
@@ -270,6 +274,16 @@ const CreateIncidentScreen: React.FC = () => {
           )}
         </View>
 
+        {/* <DropDownInput
+          name="ru_ban"
+          label={'Rural / Urban'}
+          placeholder={'Select Rural / Urban'}
+          control={control}
+          rules={{ required: TEXT.tehsil_is_required() }}
+          items={tahsilList}
+          errors={errors}
+        /> */}
+
         <DropDownInput
           name="tehsil"
           label={TEXT.select_tehsil()}
@@ -278,6 +292,15 @@ const CreateIncidentScreen: React.FC = () => {
           rules={{ required: TEXT.tehsil_is_required() }}
           items={tahsilList}
         />
+
+        {/* <DropDownInput
+          name="area"
+          label={'Select Area'}
+          control={control}
+          placeholder={'Select Area'}
+          rules={{ required: TEXT.tehsil_is_required() }}
+          items={tahsilList}
+        /> */}
 
         {/* Mobile Number */}
         <FormTextInput
@@ -354,9 +377,6 @@ const CreateIncidentScreen: React.FC = () => {
         onSubmit={async data => {
           setValue('address', data?.flat || '', { shouldValidate: true });
           setallAddress(data);
-
-          console.log('Selected State:', data?.state);
-          console.log('Selected City:', data?.city);
 
           if (data?.state && data?.city) {
             try {

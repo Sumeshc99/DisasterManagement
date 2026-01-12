@@ -71,8 +71,16 @@ const CitizenDashboard = () => {
         ApiManager.responderList(),
       ]);
 
-      if (incidentsResp?.data?.success)
-        setIncidentList(incidentsResp.data.data?.results ?? []);
+      if (incidentsResp?.data?.success) {
+        const data = incidentsResp.data.data?.results || [];
+        const newData = data.filter(
+          (item: any) =>
+            item.status == 'Pending Review' ||
+            item.status == 'Pending Response by Responder' ||
+            item.status == 'Pending closure by Responder',
+        );
+        setIncidentList(newData ?? []);
+      }
 
       if (respondersResp?.data?.success)
         setResponders(respondersResp.data.data?.results ?? []);

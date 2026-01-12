@@ -64,6 +64,8 @@ const PushNotification = () => {
       },
     });
   };
+
+  return null;
 };
 
 export default PushNotification;

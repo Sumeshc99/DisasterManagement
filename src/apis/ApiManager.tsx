@@ -100,6 +100,8 @@ const requestPath = {
   deleteCommentById: 'mobileapis/deleteCommentById',
   getLogReport: 'mobileapis/getLogReport',
   createIncidentLogReport: 'mobileapis/createIncidentLogReport',
+  downloadPdf: 'mobileapis/downloadIncidentPdf',
+  ruralUrbanApi: 'location/get-rural-arban',
 };
 
 const ApiManager = {
@@ -138,6 +140,8 @@ const ApiManager = {
     requests.get(`${requestPath.notifcation}/${id}`, token),
   assignRes: (id: any, token: string) =>
     requests.get(`${requestPath.assignRes}/${id}`, token),
+  downloadPdf: (id: any, token: string) =>
+    requests.get(`${requestPath.downloadPdf}/${id}`, token),
 
   getNotificationDetails: (
     incidentId: any,

@@ -271,6 +271,17 @@ const ResIncidentDetails: React.FC = () => {
     return null;
   };
 
+  const getPdf = () => {
+    setLoading(true);
+    ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        // console.log('downloadPdf', resp?.data?.data?.pdfUrl);
+        downloadPDF(resp?.data?.data?.pdfUrl);
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -394,9 +405,7 @@ const ResIncidentDetails: React.FC = () => {
                     <View style={{ alignItems: 'center' }}>
                       <TouchableOpacity
                         style={styles.submitButton1}
-                        onPress={() =>
-                          downloadPDF(incidentData?.incident_blob_pdf)
-                        }
+                        onPress={() => getPdf()}
                       >
                         <Text style={styles.submitButtonText1}>
                           {TEXT.download_pdf()}
