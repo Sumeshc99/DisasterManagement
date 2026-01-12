@@ -20,6 +20,10 @@ import ResIncidentDetails from '../screens/responder/ResIncidentDetails';
 import Notification from '../screens/notification/Notification';
 import NotificationIncidentDetails from '../screens/citizen/pages/NotificationIncidentDetails';
 import TermsAndConditions from '../screens/TermsAndConditions';
+import HumanImpactScreen from '../screens/receiver/logReport/HumanImpactScreen';
+import AnimalImpactScreen from '../screens/receiver/logReport/AnimalImpactScreen';
+import InfrastructureReportScreen from '../screens/receiver/logReport/InfrastructureReportScreen';
+import CropDamageReportScreen from '../screens/receiver/logReport/CropDamageReportScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -72,6 +76,20 @@ const AppNavigation = () => {
         <Stack.Screen
           name="termsAndConditions"
           component={TermsAndConditions}
+        />
+
+        <Stack.Screen name="HumanImpactScreen" component={HumanImpactScreen} />
+        <Stack.Screen
+          name="AnimalImpactScreen"
+          component={AnimalImpactScreen}
+        />
+        <Stack.Screen
+          name="InfrastructureReportScreen"
+          component={InfrastructureReportScreen}
+        />
+        <Stack.Screen
+          name="CropDamageReportScreen"
+          component={CropDamageReportScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

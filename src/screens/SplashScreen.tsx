@@ -33,7 +33,7 @@ const SplashScreen = () => {
       if (user?.id) {
         navigation.replace('mainAppSelector');
       } else {
-        navigation.navigate('selectLanguage');
+        navigation.replace('selectLanguage');
       }
     }, 2000);
 
@@ -55,7 +55,7 @@ const SplashScreen = () => {
       >
         <View style={styles.content}>
           <Animated.Image
-            source={require('../assets/DDMA LOGO.png')}
+            source={require('../assets/appLogo1.png')}
             style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
             resizeMode="contain"
           />

@@ -406,4 +406,132 @@ export const TEXT = {
   required_latitude: () => t('required_latitude', 'Latitude is required'),
 
   required_longitude: () => t('required_longitude', 'Longitude is required'),
+  media: () => t('media', 'Media'),
+
+  nagpur: () => t('nagpur', 'Nagpur'),
+  nagpur_collector_office: () =>
+    t(
+      'nagpur_collector_office',
+      'Nagpur District Collector Office COVID Control Room:',
+    ),
+  covid_helpline: () => t('covid_helpline', 'COVID Helpline:'),
+  corona: () => t('corona', 'Corona'),
+  corona_helpline: () => t('corona_helpline', 'Corona (COVID-19) Helpline:'),
+  log_report: () => t('log_report', 'Log Report'),
+  impact_human_population: () =>
+    t('impact_human_population', 'Impact on Human Population'),
+  no_of_deceased: () => t('no_of_deceased', 'Number of deceased'),
+  name: () => t('name', 'Name'),
+  age: () => t('age', 'Age'),
+  gender: () => t('gender', 'Gender'),
+
+  no_of_injured: () => t('no_of_injured', 'Number of injured'),
+  type_of_injury: () => t('type_of_injury', 'Type of Injury'),
+
+  no_of_missing: () => t('no_of_missing', 'Number of missing'),
+
+  close: () => t('close', 'Close'),
+
+  impact_animal_population: () =>
+    t('impact_animal_population', 'Impact on Animal Population'),
+
+  name_of_village: () => t('name_of_village', 'Name of Village'),
+
+  type_of_animal: () => t('type_of_animal', 'Type of Animal'),
+
+  count_of_injured: () => t('count_of_injured', 'Count of Injured'),
+
+  count_of_deceased: () => t('count_of_deceased', 'Count of Deceased'),
+
+  count_of_missing: () => t('count_of_missing', 'Count of Missing'),
+
+  property_damage_report: () =>
+    t('property_damage_report', 'Infrastructure/Property Damage Report'),
+
+  type_of_property: () =>
+    t('type_of_property', 'Type of Property / Infrastructure'),
+
+  count_of_partial_damage: () =>
+    t('count_of_partial_damage', 'Count of Partial Damage'),
+
+  count_of_fully_damage: () =>
+    t('count_of_fully_damage', 'Count of Fully Damage'),
+
+  crop_damage_report: () => t('crop_damage_report', 'Crop Damage Report'),
+
+  no_of_affected_farmers: () =>
+    t('no_of_affected_farmers', 'Number of affected farmers (Approx.)'),
+
+  area_of_agricultural_damage: () =>
+    t(
+      'area_of_agricultural_damage',
+      'Area of Agricultural Damage in Hectare (Approx.)',
+    ),
+
+  report_success_msg: () =>
+    t(
+      'report_success_msg',
+      'The report has been saved successfully. Until it is submitted, the report is open for revisions.',
+    ),
+
+  report_success_msg_for_admin_closure: () =>
+    t(
+      'report_success_msg_for_admin_closure',
+      'Report has been successfully submitted for Admin closure. The report is no longer available for updates.',
+    ),
+
+  upload_image_and_video: () =>
+    t('upload_image_and_video', 'Upload image & video'),
+
+  video_limit: () => t('video_limit', 'Video limit exceeds 10MB'),
+
+  incident_registered: () => t('incident_registered', 'Incident Registered'),
+
+  incident_accepted: () => t('incident_accepted', 'Incident Accepted'),
+
+  incident_resolved: () => t('incident_resolved', 'Incident Resolved'),
+
+  comment: () => t('comment', 'Comment'),
+
+  comment_alert: () =>
+    t(
+      'comment_alert',
+      'If you have more information to share on this incident, please feel free to post a comment by clicking on "Comment" button below. ',
+    ),
+
+  biomatric_fast_login: () =>
+    t(
+      'biomatric_fast_login',
+      'We are here to make your life easy, please show your face for fast login.',
+    ),
+
+  face_not_match: () =>
+    t(
+      'face_not_match',
+      'Face does not match: “Sorry we could not match your Face, please try again.',
+    ),
+
+  touch_id: () =>
+    t(
+      'touch_id',
+      'We are here to make your life easy, use your touch ID for fast login.',
+    ),
+
+  touch_id_not_match: () =>
+    t(
+      'touch_id_not_match',
+      'Touch Id does not match: “Sorry we could not match your Touch ID, please try again.',
+    ),
+
+  timeline: () => t('timeline', 'Timeline'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
 };

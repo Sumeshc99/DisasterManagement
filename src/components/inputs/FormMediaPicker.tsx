@@ -17,6 +17,7 @@ interface MediaAsset {
   uri?: string;
   type?: string;
   fileName?: string;
+  duration?: number;
 }
 
 interface FormMediaPickerProps {
@@ -26,7 +27,7 @@ interface FormMediaPickerProps {
   rules?: RegisterOptions;
   error?: string;
   media?: MediaAsset[];
-  onChangeMedia?: any;
+  onChangeMedia?: (assets: MediaAsset[]) => void;
   onRemoveMedia?: (index: number) => void;
 }
 
@@ -42,29 +43,61 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
 }) => {
   const isRequired = !!rules?.required;
   const sheetRef = useRef<any>(null);
+  const isPickingRef = useRef(false); // 🔐 prevent double open
 
   const openSheet = useCallback(() => {
+    if (isPickingRef.current) return;
     sheetRef.current?.open();
   }, []);
 
   const openCamera = async () => {
-    sheetRef.current?.close();
-    const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
+    if (isPickingRef.current) return;
+    isPickingRef.current = true;
 
-    if (result.assets?.length) {
-      onChangeMedia?.(result.assets);
-    }
+    sheetRef.current?.close();
+
+    setTimeout(async () => {
+      try {
+        const result = await launchCamera({
+          mediaType: 'mixed',
+          quality: 0.8,
+          videoQuality: 'high',
+          saveToPhotos: true,
+        });
+
+        if (result.didCancel || result.errorCode) return;
+
+        if (result.assets?.length) {
+          onChangeMedia?.(result.assets);
+        }
+      } finally {
+        isPickingRef.current = false;
+      }
+    }, 300);
   };
 
   const openGallery = async () => {
+    if (isPickingRef.current) return;
+    isPickingRef.current = true;
+
     sheetRef.current?.close();
-    const result = await launchImageLibrary({
-      mediaType: 'photo',
-      selectionLimit: 5,
-    });
-    if (result.assets?.length) {
-      onChangeMedia?.(result.assets);
-    }
+
+    setTimeout(async () => {
+      try {
+        const result = await launchImageLibrary({
+          mediaType: 'mixed',
+          selectionLimit: 5,
+        });
+
+        if (result.didCancel || result.errorCode) return;
+
+        if (result.assets?.length) {
+          onChangeMedia?.(result.assets);
+        }
+      } finally {
+        isPickingRef.current = false;
+      }
+    }, 300);
   };
 
   return (
@@ -81,49 +114,57 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
         name={name}
         rules={rules}
         render={() => (
-          <>
-            <TouchableOpacity
-              style={[styles.uploadBox, error && styles.inputError]}
-              onPress={openSheet}
-              activeOpacity={0.8}
-            >
-              {media?.length > 0 ? (
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={styles.previewScroll}
-                >
-                  {media?.map((item: any, index) => (
+          <TouchableOpacity
+            style={[styles.uploadBox, error && styles.inputError]}
+            onPress={openSheet}
+            activeOpacity={0.8}
+          >
+            {media.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.previewScroll}
+              >
+                {media.map((item, index) => {
+                  const isVideo = item.type?.startsWith('video');
+
+                  return (
                     <View key={index} style={styles.thumbnailWrapper}>
                       <Image
-                        source={{ uri: (item as { uri: any }).uri }}
+                        source={{ uri: item.uri }}
                         style={styles.previewImage}
                       />
+
+                      {isVideo && (
+                        <View style={styles.videoBadge}>
+                          <Text style={styles.videoIcon}>▶</Text>
+                        </View>
+                      )}
+
                       {onRemoveMedia && (
                         <TouchableOpacity
                           style={styles.removeButton}
                           onPress={() => onRemoveMedia(index)}
                         >
-                          <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                            ✕
-                          </Text>
+                          <Text style={styles.removeText}>✕</Text>
                         </TouchableOpacity>
                       )}
                     </View>
-                  ))}
-                </ScrollView>
-              ) : (
-                <Text style={styles.placeholderText}>
-                  {TEXT.capture_or_upload()}
-                </Text>
-              )}
-            </TouchableOpacity>
-          </>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <Text style={styles.placeholderText}>
+                {TEXT.capture_or_upload()}
+              </Text>
+            )}
+          </TouchableOpacity>
         )}
       />
 
       {error && <Text style={styles.errorText}>{error}</Text>}
 
+      {/* Bottom Sheet */}
       <MediaOptionSheet
         ref={sheetRef}
         onCamera={openCamera}
@@ -147,7 +188,6 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontWeight: '500',
   },
-
   requiredMark: {
     color: 'red',
     marginLeft: 4,
@@ -164,11 +204,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  previewScroll: {
-    marginTop: 4,
+  previewScroll: { marginTop: 4 },
+
+  thumbnailWrapper: {
+    position: 'relative',
+    marginRight: 10,
   },
-  thumbnailWrapper: { position: 'relative', marginRight: 10 },
-  previewImage: { width: 90, height: 90, borderRadius: 6 },
+
+  previewImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 6,
+  },
+
+  videoBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+
+  videoIcon: {
+    color: '#fff',
+    fontSize: 12,
+  },
+
   removeButton: {
     position: 'absolute',
     top: 4,
@@ -177,9 +240,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 2,
   },
-  inputError: {
-    borderColor: 'red',
+  removeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
   },
+  inputError: { borderColor: 'red' },
   placeholderText: {
     fontSize: 16,
     color: COLOR.lightTextGrey,

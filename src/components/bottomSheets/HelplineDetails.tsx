@@ -52,26 +52,27 @@ const HelplineDetails = forwardRef<React.ComponentRef<typeof RBSheet>, Props>(
 
             {/* Logo */}
             <Image
-              source={require('../../assets/DDMA LOGO.png')}
+              source={require('../../assets/appLogo1.png')}
               style={styles.logo}
             />
 
             {/* Details */}
             <Text style={styles.text}>
-              <Text style={styles.bold}>Nagpur {TEXT.std_code()}:</Text> 0712
+              <Text style={styles.bold}>
+                {TEXT.nagpur()} {TEXT.std_code()}:
+              </Text>{' '}
+              0712
             </Text>
             <Text style={styles.text}>
-              <Text style={styles.bold}>
-                Nagpur District Collector Office COVID Control Room:
-              </Text>{' '}
+              <Text style={styles.bold}>{TEXT.nagpur_collector_office()}</Text>{' '}
               0712-2562668 or 1077
             </Text>
             <Text style={styles.text}>
-              <Text style={styles.bold}>COVID Helpline:</Text> 0712-2567021 /
-              0712-2551866 / 18002333764
+              <Text style={styles.bold}>{TEXT.covid_helpline()}</Text>{' '}
+              0712-2567021 / 0712-2551866 / 18002333764
             </Text>
             <Text style={styles.text}>
-              <Text style={styles.bold}>Corona (COVID-19) Helpline:</Text>{' '}
+              <Text style={styles.bold}>{TEXT.corona_helpline()}</Text>{' '}
               011-23978046 or 1075
             </Text>
             <Text style={styles.text}>

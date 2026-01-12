@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { RootState } from '../../store/RootReducer';
 import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
+import TimelineSheet from './TimelineSheet';
 
 const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -24,8 +25,54 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const [myIncident, setMyIncident] = useState([]);
     const [assignedIncident, setAssignedIncident] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+    const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
+      null,
+    );
 
     const [refreshing, setRefreshing] = useState(false);
+
+    const timelineRef = useRef<RBSheet>(null);
+
+    const timelineData = [
+      {
+        role: 'Guest',
+        status: 'Incident Registered',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:12 PM',
+        location: 'Sitabardi, Nagpur',
+      },
+      {
+        role: 'Reviewer',
+        status: 'Incident Accepted',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:14 PM',
+        location: 'Sitabardi, Nagpur',
+        details: [
+          { title: 'Disaster Management Officer', name: 'Akshay Shinde' },
+        ],
+      },
+      {
+        role: 'Responder',
+        status: 'Incident Accepted',
+        incidentType: 'Fire',
+        date: '10 April 2025, 5:16 PM',
+        location: 'Sitabardi, Nagpur',
+        details: [
+          { title: 'Police officer', name: 'Avinash Kakade, Kiran Kamat' },
+          {
+            title: 'Ambulance',
+            name: 'Vijay Satpute, Government Hospital, Sitabardi',
+          },
+        ],
+      },
+      {
+        role: 'Responder',
+        status: 'Incident Resolved',
+        incidentType: 'Fire',
+        date: '10 April 2025, 6:20 PM',
+        location: 'Sitabardi, Nagpur',
+      },
+    ];
 
     // --- Fetch API ---
     const fetchIncidentList = async () => {
@@ -44,9 +91,13 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    useEffect(() => {
-      fetchIncidentList();
-    }, [userToken]);
+    // useEffect(() => {
+    //   fetchIncidentList();
+    // }, [userToken]);
+
+    const refreshIncidents = async () => {
+      await fetchIncidentList();
+    };
 
     const onRefresh = async () => {
       setRefreshing(true);
@@ -91,14 +142,14 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     };
 
     const renderItem = ({ item }: any) => {
+      const isMyIncident = item.user_id === user?.id;
+
       return (
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
             (ref as { current: any } | null)?.current?.close();
-            navigation.navigate('incidentDetails', {
-              data: item.id,
-            });
+            navigation.navigate('incidentDetails', { data: item.id });
           }}
           style={styles.card}
         >
@@ -118,7 +169,8 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
           >
             <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-            {item.status == 'New' && (
+            {/* Button Logic */}
+            {item.status === 'New' && isMyIncident ? (
               <View
                 style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
               >
@@ -126,6 +178,16 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                   Edit
                 </Text>
               </View>
+            ) : (
+              <TouchableOpacity
+                style={[styles.timelineBadge]}
+                onPress={() => {
+                  setSelectedIncidentId(item.id);
+                  timelineRef.current?.open();
+                }}
+              >
+                <Text style={[styles.timelineText]}>{TEXT.timeline()}</Text>
+              </TouchableOpacity>
             )}
           </View>
 
@@ -141,6 +203,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         ref={ref}
         closeOnPressMask
         height={600}
+        onOpen={refreshIncidents}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },
@@ -229,6 +292,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
             }
           />
         </View>
+        <TimelineSheet ref={timelineRef} incidentId={selectedIncidentId} />
       </RBSheet>
     );
   },
@@ -334,6 +398,19 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     maxWidth: 120,
+  },
+  timelineText: {
+    color: COLOR.blue,
+    fontSize: 11,
+    fontWeight: '600',
+    maxWidth: 120,
+  },
+  timelineBadge: {
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
 });
 

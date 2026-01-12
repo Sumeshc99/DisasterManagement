@@ -28,18 +28,22 @@ import AssignResponderSheet from '../../components/bottomSheets/AssignResponderS
 import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
 import { downloadPDF } from '../../Utils/downloadPDF';
+import CommentSheet from '../../components/bottomSheets/CommentSheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import ReuseButton from '../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
   incidentId: string;
   incidentType: string;
   address: string;
+  ru_ban: string;
   tehsil: string;
+  area: string;
   mobileNumber: string;
   description: string;
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
-  tehsil: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -89,7 +93,7 @@ const RevIncidentDetails: React.FC = () => {
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
 
-  const { userToken } = useSelector((state: RootState) => state.auth);
+  const { userToken, user } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
   const data = (route as { params?: { data?: any } })?.params?.data;
@@ -97,6 +101,9 @@ const RevIncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
   const [assignInc, setassignInc] = useState([]);
+
+  const commentRef = useRef<RBSheet>(null);
+  const incidentId = data?.incident_auto_id || data;
 
   const {
     control,
@@ -109,7 +116,9 @@ const RevIncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      ru_ban: '',
       tehsil: '',
+      area: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -157,8 +166,9 @@ const RevIncidentDetails: React.FC = () => {
               description: inc?.description,
               media: inc?.media,
               status: inc?.status,
+              ru_ban: inc?.rural_urban_name,
+              area: inc?.area_name,
               dateTime: formatDateTime(inc?.date_reporting),
-              tehsil: inc?.tehsil_name,
             });
           }
         })
@@ -221,6 +231,43 @@ const RevIncidentDetails: React.FC = () => {
     cancelRef.current.close();
   };
 
+  const LOG_REPORT_ALLOWED_STATUS = [
+    'Pending Response by Responder',
+    'Pending Log Report Update',
+    'Pending closure by Admin',
+    'Pending Closure By Responder',
+    'Pending Log Report Review',
+    'Pending Log Report Update',
+  ];
+
+  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.includes(
+    incidentData?.status,
+  );
+
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+    'pending log report review',
+    'pending log report update',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
+  );
+
+  const getPdf = () => {
+    setLoading(true);
+    ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        // console.log('downloadPdf', resp.data);
+        downloadPDF(resp?.data?.data?.pdfUrl);
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -270,17 +317,25 @@ const RevIncidentDetails: React.FC = () => {
                 rules={{ required: TEXT.address_required() }}
                 error={errors.address?.message}
               />
+
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
+                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
                 </View>
               </View>
 
-              <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{'Area'}</Text>
                 <View style={styles.disabledBox}>
-                  <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                  <Text style={styles.disabledText}>{watch('area')}</Text>
                 </View>
               </View>
 
@@ -315,7 +370,7 @@ const RevIncidentDetails: React.FC = () => {
               {/* MEDIA + STATUS */}
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {media?.length && <ImageContainer data={media} />}
+                  <ImageContainer data={media} />
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -373,21 +428,66 @@ const RevIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               ) : (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+                <View style={{ marginTop: 24 }}>
+                  {/* ROW: Download PDF + Log Report */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      gap: 16,
+                      flexWrap: 'wrap', // ✅ prevents overflow
+                    }}
                   >
-                    <Text style={styles.submitButtonText1}>
-                      {TEXT.download_pdf()}
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.submitButton1}
+                      onPress={() => getPdf()}
+                    >
+                      <Text style={styles.submitButtonText1}>
+                        {TEXT.download_pdf()}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {canShowLogReport && (
+                      <TouchableOpacity
+                        style={styles.submitButton1}
+                        onPress={() =>
+                          navigation.navigate('HumanImpactScreen', {
+                            incidentId: incidentId,
+                          })
+                        }
+                      >
+                        <Text style={styles.submitButtonText1}>
+                          {TEXT.log_report()}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* COLUMN: Comment alert + button */}
+                  {isCommentVisible && (
+                    <View style={{ alignItems: 'center', marginTop: 18 }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: '#6E6E6E',
+                          textAlign: 'center',
+                          lineHeight: 18,
+                          marginHorizontal: 20, // ✅ prevents text cutoff
+                        }}
+                      >
+                        {TEXT.comment_alert()}
+                      </Text>
+
+                      <ReuseButton
+                        text="Comment"
+                        style={{
+                          width: WIDTH(50),
+                          marginTop: 12,
+                        }}
+                        onPress={() => commentRef.current?.open()}
+                      />
+                    </View>
+                  )}
                 </View>
               )}
             </View>
@@ -427,6 +527,13 @@ const RevIncidentDetails: React.FC = () => {
       <SuccessSheet
         ref={successRef}
         message={TEXT.responder_assigned_success()}
+      />
+
+      <CommentSheet
+        ref={commentRef}
+        incidentId={incidentId}
+        userToken={userToken}
+        userId={user?.id}
       />
     </SafeAreaView>
   );
@@ -527,6 +634,20 @@ const styles = StyleSheet.create({
   },
   submitButtonText1: {
     color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  logButton: {
+    backgroundColor: COLOR.orange, // or COLOR.blue
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    alignItems: 'center',
+    width: 180,
+  },
+
+  logButtonText: {
+    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
   },

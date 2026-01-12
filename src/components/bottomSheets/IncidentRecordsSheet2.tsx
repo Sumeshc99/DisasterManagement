@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { TEXT } from '../../i18n/locales/Text';
 import { useNavigation } from '@react-navigation/native';
 import { FONT, WIDTH } from '../../themes/AppConst';
 import Filter from '../../assets/filter.svg';
+import TimelineSheet from './TimelineSheet';
 
 const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
   ({}, ref) => {
@@ -27,11 +28,15 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const [assignedIncident, setAssignedIncident] = useState([]);
     const [assignedInc, setAssignedInc] = useState([]);
     const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+    const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
+      null,
+    );
 
     const [showFilter, setShowFilter] = useState(false);
     const [incType, setIncType] = useState<0 | 1>(0);
 
     const [refreshing, setRefreshing] = useState(false);
+    const timelineRef = useRef<RBSheet>(null);
 
     const fetchIncidentList = async () => {
       try {
@@ -62,10 +67,15 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       }
     };
 
-    useEffect(() => {
-      fetchIncidentList();
-      getAssignedIncident();
-    }, [userToken]);
+    const refreshIncidents = async () => {
+      await fetchIncidentList();
+      await getAssignedIncident();
+    };
+
+    // useEffect(() => {
+    //   fetchIncidentList();
+    //   getAssignedIncident();
+    // }, [userToken]);
 
     const onRefresh = async () => {
       setRefreshing(true);
@@ -110,45 +120,67 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
       );
     };
 
-    const renderItem = ({ item }: any) => (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          (ref as { current: any } | null)?.current?.close();
-          navigation.navigate(
-            !isAssignedTab ? 'incidentDetails' : 'revIncidentDetails',
-            {
-              data: item.id,
-            },
-          );
-        }}
-        style={styles.card}
-      >
-        <View style={styles.headerRow1}>
-          <Text style={styles.incidentId}>
-            {TEXT.incident_id()} - {item.incident_id}
-          </Text>
-          {renderStatus(item.status)}
-        </View>
+    const renderItem = ({ item }: any) => {
+      const isMyIncident = item.user_id === user?.id;
+      const isDraft = item.status === 'New';
 
-        <Text style={styles.cardTitle}>{item.incident_type_name}</Text>
-        <Text style={styles.cardLocation}>{item.address}</Text>
+      return (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            (ref as { current: any } | null)?.current?.close();
+            navigation.navigate(
+              !isAssignedTab ? 'incidentDetails' : 'revIncidentDetails',
+              {
+                data: item.id,
+              },
+            );
+          }}
+          style={styles.card}
+        >
+          <View style={styles.headerRow1}>
+            <Text style={styles.incidentId}>
+              {TEXT.incident_id()} - {item.incident_id}
+            </Text>
+            {renderStatus(item.status)}
+          </View>
 
-        <View style={styles.rowBetween}>
-          <Text style={styles.cardDate}>{formatDateTime(item.created_on)}</Text>
+          <Text style={styles.title}>{item.incident_type_name}</Text>
+          <Text style={styles.location}>{item.address}</Text>
 
-          {item.status === 'New' && (
-            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
-              <Text style={[styles.statusText, { color: COLOR.white }]}>
-                Edit
-              </Text>
-            </View>
-          )}
-        </View>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
 
-        <View style={styles.divider} />
-      </TouchableOpacity>
-    );
+            {/* ACTION BUTTON LOGIC */}
+            {isDraft && isMyIncident ? (
+              /* Draft + My Incident → Edit */
+              <View
+                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
+              >
+                <Text style={[styles.statusText, { color: COLOR.white }]}>
+                  Edit
+                </Text>
+              </View>
+            ) : !isDraft ? (
+              /* Created Incident → Timeline */
+              <TouchableOpacity
+                style={[styles.timelineBadge]}
+                onPress={() => {
+                  setSelectedIncidentId(item.id);
+                  timelineRef.current?.open();
+                }}
+              >
+                <Text style={styles.timelineText}>{TEXT.timeline()}</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          <View style={styles.divider} />
+        </TouchableOpacity>
+      );
+    };
 
     const listData = isAssignedTab
       ? assignedInc
@@ -161,6 +193,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
         ref={ref}
         closeOnPressMask
         height={600}
+        onOpen={refreshIncidents}
         customStyles={{
           container: styles.sheetContainer,
           draggableIcon: { backgroundColor: 'transparent' },
@@ -268,6 +301,7 @@ const IncidentRecordsSheet2 = forwardRef<React.ComponentRef<typeof RBSheet>>(
             onRefresh={onRefresh}
           />
         </View>
+        <TimelineSheet ref={timelineRef} incidentId={selectedIncidentId} />
       </RBSheet>
     );
   },
@@ -316,6 +350,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: WIDTH(92),
   },
+
+  title: {
+    color: COLOR.blue,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 5,
+  },
+  location: { color: '#666', fontSize: 14 },
+  date: { fontSize: 12, color: '#777', marginTop: 2 },
 
   tabButton: {
     paddingVertical: 10,
@@ -460,5 +503,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: FONT.R_BOLD_700,
     maxWidth: 120,
+  },
+  timelineText: {
+    color: COLOR.blue,
+    fontSize: 11,
+    fontWeight: '600',
+    maxWidth: 120,
+  },
+  timelineBadge: {
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLOR.blue,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
 });

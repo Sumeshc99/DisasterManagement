@@ -25,7 +25,7 @@ const ImageContainer = ({ data }: any) => {
 
   return (
     <View>
-      <Text style={styles.title}>{TEXT.image_and_video()}</Text>
+      <Text style={styles.title}>{TEXT.media()}</Text>
 
       <TouchableOpacity onPress={openGallery} style={styles.thumbnailWrapper}>
         <Image

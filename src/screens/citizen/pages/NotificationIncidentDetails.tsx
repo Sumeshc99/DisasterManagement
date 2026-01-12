@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,9 @@ import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import { TEXT } from '../../../i18n/locales/Text';
 import ReuseButton from '../../../components/UI/ReuseButton';
+import CommentSheet from '../../../components/bottomSheets/CommentSheet';
+
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 const formatDateTime = (dateString: string) => {
   if (!dateString) return '';
@@ -83,6 +86,8 @@ const NotificationIncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  const commentRef = useRef<RBSheet>(null);
+
   useEffect(() => {
     getIncidentDetails();
   }, []);
@@ -128,6 +133,17 @@ const NotificationIncidentDetails: React.FC = () => {
       .then(() => snackbar(TEXT.pdf_downloaded(), 'success'))
       .catch(err => console.log(err));
   };
+
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -242,20 +258,6 @@ const NotificationIncidentDetails: React.FC = () => {
                   />
                 )}
 
-                {incidentData?.reviewers?.length > 0 && (
-                  <ReviewerTable
-                    title={TEXT.reviewer()}
-                    data={incidentData?.reviewers}
-                  />
-                )}
-
-                {incidentData?.responders?.length > 0 && (
-                  <ReviewerTable
-                    title={TEXT.responders()}
-                    data={incidentData?.responders}
-                  />
-                )}
-
                 {incidentData?.incident_blob_pdf && (
                   <TouchableOpacity
                     style={styles.submitButton1}
@@ -267,28 +269,41 @@ const NotificationIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 )}
 
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: '#6E6E6E',
-                    textAlign: 'center',
-                    marginTop: 18,
-                    lineHeight: 18,
-                  }}
-                >
-                  If you have more information to share on this incident, please
-                  feel free to post a comment by clicking on "Comment" button
-                  below.
-                </Text>
+                {isCommentVisible && (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: '#6E6E6E',
+                        textAlign: 'center',
+                        marginTop: 18,
+                        lineHeight: 18,
+                      }}
+                    >
+                      {TEXT.comment_alert()}
+                    </Text>
 
-                <ReuseButton
-                  text="Comment"
-                  style={{ width: WIDTH(50), alignSelf: 'center' }}
-                />
+                    <ReuseButton
+                      text="Comment"
+                      style={{
+                        width: WIDTH(50),
+                        alignSelf: 'center',
+                        marginTop: 12,
+                      }}
+                      onPress={() => commentRef.current?.open()}
+                    />
+                  </>
+                )}
               </View>
             )}
           </ScrollView>
         </ScreenStateHandler>
+
+        <CommentSheet
+          ref={commentRef}
+          incidentId={incident_id}
+          userToken={userToken}
+        />
       </View>
     </SafeAreaView>
   );

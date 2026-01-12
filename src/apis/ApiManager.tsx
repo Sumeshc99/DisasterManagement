@@ -6,6 +6,9 @@ export const IMG_URL = 'https://disaster.pixelplanet.in/';
 // export const BASE_URL = 'https://disasterqaapi.civicplan.in/api/';
 // export const IMG_URL = 'https://disasterqaapi.civicplan.in/';
 
+// export const BASE_URL = 'https://api.ddmanagpur.in/api/';
+// export const IMG_URL = 'https://api.ddmanagpur.in/';
+
 const getHeader = (isFormData = false) => ({
   'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -38,7 +41,7 @@ const constructApiRequest = (
 
 const Axios = axios.create({
   baseURL: BASE_URL,
-  timeout: 20000,
+  timeout: 60000,
 });
 
 const requests = {
@@ -89,7 +92,17 @@ const requestPath = {
   resByTehsil: 'responder/getRespondersByTehsil',
   getRespondersByTehsilAndResource:
     'responder/getRespondersByTehsilAndResource',
-  getTehsilByCity: 'mobileapis/getTehsilByCity',
+  helplineNumber: 'helplineNumber/public/list',
+  getTimelineNew: 'mobileapis/getTimelineNew',
+  getComments: 'mobileapis/getComments',
+  createComment: 'mobileapis/createComment',
+  deleteCommentById: 'mobileapis/deleteCommentById',
+  getLogReport: 'mobileapis/getLogReport',
+  createIncidentLogReport: 'mobileapis/createIncidentLogReport',
+  downloadPdf: 'mobileapis/downloadIncidentPdf',
+  ruralUrbanApi: 'location/get-rural-arban',
+  tehsils: 'location/get-tehsil',
+  area: 'location/get-block',
 };
 
 const ApiManager = {
@@ -97,6 +110,7 @@ const ApiManager = {
   language: () => requests.get(requestPath.language),
   tahsilList: () => requests.get(requestPath.tahsilList),
   responderList: () => requests.get(requestPath.responderList),
+  helplineNumber: () => requests.get(requestPath.helplineNumber),
 
   userLogin: (params: any) => requests.post(requestPath.login, params),
   verifyOtp: (params: any) => requests.post(requestPath.verifyOtp, params),
@@ -127,7 +141,14 @@ const ApiManager = {
     requests.get(`${requestPath.notifcation}/${id}`, token),
   assignRes: (id: any, token: string) =>
     requests.get(`${requestPath.assignRes}/${id}`, token),
-
+  downloadPdf: (id: any, token: string) =>
+    requests.get(`${requestPath.downloadPdf}/${id}`, token),
+  ruralUrbanApi: (token: string) =>
+    requests.get(`${requestPath.ruralUrbanApi}`, token),
+  getTehsils: (id: any, token: string) =>
+    requests.get(`${requestPath.tehsils}/${id}`, token),
+  getAreas: (id: any, id2: any, token: string) =>
+    requests.get(`${requestPath.area}/${id}/${id2}`, token),
   getNotificationDetails: (
     incidentId: any,
     notificationId: any,
@@ -137,6 +158,17 @@ const ApiManager = {
       `${requestPath.notificationDetails}/${incidentId}/${notificationId}`,
       token,
     ),
+  getTimelineNew: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getTimelineNew}/${incidentId}`, token),
+  getComments: (incidentId: any, token: string) =>
+    requests.get(`${requestPath.getComments}/${incidentId}`, token),
+  deleteCommentById: (commentId: number, userId: number, token: string) =>
+    requests.get(
+      `${requestPath.deleteCommentById}/${commentId}/${userId}`,
+      token,
+    ),
+  getLogReport: (incidentId: number, token: string) =>
+    requests.get(`${requestPath.getLogReport}/${incidentId}`, token),
 
   // Authenticated (requires Bearer token)
   verifyPin: (params: any, token: string) =>
@@ -164,12 +196,12 @@ const ApiManager = {
   resByTehsil: (params: any) => requests.post(requestPath.resByTehsil, params),
   getRespondersByTehsilAndResource: (params: any, token: string) =>
     requests.post(requestPath.getRespondersByTehsilAndResource, params, token),
-  getTehsilByCity: (stateName: string, cityName: string, token: string) =>
-    requests.get(
-      `${requestPath.getTehsilByCity}/${stateName}/${cityName}`,
-      token,
-    ),
 
+  createComment: (params: any, token: string) =>
+    requests.post(requestPath.createComment, params, token),
+
+  createIncidentLogReport: (params: any, token: string) =>
+    requests.post(requestPath.createIncidentLogReport, params, token),
 };
 
 export default ApiManager;

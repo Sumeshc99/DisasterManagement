@@ -134,7 +134,7 @@ export default function OTPVerifyForPin() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/DDMA LOGO.png')}
+            source={require('../../assets/appLogo1.png')}
             resizeMode="contain"
             style={{ width: 100, height: 100, marginTop: 60 }}
           />

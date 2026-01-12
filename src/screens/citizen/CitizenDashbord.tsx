@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import OpenStreetMap from '../../components/OpenStreetMap';
 import RespondersList from './pages/RespondersList';
 import RightDrawer from '../../components/RightDrawer';
+import WeatherSheet from '../../components/bottomSheets/WeatherSheet';
 
 import HelplineDetails from '../../components/bottomSheets/HelplineDetails';
 import CompleteProfileSheet from '../../components/bottomSheets/CompleteProfileSheet';
@@ -30,7 +31,6 @@ import Dis from '../../assets/svg/dis.svg';
 import { TEXT } from '../../i18n/locales/Text';
 import ReviewerSection from '../receiver/ReviewerSection';
 import ResponderSection from '../responder/ResponderSection';
-import ResponderListSheet from '../../components/bottomSheets/ResponderListSheet';
 
 const CitizenDashboard = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -41,25 +41,13 @@ const CitizenDashboard = () => {
   const [responders, setResponders] = useState<any[]>([]);
   const [showResponders, setShowResponders] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [responderListFromSheet, setResponderListFromSheet] = useState([]);
-
-  const route = useRoute();
-  // const navigation = useNavigation();
-
-  useEffect(() => {
-    if (route?.params?.responders) {
-      setResponderListFromSheet(route?.params?.responders);
-      // OPEN bottom sheet when data arrives
-      responderSheetRef.current?.open();
-    }
-  }, [route.params]);
 
   const sheetRef = useRef<any>(null);
   const remindRef = useRef<any>(null);
   const showHelpRef = useRef<any>(null);
   const changePassRef = useRef<any>(null);
   const successRef = useRef<any>(null);
-  const responderSheetRef = useRef<any>(null);
+  const weatherSheetRef = useRef<any>(null);
 
   GetCurrentLocation();
   useBackExit();
@@ -76,14 +64,6 @@ const CitizenDashboard = () => {
     return () => clearTimeout(timer);
   }, [user]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     GetCurrentLocation();
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   const fetchIncidentsAndResponders = useCallback(async () => {
     try {
       const [incidentsResp, respondersResp] = await Promise.all([
@@ -91,8 +71,16 @@ const CitizenDashboard = () => {
         ApiManager.responderList(),
       ]);
 
-      if (incidentsResp?.data?.success)
-        setIncidentList(incidentsResp.data.data?.results ?? []);
+      if (incidentsResp?.data?.success) {
+        const data = incidentsResp.data.data?.results || [];
+        const newData = data.filter(
+          (item: any) =>
+            item.status == 'Pending Review' ||
+            item.status == 'Pending Response by Responder' ||
+            item.status == 'Pending closure by Responder',
+        );
+        setIncidentList(newData ?? []);
+      }
 
       if (respondersResp?.data?.success)
         setResponders(respondersResp.data.data?.results ?? []);
@@ -156,15 +144,6 @@ const CitizenDashboard = () => {
 
       {/* Floating buttons */}
       <View style={styles.sideBtns}>
-        {/* <TouchableOpacity
-          style={styles.btnWrapper}
-          onPress={() => responderSheetRef.current?.open()}
-        >
-          <View style={styles.floatingBtn}>
-            <Text> open here</Text>
-          </View>
-          <Text style={styles.text}>open res sheet</Text>
-        </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.btnWrapper}
           onPress={() => setShowResponders(prev => !prev)}
@@ -195,7 +174,10 @@ const CitizenDashboard = () => {
           <Text style={styles.text}>{TEXT.help()}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => ''} style={styles.btnWrapper}>
+        <TouchableOpacity
+          onPress={() => weatherSheetRef?.current?.open()}
+          style={styles.btnWrapper}
+        >
           <View style={styles.floatingBtn}>
             <Weather width={26} height={26} />
           </View>
@@ -232,11 +214,7 @@ const CitizenDashboard = () => {
       {user?.role === 'reviewer' && <ReviewerSection />}
       {user?.role === 'responder' && <ResponderSection />}
 
-      <ResponderListSheet
-        ref={responderSheetRef}
-        responders={responderListFromSheet}
-        onClose={() => console.log('Sheet closed')}
-      />
+      <WeatherSheet ref={weatherSheetRef} />
     </SafeAreaView>
   );
 };

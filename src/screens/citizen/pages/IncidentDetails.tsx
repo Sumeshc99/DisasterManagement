@@ -16,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH, HEIGHT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -29,6 +29,9 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ImageContainer from '../../../components/ImageContainer';
 import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
+import ResponderListSheet from '../../../components/bottomSheets/ResponderListSheet';
+import CommentSheet from '../../../components/bottomSheets/CommentSheet';
+import ReuseButton from '../../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -39,7 +42,9 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  ru_ban: string;
   tehsil: string;
+  area: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -105,6 +110,7 @@ const IncidentDetails: React.FC = () => {
   const successRef = useRef<any>(null);
   const cancelRef = useRef<any>(null);
   const acceptRef = useRef<any>(null);
+  const listRef = useRef<any>(null);
 
   const { user, userToken } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
@@ -112,10 +118,13 @@ const IncidentDetails: React.FC = () => {
   const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setIncidentData] = useState<any>('');
+  const [filteredList, setfilteredList] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [tapCount, setTapCount] = useState(0);
   const tapTimeout = useRef<number | null>(null);
+  const commentRef = useRef<RBSheet>(null);
+  const incidentId = data?.incident_auto_id || data;
 
   const {
     control,
@@ -129,7 +138,9 @@ const IncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      ru_ban: '',
       tehsil: '',
+      area: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -162,6 +173,8 @@ const IncidentDetails: React.FC = () => {
             status: inc?.status,
             dateTime: formatDateTime(inc?.date_reporting),
             tehsil: inc?.tehsil_name,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
           });
         }
       })
@@ -191,27 +204,52 @@ const IncidentDetails: React.FC = () => {
   };
 
   // ====================== SEND INCIDENT ============================
-  const incidentUpdateStatus = () => {
-    const body = {
-      user_id: user?.id,
-      incident_id: data?.incident_auto_id || data,
-      button_type: TEXT.yes(),
-      cancel_reason: '',
-      duplicate_incident_id: '',
-      reason_for_cancellation: '',
-    };
-    showLoader();
-    ApiManager.incidentStatusUpdate(body, userToken)
-      .then(resp => {
-        if (resp.data.status) {
-          console.log(resp.data.status, 'Response create incident');
+  const incidentUpdateStatus = async () => {
+    try {
+      const body = {
+        user_id: user?.id,
+        incident_id: data?.incident_auto_id ?? data,
+        button_type: 'Yes',
+        cancel_reason: '',
+        duplicate_incident_id: '',
+        reason_for_cancellation: '',
+      };
+
+      showLoader();
+
+      const resp = await ApiManager.incidentStatusUpdate(body, userToken);
+
+      if (resp?.data?.status === true) {
+        if (successRef?.current?.close) {
           successRef.current.close();
-          acceptRef.current.open();
+        }
+
+        setTimeout(() => {
+          if (acceptRef?.current?.open) {
+            acceptRef.current.open();
+          }
+        }, 300);
+
+        if (typeof assignToReviewer === 'function') {
           assignToReviewer();
         }
+      }
+    } catch (err) {
+      console.log('Incident update error:', err);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  const getPdf = () => {
+    setLoading(true);
+    ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        // console.log('downloadPdf', resp?.data?.data?.pdfUrl);
+        downloadPDF(resp?.data?.data?.pdfUrl);
       })
-      .catch(err => console.log('err', err))
-      .finally(() => hideLoader());
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
   };
 
   const assignToReviewer = () => {
@@ -232,14 +270,12 @@ const IncidentDetails: React.FC = () => {
         clearTimeout(tapTimeout.current);
       }
 
-      // If tapped 3 times
       if (newCount >= 3) {
         setTapCount(0);
         cancelIncident();
         return 0;
       }
 
-      // Reset counter if too slow (1.5 sec)
       tapTimeout.current = setTimeout(() => {
         setTapCount(0);
       }, 1500);
@@ -332,6 +368,17 @@ const IncidentDetails: React.FC = () => {
     cancelRef.current.close();
   };
 
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -386,9 +433,23 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>Tehsil</Text>
+                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{'Area'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('area')}</Text>
                 </View>
               </View>
 
@@ -427,7 +488,7 @@ const IncidentDetails: React.FC = () => {
 
               <View style={{ flexDirection: 'row', gap: 14 }}>
                 <View style={{ width: WIDTH(30) }}>
-                  {media?.length && <ImageContainer data={media} />}
+                  <ImageContainer data={media} />
                 </View>
 
                 <View style={{ flex: 1, justifyContent: 'space-between' }}>
@@ -518,13 +579,39 @@ const IncidentDetails: React.FC = () => {
                 >
                   <TouchableOpacity
                     style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+                    onPress={() => getPdf()}
                   >
                     <Text style={styles.submitButtonText1}>
                       {TEXT.download_pdf()}
                     </Text>
                   </TouchableOpacity>
                 </View>
+              )}
+
+              {isCommentVisible && (
+                <>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: '#6E6E6E',
+                      textAlign: 'center',
+                      marginTop: 18,
+                      lineHeight: 18,
+                    }}
+                  >
+                    {TEXT.comment_alert()}
+                  </Text>
+
+                  <ReuseButton
+                    text="Comment"
+                    style={{
+                      width: WIDTH(50),
+                      alignSelf: 'center',
+                      marginTop: 12,
+                    }}
+                    onPress={() => commentRef.current?.open()}
+                  />
+                </>
               )}
             </View>
           </ScrollView>
@@ -552,7 +639,21 @@ const IncidentDetails: React.FC = () => {
       {/* ACCEPT */}
       <SelfHelpBottomSheet
         ref={acceptRef}
-        onClose={() => console.log('Closed')}
+        data={incidentData}
+        list={filteredList}
+        setList={(i: any) => setfilteredList(i)}
+        onClose={() => {
+          acceptRef.current.close();
+          listRef.current.open();
+        }}
+      />
+
+      <ResponderListSheet ref={listRef} responders={filteredList} />
+      <CommentSheet
+        ref={commentRef}
+        incidentId={incidentId}
+        userToken={userToken}
+        userId={user?.id}
       />
     </SafeAreaView>
   );

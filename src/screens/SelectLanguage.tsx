@@ -26,6 +26,7 @@ import {
   request,
   RESULTS,
 } from 'react-native-permissions';
+import { TEXT } from '../i18n/locales/Text';
 
 const SelectLanguage = () => {
   const navigation = useNavigation<AppStackNavigationProp<'splashScreen'>>();
@@ -160,7 +161,7 @@ const SelectLanguage = () => {
         {/* Content Section */}
         <View style={styles.contentContainer}>
           <Image
-            source={require('../assets/DDMA LOGO.png')}
+            source={require('../assets/appLogo1.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -221,7 +222,7 @@ const SelectLanguage = () => {
 
           {/* Next Button */}
           <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-            <Text style={styles.nextText}>Next</Text>
+            <Text style={styles.nextText}>{TEXT.next()}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

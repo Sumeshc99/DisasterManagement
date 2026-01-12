@@ -73,7 +73,7 @@ export default function OTPVerification() {
               email: resp?.data?.data?.email,
               role: resp?.data?.data?.role,
               tehsil: userData?.data?.tehsil,
-              is_registered: resp?.data?.data?.is_registered,
+              is_registered: userData?.data?.is_registered,
             }),
           );
           dispatch(userToken(resp?.data?.token));
@@ -137,7 +137,7 @@ export default function OTPVerification() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/DDMA LOGO.png')}
+            source={require('../../assets/appLogo1.png')}
             resizeMode="contain"
             style={{ width: 100, height: 100, marginTop: 60 }}
           />

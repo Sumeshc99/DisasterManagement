@@ -43,7 +43,10 @@ const GetCurrentLocation = () => {
           Alert.alert(
             'Location Required',
             'This feature needs your location to continue.',
-            [{ text: 'Retry', onPress: () => ensureLocationPermission() }],
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Retry', onPress: () => ensureLocationPermission() },
+            ],
           );
 
           return;
@@ -68,27 +71,34 @@ const GetCurrentLocation = () => {
 
           if (req === RESULTS.BLOCKED) {
             Alert.alert(
-              'Permission Blocked',
-              'Please enable location in settings.',
-              [{ text: 'Open Settings', onPress: () => openSettings() }],
+              'Permission Denied',
+              'Please enable location permission in settings.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Open Settings', onPress: () => openSettings() },
+              ],
             );
+
             return;
           }
-
-          // still denied
           Alert.alert(
             'Location Needed',
             'Please allow location to use this feature.',
-            [{ text: 'Retry', onPress: () => ensureLocationPermission() }],
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Retry', onPress: () => ensureLocationPermission() },
+            ],
           );
           return;
         }
-        console.log('iOS Permission Status:', status);
         if (status === RESULTS.BLOCKED) {
           Alert.alert(
             'Permission Blocked',
             'Please enable location permission in settings.',
-            [{ text: 'Open Settings', onPress: () => openSettings() }],
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => openSettings() },
+            ],
           );
           return;
         }
@@ -96,7 +106,10 @@ const GetCurrentLocation = () => {
         Alert.alert(
           'Location Needed',
           'Please allow location to use this feature.',
-          [{ text: 'Retry', onPress: () => ensureLocationPermission() }],
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Retry', onPress: () => ensureLocationPermission() },
+          ],
         );
       } catch (err) {
         console.warn('Permission error:', err);
