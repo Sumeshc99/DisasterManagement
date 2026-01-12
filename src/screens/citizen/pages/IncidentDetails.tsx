@@ -42,7 +42,9 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  ru_ban: string;
   tehsil: string;
+  area: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -136,7 +138,9 @@ const IncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      ru_ban: '',
       tehsil: '',
+      area: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -169,6 +173,8 @@ const IncidentDetails: React.FC = () => {
             status: inc?.status,
             dateTime: formatDateTime(inc?.date_reporting),
             tehsil: inc?.tehsil_name,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
           });
         }
       })
@@ -427,9 +433,23 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
                 <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{'Area'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('area')}</Text>
                 </View>
               </View>
 

@@ -39,9 +39,9 @@ interface IncidentForm {
   mobileNumber: string;
   description: string;
   media: MediaAsset[];
-  // ru_ban: string;
+  ru_ban: string;
   tehsil: string;
-  // area: string;
+  area: string;
 }
 
 const CreateIncidentScreen: React.FC = () => {
@@ -55,7 +55,9 @@ const CreateIncidentScreen: React.FC = () => {
   const [desc, setdesc] = useState([]);
   const [showdropDown, setshowdropDown] = useState(false);
 
+  const [addTypes, setaddTypes] = useState([]);
   const [tahsilList, setTahsilList] = useState([]);
+  const [area, setarea] = useState([]);
 
   const addressRef = useRef<any>(null);
 
@@ -76,14 +78,16 @@ const CreateIncidentScreen: React.FC = () => {
       mobileNumber: '',
       description: '',
       media: [],
-      // ru_ban: '',
+      ru_ban: '',
       tehsil: '',
-      // area: '',
+      area: '',
     },
   });
 
   const media = watch('media');
   const selectedType = watch('incidentType');
+  const type = watch('ru_ban');
+  const tehsil = watch('tehsil');
 
   useEffect(() => {
     register('address', { required: TEXT.address_required() });
@@ -113,6 +117,82 @@ const CreateIncidentScreen: React.FC = () => {
     getIncidentType();
   }, []);
 
+  useEffect(() => {
+    const getRuralUrban = async () => {
+      try {
+        showLoader();
+        const resp = await ApiManager.ruralUrbanApi(userToken);
+        if (resp?.data?.success) {
+          setaddTypes(
+            (resp?.data?.data || []).map((item: any) => ({
+              label: item.type_name,
+              value: item.id,
+            })),
+          );
+        }
+      } catch (err: any) {
+        console.log('Incident Error:', err.response || err);
+      } finally {
+        hideLoader();
+      }
+    };
+
+    getRuralUrban();
+  }, []);
+
+  useEffect(() => {
+    const getTehsils = async () => {
+      try {
+        showLoader();
+        const resp = await ApiManager.getTehsils(type, userToken);
+        if (resp?.data?.success) {
+          setTahsilList(
+            (resp?.data?.data || []).map((item: any) => ({
+              label: item.tehsil_name,
+              value: item.tehsil_id,
+            })),
+          );
+        } else {
+          snackbar('Failed to load tehsil list', 'error');
+        }
+      } catch (err) {
+        console.log('Tehsil Fetch Error:', err);
+        snackbar('Error fetching tehsil list', 'error');
+      } finally {
+        hideLoader();
+      }
+    };
+
+    type && getTehsils();
+  }, [type]);
+
+  useEffect(() => {
+    const getArea = async () => {
+      try {
+        showLoader();
+        const resp = await ApiManager.getAreas(type, tehsil, userToken);
+
+        if (resp?.data?.success) {
+          setarea(
+            (resp?.data?.data || []).map((item: any) => ({
+              label: item.block_name,
+              value: item.block_id,
+            })),
+          );
+        } else {
+          snackbar('Failed to load area list', 'error');
+        }
+      } catch (err) {
+        console.log('Area Fetch Error:', err);
+        snackbar('Error fetching area list', 'error');
+      } finally {
+        hideLoader();
+      }
+    };
+
+    tehsil && getArea();
+  }, [tehsil]);
+
   const handleMediaPick = (items: any[]) => {
     const updated = [...media, ...items];
     setValue('media', updated);
@@ -141,6 +221,8 @@ const CreateIncidentScreen: React.FC = () => {
       formData.append('district_id', allAddress?.district_id || '');
       formData.append('city_code', allAddress?.pincode || '');
       formData.append('other_incident_type', data?.customIncidentType || '');
+      formData.append('area_type_id', data?.ru_ban || '');
+      formData.append('block_id', data?.area || '');
 
       if (Array.isArray(data.media)) {
         data.media.forEach((file: any, index) => {
@@ -274,15 +356,15 @@ const CreateIncidentScreen: React.FC = () => {
           )}
         </View>
 
-        {/* <DropDownInput
+        <DropDownInput
           name="ru_ban"
           label={'Rural / Urban'}
           placeholder={'Select Rural / Urban'}
           control={control}
-          rules={{ required: TEXT.tehsil_is_required() }}
-          items={tahsilList}
+          rules={{ required: 'Rural/Urban is required' }}
+          items={addTypes}
           errors={errors}
-        /> */}
+        />
 
         <DropDownInput
           name="tehsil"
@@ -293,14 +375,14 @@ const CreateIncidentScreen: React.FC = () => {
           items={tahsilList}
         />
 
-        {/* <DropDownInput
+        <DropDownInput
           name="area"
-          label={'Select Area'}
+          label={'Area'}
           control={control}
           placeholder={'Select Area'}
-          rules={{ required: TEXT.tehsil_is_required() }}
-          items={tahsilList}
-        /> */}
+          // rules={{ required: 'Area is required' }}
+          items={area}
+        />
 
         {/* Mobile Number */}
         <FormTextInput
@@ -377,33 +459,6 @@ const CreateIncidentScreen: React.FC = () => {
         onSubmit={async data => {
           setValue('address', data?.flat || '', { shouldValidate: true });
           setallAddress(data);
-
-          if (data?.state && data?.city) {
-            try {
-              showLoader();
-              const resp = await ApiManager.getTehsilByCity(
-                data.state,
-                data.city,
-                userToken,
-              );
-
-              if (resp?.data?.status) {
-                setTahsilList(
-                  (resp?.data?.data || []).map((item: any) => ({
-                    label: item.tehsil_name,
-                    value: item.id,
-                  })),
-                );
-              } else {
-                snackbar('Failed to load tehsil list', 'error');
-              }
-            } catch (err) {
-              console.log('Tehsil Fetch Error:', err);
-              snackbar('Error fetching tehsil list', 'error');
-            } finally {
-              hideLoader();
-            }
-          }
         }}
       />
     </SafeAreaView>
