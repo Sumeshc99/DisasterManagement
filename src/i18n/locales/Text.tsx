@@ -524,14 +524,4 @@ export const TEXT = {
     ),
 
   timeline: () => t('timeline', 'Timeline'),
-
-  media: () => t('media', 'Media'),
-
-  media: () => t('media', 'Media'),
-
-  media: () => t('media', 'Media'),
-
-  media: () => t('media', 'Media'),
-
-  media: () => t('media', 'Media'),
 };

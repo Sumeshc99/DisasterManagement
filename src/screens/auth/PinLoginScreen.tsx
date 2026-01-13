@@ -170,9 +170,9 @@ export default function OTPVerification() {
             source={require('../../assets/fingerPrint.png')}
           />
         </TouchableOpacity> */}
-        <View style={{ flex: 1, marginTop: 30 }}>
+        {/* <View style={{ flex: 1, marginTop: 30 }}>
           <BiometricAuth response={() => handleNext('biometric')} />
-        </View>
+        </View> */}
       </ScrollView>
     </ImageBackground>
   );

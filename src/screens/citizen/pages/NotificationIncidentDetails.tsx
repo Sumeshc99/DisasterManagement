@@ -269,7 +269,7 @@ const NotificationIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 )}
 
-                {isCommentVisible && (
+                {/* {isCommentVisible && (
                   <>
                     <Text
                       style={{
@@ -293,7 +293,7 @@ const NotificationIncidentDetails: React.FC = () => {
                       onPress={() => commentRef.current?.open()}
                     />
                   </>
-                )}
+                )} */}
               </View>
             )}
           </ScrollView>

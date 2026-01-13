@@ -445,7 +445,7 @@ const RevIncidentDetails: React.FC = () => {
                       </Text>
                     </TouchableOpacity>
 
-                    {canShowLogReport && (
+                    {/* {canShowLogReport && (
                       <TouchableOpacity
                         style={styles.submitButton1}
                         onPress={() =>
@@ -458,10 +458,10 @@ const RevIncidentDetails: React.FC = () => {
                           {TEXT.log_report()}
                         </Text>
                       </TouchableOpacity>
-                    )}
+                    )} */}
                   </View>
 
-                  {isCommentVisible && (
+                  {/* {isCommentVisible && (
                     <View style={{ alignItems: 'center', marginTop: 18 }}>
                       <Text
                         style={{
@@ -485,7 +485,7 @@ const RevIncidentDetails: React.FC = () => {
                         onPress={() => commentRef.current?.open()}
                       />
                     </View>
-                  )}
+                  )} */}
                 </>
               )}
             </View>

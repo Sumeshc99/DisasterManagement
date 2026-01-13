@@ -588,7 +588,7 @@ const IncidentDetails: React.FC = () => {
                 </View>
               )}
 
-              {isCommentVisible && (
+              {/* {isCommentVisible && (
                 <>
                   <Text
                     style={{
@@ -612,7 +612,7 @@ const IncidentDetails: React.FC = () => {
                     onPress={() => commentRef.current?.open()}
                   />
                 </>
-              )}
+              )} */}
             </View>
           </ScrollView>
         </ScreenStateHandler>
