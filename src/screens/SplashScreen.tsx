@@ -33,7 +33,7 @@ const SplashScreen = () => {
       if (user?.id) {
         navigation.replace('mainAppSelector');
       } else {
-        navigation.navigate('selectLanguage');
+        navigation.replace('selectLanguage');
       }
     }, 2000);
 

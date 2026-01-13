@@ -31,7 +31,6 @@ import RNBlobUtil from 'react-native-blob-util';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ResponderListSheet from '../../../components/bottomSheets/ResponderListSheet';
 import CommentSheet from '../../../components/bottomSheets/CommentSheet';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import ReuseButton from '../../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
@@ -43,7 +42,9 @@ interface IncidentDetailsForm {
   media: { uri?: string; name?: string; type?: string }[];
   status: string;
   dateTime: string;
+  ru_ban: string;
   tehsil: string;
+  area: string;
 }
 
 const ReviewerTable = ({ title, data }: any) => {
@@ -137,7 +138,9 @@ const IncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      ru_ban: '',
       tehsil: '',
+      area: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -170,6 +173,8 @@ const IncidentDetails: React.FC = () => {
             status: inc?.status,
             dateTime: formatDateTime(inc?.date_reporting),
             tehsil: inc?.tehsil_name,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
           });
         }
       })
@@ -214,8 +219,6 @@ const IncidentDetails: React.FC = () => {
 
       const resp = await ApiManager.incidentStatusUpdate(body, userToken);
 
-      console.log('Incident update response:', resp);
-
       if (resp?.data?.status === true) {
         if (successRef?.current?.close) {
           successRef.current.close();
@@ -236,6 +239,17 @@ const IncidentDetails: React.FC = () => {
     } finally {
       hideLoader();
     }
+  };
+
+  const getPdf = () => {
+    setLoading(true);
+    ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        // console.log('downloadPdf', resp?.data?.data?.pdfUrl);
+        downloadPDF(resp?.data?.data?.pdfUrl);
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
   };
 
   const assignToReviewer = () => {
@@ -419,9 +433,23 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
                 <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{'Area'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('area')}</Text>
                 </View>
               </View>
 
@@ -551,7 +579,7 @@ const IncidentDetails: React.FC = () => {
                 >
                   <TouchableOpacity
                     style={[styles.submitButton1]}
-                    onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+                    onPress={() => getPdf()}
                   >
                     <Text style={styles.submitButtonText1}>
                       {TEXT.download_pdf()}

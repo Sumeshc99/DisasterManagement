@@ -17,6 +17,7 @@ interface MediaAsset {
   uri?: string;
   type?: string;
   fileName?: string;
+  duration?: number;
 }
 
 interface FormMediaPickerProps {
@@ -58,15 +59,13 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
     setTimeout(async () => {
       try {
         const result = await launchCamera({
-          mediaType: 'photo',
+          mediaType: 'mixed',
           quality: 0.8,
+          videoQuality: 'high',
           saveToPhotos: true,
         });
 
-        if (result.didCancel || result.errorCode) {
-          isPickingRef.current = false;
-          return;
-        }
+        if (result.didCancel || result.errorCode) return;
 
         if (result.assets?.length) {
           onChangeMedia?.(result.assets);
@@ -86,14 +85,11 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
     setTimeout(async () => {
       try {
         const result = await launchImageLibrary({
-          mediaType: 'photo',
+          mediaType: 'mixed',
           selectionLimit: 5,
         });
 
-        if (result.didCancel || result.errorCode) {
-          isPickingRef.current = false;
-          return;
-        }
+        if (result.didCancel || result.errorCode) return;
 
         if (result.assets?.length) {
           onChangeMedia?.(result.assets);
@@ -123,28 +119,39 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
             onPress={openSheet}
             activeOpacity={0.8}
           >
-            {media?.length > 0 ? (
+            {media.length > 0 ? (
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.previewScroll}
               >
-                {media.map((item: any, index) => (
-                  <View key={index} style={styles.thumbnailWrapper}>
-                    <Image
-                      source={{ uri: item.uri }}
-                      style={styles.previewImage}
-                    />
-                    {onRemoveMedia && (
-                      <TouchableOpacity
-                        style={styles.removeButton}
-                        onPress={() => onRemoveMedia(index)}
-                      >
-                        <Text style={styles.removeText}>✕</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ))}
+                {media.map((item, index) => {
+                  const isVideo = item.type?.startsWith('video');
+
+                  return (
+                    <View key={index} style={styles.thumbnailWrapper}>
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={styles.previewImage}
+                      />
+
+                      {isVideo && (
+                        <View style={styles.videoBadge}>
+                          <Text style={styles.videoIcon}>▶</Text>
+                        </View>
+                      )}
+
+                      {onRemoveMedia && (
+                        <TouchableOpacity
+                          style={styles.removeButton}
+                          onPress={() => onRemoveMedia(index)}
+                        >
+                          <Text style={styles.removeText}>✕</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  );
+                })}
               </ScrollView>
             ) : (
               <Text style={styles.placeholderText}>
@@ -157,6 +164,7 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
 
       {error && <Text style={styles.errorText}>{error}</Text>}
 
+      {/* Bottom Sheet */}
       <MediaOptionSheet
         ref={sheetRef}
         onCamera={openCamera}
@@ -197,8 +205,33 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   previewScroll: { marginTop: 4 },
-  thumbnailWrapper: { position: 'relative', marginRight: 10 },
-  previewImage: { width: 90, height: 90, borderRadius: 6 },
+
+  thumbnailWrapper: {
+    position: 'relative',
+    marginRight: 10,
+  },
+
+  previewImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 6,
+  },
+
+  videoBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+
+  videoIcon: {
+    color: '#fff',
+    fontSize: 12,
+  },
+
   removeButton: {
     position: 'absolute',
     top: 4,
@@ -212,7 +245,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
   },
-
   inputError: { borderColor: 'red' },
   placeholderText: {
     fontSize: 16,

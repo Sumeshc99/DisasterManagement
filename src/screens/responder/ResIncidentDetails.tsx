@@ -31,7 +31,9 @@ interface IncidentDetailsForm {
   incidentId: string;
   incidentType: string;
   address: string;
+  ru_ban: string;
   tehsil: string;
+  area: string;
   mobileNumber: string;
   description: string;
   media: { uri?: string; name?: string; type?: string }[];
@@ -106,7 +108,9 @@ const ResIncidentDetails: React.FC = () => {
       incidentId: '',
       incidentType: '',
       address: '',
+      ru_ban: '',
       tehsil: '',
+      area: '',
       mobileNumber: '',
       description: '',
       media: [],
@@ -155,6 +159,8 @@ const ResIncidentDetails: React.FC = () => {
               description: inc?.description,
               media: inc?.media,
               status: inc?.status,
+              ru_ban: inc?.rural_urban_name,
+              area: inc?.area_name,
               dateTime: formatDateTime(inc?.date_reporting),
             });
           }
@@ -213,6 +219,75 @@ const ResIncidentDetails: React.FC = () => {
       .finally(() => hideLoader());
   };
 
+  const showActionBtns = () => {
+    const data = incidentData?.pending_closure?.find(
+      (i: any) => i.user_id === user?.id,
+    );
+
+    if (!data?.pending_closure) {
+      return (
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+        >
+          <TouchableOpacity
+            style={[styles.submitButton, { backgroundColor: COLOR.darkGray }]}
+            onPress={() => rejectRef.current.open()}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => incidentUpdateStatus('ResponderAccept')}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (data.pending_closure === 'accept') {
+      return (
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}
+        >
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => incidentUpdateStatus('Complete')}
+          >
+            <Text style={styles.submitButtonText}>{TEXT.complete()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (data.pending_closure === 'complete') {
+      return (
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            style={styles.submitButton1}
+            onPress={() => downloadPDF(incidentData?.incident_blob_pdf)}
+          >
+            <Text style={styles.submitButtonText1}>{TEXT.download_pdf()}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
+  const getPdf = () => {
+    setLoading(true);
+    ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        // console.log('downloadPdf', resp?.data?.data?.pdfUrl);
+        downloadPDF(resp?.data?.data?.pdfUrl);
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -261,9 +336,23 @@ const ResIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
+                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
                 <Text style={styles.label}>{TEXT.tehsil()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('tehsil')}</Text>
+                </View>
+              </View>
+
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.label}>{'Area'}</Text>
+                <View style={styles.disabledBox}>
+                  <Text style={styles.disabledText}>{watch('area')}</Text>
                 </View>
               </View>
 
@@ -326,78 +415,24 @@ const ResIncidentDetails: React.FC = () => {
                 />
               )}
               {/* BUTTONS */}
-              {incidentData?.status == 'Pending Response by Responder' && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => rejectRef.current.open()}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.reject()}</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => incidentUpdateStatus('ResponderAccept')}
-                  >
-                    <Text style={styles.submitButtonText}>{TEXT.accept()}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {incidentData?.status === 'Pending closure by Responder' ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    gap: 20,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.submitButton,
-                      { backgroundColor: COLOR.darkGray },
-                    ]}
-                    onPress={() => incidentUpdateStatus('Complete')}
-                  >
-                    <Text style={styles.submitButtonText}>
-                      {TEXT.complete()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                (incidentData?.status === 'Pending closure by Admin' ||
-                  incidentData?.status === 'Closed' ||
-                  incidentData?.status === 'Admin Cancelled' ||
-                  incidentData?.status === 'Reviewer Duplicate') && (
-                  <View
-                    style={{
-                      marginTop: 0,
-                      alignItems: 'center',
-                    }}
-                  >
-                    {/* 🔽 Download PDF button here 🔽 */}
-                    <TouchableOpacity
-                      style={[styles.submitButton1]}
-                      onPress={() =>
-                        downloadPDF(incidentData?.incident_blob_pdf)
-                      }
-                    >
-                      <Text style={styles.submitButtonText1}>
-                        {TEXT.download_pdf()}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              )}
+              {incidentData?.status === 'Pending Response by Responder' ||
+              incidentData?.status === 'Pending closure by Responder'
+                ? showActionBtns()
+                : (incidentData?.status === 'Pending closure by Admin' ||
+                    incidentData?.status === 'Closed' ||
+                    incidentData?.status === 'Admin Cancelled' ||
+                    incidentData?.status === 'Reviewer Duplicate') && (
+                    <View style={{ alignItems: 'center' }}>
+                      <TouchableOpacity
+                        style={styles.submitButton1}
+                        onPress={() => getPdf()}
+                      >
+                        <Text style={styles.submitButtonText1}>
+                          {TEXT.download_pdf()}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
             </View>
           </ScrollView>
         </ScreenStateHandler>
