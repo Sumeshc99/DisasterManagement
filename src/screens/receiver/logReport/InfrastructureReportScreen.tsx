@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,9 @@ import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
 import { FONT } from '../../../themes/AppConst';
 import { TEXT } from '../../../i18n/locales/Text';
-
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
+import ScreenLoader from '../../../components/ScreenLoader';
+import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
 interface InfrastructureItem {
   name_of_village: string;
   type_of_property: string;
@@ -42,6 +44,11 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   const [infraList, setInfraList] = useState<InfrastructureItem[]>([
     getEmptyInfra(),
   ]);
+  const [loadingGet, setLoadingGet] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const successRef = useRef<any>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
   /* ---------------- GET LOG REPORT ---------------- */
   useEffect(() => {
@@ -52,12 +59,14 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
 
   const getLogReport = async () => {
     try {
+      setLoadingGet(true);
       const res = await ApiManager.getLogReport(incident_id, userToken);
       if (!res?.data?.status) return;
 
       const data = res.data.data;
 
       // No log report yet
+      setIsSubmitted(data?.is_submitted === true);
       if (
         data?.status === false ||
         data?.infrastructure_damage_report === undefined
@@ -84,6 +93,8 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Infra GET error', e);
+    } finally {
+      setLoadingGet(false);
     }
   };
 
@@ -123,18 +134,32 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
     };
 
     try {
+      setLoadingSave(true);
       const res = await ApiManager.createIncidentLogReport(payload, userToken);
       if (res?.data?.status) {
         setLogReportId(res.data.data.id);
         console.log('Infrastructure saved');
+        // Show the first message in snackbar
+        const msg =
+          res?.data?.data?.messages && res.data.data.messages.length > 0
+            ? res.data.data.messages[0]
+            : res.data.message; // fallback to main message
+
+        setSuccessMsg(msg);
+        successRef.current?.open();
+
+        await getLogReport();
       }
     } catch (e) {
       console.log('Infra SAVE error', e);
+    } finally {
+      setLoadingSave(false);
     }
   };
 
   const handleNext = async () => {
-    await handleSave();
+    // await handleSave();
+    // !isSubmitted && handleSave();
     navigation.navigate('CropDamageReportScreen', { incident_id });
   };
 
@@ -153,72 +178,105 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       </View>
 
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>
-            {TEXT.property_damage_report()}
-          </Text>
+        {loadingGet || loadingSave ? (
+          <ScreenLoader />
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            <Text style={styles.sectionTitle}>
+              {TEXT.property_damage_report()}
+            </Text>
 
-          {infraList.map((item, index) => (
-            <View key={index} style={{ marginBottom: 16 }}>
-              <Text style={styles.label}>{TEXT.name_of_village()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.name_of_village()}
-                value={item.name_of_village}
-                onChangeText={t => updateField(index, 'name_of_village', t)}
-              />
-
-              <Text style={styles.label}>{TEXT.type_of_property()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.type_of_property()}
-                value={item.type_of_property}
-                onChangeText={t => updateField(index, 'type_of_property', t)}
-              />
-              <Text style={styles.label}>{TEXT.count_of_partial_damage()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.count_of_partial_damage()}
-                keyboardType="number-pad"
-                value={item.count_of_partial_damaged}
-                onChangeText={t =>
-                  updateField(index, 'count_of_partial_damaged', t)
-                }
-              />
-              <Text style={styles.label}>{TEXT.count_of_fully_damage()}</Text>
-
-              <View style={styles.inlineRow}>
+            {infraList.map((item, index) => (
+              <View key={index} style={{ marginBottom: 16 }}>
+                <Text style={styles.label}>{TEXT.name_of_village()}</Text>
                 <TextInput
-                  style={[styles.input, styles.flexInput]}
-                  placeholder={TEXT.count_of_fully_damage()}
-                  keyboardType="number-pad"
-                  value={item.count_of_fully_damaged}
-                  onChangeText={t =>
-                    updateField(index, 'count_of_fully_damaged', t)
-                  }
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.name_of_village()}
+                  value={item.name_of_village}
+                  onChangeText={t => updateField(index, 'name_of_village', t)}
                 />
 
-                {index === infraList.length - 1 ? (
-                  <TouchableOpacity
-                    style={[styles.inlineBtn, { backgroundColor: COLOR.blue }]}
-                    onPress={addInfra}
-                  >
-                    <Text style={styles.inlinePlus}>＋</Text>
-                  </TouchableOpacity>
-                ) : (
-                  infraList.length > 1 && (
-                    <TouchableOpacity
-                      style={[styles.inlineBtn, { backgroundColor: COLOR.red }]}
-                      onPress={() => removeInfra(index)}
-                    >
-                      <Text style={styles.inlineCross}>×</Text>
-                    </TouchableOpacity>
-                  )
-                )}
+                <Text style={styles.label}>{TEXT.type_of_property()}</Text>
+                <TextInput
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.type_of_property()}
+                  value={item.type_of_property}
+                  onChangeText={t => updateField(index, 'type_of_property', t)}
+                />
+                <Text style={styles.label}>
+                  {TEXT.count_of_partial_damage()}
+                </Text>
+                <TextInput
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.count_of_partial_damage()}
+                  keyboardType="number-pad"
+                  value={item.count_of_partial_damaged}
+                  onChangeText={t =>
+                    updateField(index, 'count_of_partial_damaged', t)
+                  }
+                />
+                <Text style={styles.label}>{TEXT.count_of_fully_damage()}</Text>
+
+                <View style={styles.inlineRow}>
+                  <TextInput
+                    editable={!isSubmitted}
+                    style={[
+                      styles.input,
+                      styles.flexInput,
+                      isSubmitted && { backgroundColor: COLOR.gray },
+                    ]}
+                    placeholder={TEXT.count_of_fully_damage()}
+                    keyboardType="number-pad"
+                    value={item.count_of_fully_damaged}
+                    onChangeText={t =>
+                      updateField(index, 'count_of_fully_damaged', t)
+                    }
+                  />
+
+                  <View style={{ flexDirection: 'row' }}>
+                    {/* Delete */}
+                    {!isSubmitted && infraList.length > 1 && (
+                      <TouchableOpacity
+                        style={[
+                          styles.inlineBtn,
+                          { backgroundColor: COLOR.red },
+                        ]}
+                        onPress={() => removeInfra(index)}
+                      >
+                        <Text style={styles.inlineCross}>×</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {/* Add (only on last row) */}
+                    {!isSubmitted && index === infraList.length - 1 && (
+                      <TouchableOpacity
+                        style={[
+                          styles.inlineBtn,
+                          { backgroundColor: COLOR.blue },
+                        ]}
+                        onPress={addInfra}
+                      >
+                        <Text style={styles.inlinePlus}>＋</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
               </View>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        )}
 
         <View style={styles.footer}>
           <View style={styles.topButtonRow}>
@@ -226,11 +284,13 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
               text={TEXT.save()}
               onPress={handleSave}
               style={styles.half}
+              disabled={loadingSave || isSubmitted}
             />
             <ReuseButton
               text={TEXT.next()}
               onPress={handleNext}
               style={styles.half}
+              disabled={loadingSave}
             />
           </View>
 
@@ -245,6 +305,8 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
           </View>
         </View>
       </View>
+
+      <SuccessSheet ref={successRef} message={successMsg} showOk={false} />
     </SafeAreaView>
   );
 };
@@ -296,7 +358,7 @@ const styles = StyleSheet.create({
   icon: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 
   title: { fontSize: 20, fontWeight: '700', color: COLOR.blue },
-  footer: { padding: 16, backgroundColor: '#fff' },
+  footer: { paddingHorizontal: 4, backgroundColor: '#fff' },
   topButtonRow: { flexDirection: 'row', justifyContent: 'space-between' },
   halfButton: { width: '48%', marginTop: 0 },
   closeButton: { width: '60%', alignSelf: 'center', marginTop: 12 },
