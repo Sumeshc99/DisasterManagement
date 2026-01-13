@@ -22,10 +22,10 @@ import GallaryIcon from '../../assets/svg/Group.svg';
 interface Props {
   incidentId: number;
   userToken: string;
-  userId: number;
+  userId: any;
 }
 
-const CommentSheet = forwardRef<RBSheet, Props>(
+const CommentSheet = forwardRef<any, Props>(
   ({ incidentId, userToken, userId }, ref) => {
     const { control, reset } = useForm();
     const [comment, setComment] = useState('');
@@ -249,7 +249,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
             <TouchableOpacity
               style={styles.closeBtn}
-              onPress={() => ref?.current?.close()}
+              onPress={() => (ref as any)?.current?.close()}
             >
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
@@ -343,7 +343,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                       {item.media?.length > 0 && (
                         <View style={{ marginTop: 10 }}>
                           <CommentImageContainer
-                            data={item.media.map(m => ({
+                            data={item.media.map((m: any) => ({
                               blob_url: m.media_url,
                             }))}
                           />
