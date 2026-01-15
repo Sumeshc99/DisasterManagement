@@ -34,7 +34,6 @@ const CommentSheet = forwardRef<any, Props>(
 
     const [incidentStatus, setIncidentStatus] = useState<string>('');
     const [loading, setLoading] = useState(false);
-    console.log('Selected media:', media);
 
     const [comments, setComments] = useState<any[]>([]);
 
