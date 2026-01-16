@@ -26,6 +26,9 @@ import ScreenStateHandler from '../../components/ScreenStateHandler';
 import RejectReasonSheet1 from '../../components/bottomSheets/RejectReasonSheet1';
 import ImageContainer from '../../components/ImageContainer';
 import { downloadPDF } from '../../Utils/downloadPDF';
+import CommentSheet from '../../components/bottomSheets/CommentSheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import ReuseButton from '../../components/UI/ReuseButton';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -96,6 +99,7 @@ const ResIncidentDetails: React.FC = () => {
 
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
+  const commentRef = useRef<RBSheet>(null);
 
   const {
     control,
@@ -288,6 +292,19 @@ const ResIncidentDetails: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
+  const COMMENT_ALLOWED_STATUSES = [
+    'pending review',
+    'pending response by responder',
+    'pending closure by responder',
+    'pending closure by admin',
+    'pending log report review',
+    'pending log report update',
+  ];
+
+  const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
+    incidentData?.status?.toLowerCase(),
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLOR.blue} />
@@ -433,6 +450,32 @@ const ResIncidentDetails: React.FC = () => {
                       </TouchableOpacity>
                     </View>
                   )}
+
+              {/* COLUMN: Comment alert + button */}
+              {isCommentVisible && (
+                <View style={{ alignItems: 'center', marginTop: 18 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: '#6E6E6E',
+                      textAlign: 'center',
+                      lineHeight: 18,
+                      marginHorizontal: 20, // ✅ prevents text cutoff
+                    }}
+                  >
+                    {TEXT.comment_alert()}
+                  </Text>
+
+                  <ReuseButton
+                    text="Comment"
+                    style={{
+                      width: WIDTH(50),
+                      marginTop: 12,
+                    }}
+                    onPress={() => commentRef.current?.open()}
+                  />
+                </View>
+              )}
             </View>
           </ScrollView>
         </ScreenStateHandler>

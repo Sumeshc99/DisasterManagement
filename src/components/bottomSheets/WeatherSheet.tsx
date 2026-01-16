@@ -15,6 +15,8 @@ import { FONT, HEIGHT, WIDTH } from '../../themes/AppConst';
 import { COLOR } from '../../themes/Colors';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
+import { UseSelector } from 'react-redux';
+import Geocoder from 'react-native-geocoding';
 
 const WEATHER_MAP: any = {
   0: { text: 'Clear sky', icon: '☀️' },
@@ -32,6 +34,13 @@ const WEATHER_MAP: any = {
 const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
   (_, ref) => {
     const language = useSelector((state: RootState) => state.language.language);
+    Geocoder.init('AIzaSyBx9ZKDGqCuGIlboDZ-KTZcsPkOazI9l6Y', {
+      language: 'en',
+    });
+
+    const locationData = useSelector(
+      (state: RootState) => state?.location?.currentLocation,
+    );
 
     const [forecast, setForecast] = useState<any[]>([]);
     const [location, setLocation] = useState('Current Location');
@@ -40,6 +49,25 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     useEffect(() => {
       fetchWeather();
     }, []);
+
+    useEffect(() => {
+      if (locationData?.latitude && locationData?.longitude) {
+        Geocoder.from(locationData.latitude, locationData.longitude)
+          .then(res => {
+            const addr = res.results[0].address_components;
+
+            const get = (type: string) =>
+              addr.find(c => c.types.includes(type))?.long_name || '';
+
+            const city = get('locality') || get('administrative_area_level_2');
+
+            setLocation(city);
+          })
+          .catch(() => {
+            setLocation('Current Location');
+          });
+      }
+    }, [locationData]);
 
     const fetchWeather = () => {
       setLoading(true);
@@ -111,19 +139,26 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
                 colors={['#1E3A8A', '#2563EB']}
                 style={styles.todayCard}
               >
-                <Text style={styles.todayIcon}>{todayWeather.icon}</Text>
+                <View style={styles.todayRow}>
+                  {/* LEFT – ICON */}
+                  <Text style={styles.todayIcon}>{todayWeather.icon}</Text>
 
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={styles.todayLabel}>Today</Text>
-                  <Text style={styles.todayTemp}>{today?.max}°C</Text>
-                  <Text style={styles.todayDesc}>
-                    {todayWeather.text} {today?.min}° / {today?.max}°
-                  </Text>
+                  {/* RIGHT – TEXT BLOCK */}
+                  <View style={styles.todayTextBlock}>
+                    <Text style={styles.todayLabel}>Today</Text>
+                    <Text style={styles.todayTemp}>{today?.max}°C</Text>
+                    <Text style={styles.todayDesc}>
+                      {todayWeather.text} {today?.min}° / {today?.max}°
+                    </Text>
+                  </View>
                 </View>
               </LinearGradient>
 
               {/* WIND */}
-              <Text style={styles.windText}>→ {today?.wind} km/h</Text>
+              <View style={styles.windRow}>
+                <Text style={styles.windArrow}>→</Text>
+                <Text style={styles.windValue}>{today?.wind} km/h</Text>
+              </View>
 
               {/* 7 DAY FORECAST */}
               <FlatList
@@ -204,26 +239,27 @@ const styles = StyleSheet.create({
 
   todayCard: {
     marginTop: 16,
-    width: WIDTH(86),
+    width: WIDTH(65),
     alignSelf: 'center',
     borderRadius: 14,
-    padding: 10,
-    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
   },
 
   todayIcon: {
-    fontSize: 42,
+    fontSize: 60,
   },
 
   todayLabel: {
     color: '#fff',
     fontSize: 16,
+    fontFamily: FONT.R_MED_500,
   },
 
   todayTemp: {
     color: '#fff',
     fontSize: 34,
-    fontWeight: '700',
+    fontFamily: FONT.R_MED_500,
   },
 
   todayDesc: {
@@ -265,15 +301,46 @@ const styles = StyleSheet.create({
 
   cloudy: {
     fontSize: 13,
+    fontFamily: FONT.R_BOLD_700,
+    color: COLOR.textGrey,
   },
 
   speed: {
     fontSize: 12,
-    color: '#6B7280',
+    color: COLOR.textGrey,
+    fontFamily: FONT.R_BOLD_700,
   },
 
   tempRange: {
+    color: COLOR.textGrey,
     fontWeight: '600',
     width: WIDTH(24),
+  },
+  todayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  todayTextBlock: {
+    marginLeft: 20,
+  },
+  windRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+
+  windArrow: {
+    fontSize: 26,
+    color: COLOR.darkGray,
+    marginRight: 6,
+    marginTop: -9, // move arrow up to align with text
+  },
+
+  windValue: {
+    fontSize: 16,
+    color: COLOR.blue,
   },
 });

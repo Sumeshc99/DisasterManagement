@@ -176,7 +176,10 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
 
       {/* Title Bar */}
       <View style={styles.titleBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <BackArrow />
         </TouchableOpacity>
         <Text style={styles.title}>{TEXT.log_report()}</Text>
@@ -199,7 +202,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.name_of_village()}
+                  placeholder={TEXT.enter_name_of_village()}
                   value={item.name_of_village}
                   onChangeText={t => updateField(index, 'name_of_village', t)}
                 />
@@ -214,7 +217,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.no_of_affected_farmers()}
+                  placeholder={TEXT.enter_no_of_affected_farmers()}
                   keyboardType="number-pad"
                   value={item.no_of_affected_farmers}
                   onChangeText={t =>
@@ -234,7 +237,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
                       isSubmitted && { backgroundColor: COLOR.gray },
                       { flex: 1 },
                     ]}
-                    placeholder={TEXT.area_of_agricultural_damage()}
+                    placeholder={TEXT.enter_area_of_agriculture()}
                     keyboardType="number-pad"
                     value={item.area_of_damage_hecter}
                     onChangeText={t =>
@@ -296,7 +299,11 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
                 <ReuseButton
                   text={TEXT.close()}
                   style={styles.closeBtn}
-                  onPress={() => navigation.goBack()}
+                  onPress={() =>
+                    navigation.navigate('revIncidentDetails', {
+                      data: incident_id,
+                    })
+                  }
                 />
               </View>
             </View>
@@ -336,6 +343,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 8,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   title: {

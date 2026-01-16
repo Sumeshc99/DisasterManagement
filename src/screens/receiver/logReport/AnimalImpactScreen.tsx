@@ -22,6 +22,7 @@ import { TEXT } from '../../../i18n/locales/Text';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ScreenLoader from '../../../components/ScreenLoader';
 import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface AnimalItem {
   name_of_village: string;
@@ -54,7 +55,16 @@ const AnimalImpactScreen = ({ navigation }: any) => {
 
   const snackbar = useSnackbar();
 
+  useFocusEffect(
+    useCallback(() => {
+      if (incident_id && userToken) {
+        getLogReport(); // 🔥 refresh real backend status
+      }
+    }, [incident_id, userToken]),
+  );
+
   /* ---------------- GET REPORT ---------------- */
+
   useEffect(() => {
     if (incident_id && userToken) {
       getLogReport();
@@ -119,7 +129,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
   };
 
   /* ---------------- SAVE ---------------- */
-  const handleSave = async () => {
+  const handleSave = async (showPopup = true) => {
     if (!incident_id || !user?.id) return;
 
     const payload = {
@@ -144,14 +154,16 @@ const AnimalImpactScreen = ({ navigation }: any) => {
         console.log('Animal data saved!');
 
         // Show the first message in snackbar
-        const msg =
-          res?.data?.data?.messages && res.data.data.messages.length > 0
-            ? res.data.data.messages[0]
-            : res.data.message; // fallback to main message
+        if (showPopup) {
+          const msg =
+            res?.data?.data?.messages && res.data.data.messages.length > 0
+              ? res.data.data.messages[0]
+              : res.data.message; // fallback to main message
 
-        setSuccessMsg(msg);
-        successRef.current?.open();
-        await getLogReport();
+          setSuccessMsg(msg);
+          successRef.current?.open();
+          await getLogReport();
+        }
       }
     } catch (e) {
       console.log('Animal SAVE error', e);
@@ -161,8 +173,9 @@ const AnimalImpactScreen = ({ navigation }: any) => {
   };
 
   const handleNext = async () => {
-    // await handleSave();
-    !isSubmitted && handleSave();
+    if (!isSubmitted) {
+      await handleSave(false); // 🔥 wait till save finishes
+    }
     navigation.navigate('InfrastructureReportScreen', { incident_id });
   };
 
@@ -198,7 +211,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.name_of_village()}
+                  placeholder={TEXT.enter_name_of_village()}
                   value={item.name_of_village}
                   onChangeText={t => updateField(index, 'name_of_village', t)}
                 />
@@ -209,7 +222,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.type_of_animal()}
+                  placeholder={TEXT.enter_type_of_animal()}
                   value={item.type_of_animal}
                   onChangeText={t => updateField(index, 'type_of_animal', t)}
                 />
@@ -232,7 +245,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.count_of_deceased()}
+                  placeholder={TEXT.enter_count_of_deceased()}
                   keyboardType="number-pad"
                   value={item.count_of_deceased}
                   onChangeText={t => updateField(index, 'count_of_deceased', t)}
@@ -248,7 +261,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                       styles.flexInput,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.count_of_missing()}
+                    placeholder={TEXT.enter_count_of_missing()}
                     keyboardType="number-pad"
                     value={item.count_of_missing}
                     onChangeText={t =>
@@ -286,7 +299,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
               <View style={styles.topButtonRow}>
                 <ReuseButton
                   text={TEXT.save()}
-                  onPress={handleSave}
+                  onPress={() => handleSave(true)}
                   style={styles.half}
                   disabled={loadingSave || isSubmitted}
                 />
@@ -302,7 +315,11 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                   text={TEXT.close()}
                   bgColor="#E5E7EB"
                   textColor={COLOR.white}
-                  onPress={() => navigation.goBack()}
+                  onPress={() =>
+                    navigation.navigate('revIncidentDetails', {
+                      data: incident_id,
+                    })
+                  }
                   style={styles.closeBtn}
                 />
               </View>

@@ -373,6 +373,8 @@ const IncidentDetails: React.FC = () => {
     'pending response by responder',
     'pending closure by responder',
     'pending closure by admin',
+    'pending log report review',
+    'pending log report update',
   ];
 
   const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
