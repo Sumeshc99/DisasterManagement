@@ -2,23 +2,37 @@ import { Alert, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 
-import messaging, {
+import { getApp } from '@react-native-firebase/app';
+import {
+  getMessaging,
   AuthorizationStatus,
+  onMessage,
 } from '@react-native-firebase/messaging';
 
-const PushNotification = () => {
-  notifee.onForegroundEvent(({ type, detail }) => {
-    if (type === EventType.PRESS) {
-    }
-  });
+const CHANNEL_ID = 'custom_sound_channel_v5';
 
+const PushNotification = () => {
+  const messagingInstance = getMessaging(getApp());
+
+  // 🔔 Notification press
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    return notifee.onForegroundEvent(({ type }) => {
+      if (type === EventType.PRESS) {
+        console.log('Notification pressed');
+      }
+    });
+  }, []);
+
+  // 📩 Foreground FCM listener (MODULAR)
+  useEffect(() => {
+    const unsubscribe = onMessage(messagingInstance, async remoteMessage => {
       onDisplayNotification(remoteMessage);
     });
+
     return unsubscribe;
   }, []);
 
+  // 🔐 Permission + channel
   useEffect(() => {
     requestUserPermission();
   }, []);
@@ -27,39 +41,28 @@ const PushNotification = () => {
     const settings = await notifee.requestPermission();
 
     if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-      // await notifee.createChannel({
-      //   id: 'default',
-      //   name: 'Default Channel',
-      //   importance: AndroidImportance.HIGH,
-      // });
+      await notifee.createChannel({
+        id: CHANNEL_ID,
+        name: 'Alert Sound Channel',
+        importance: AndroidImportance.HIGH,
+        sound: 'alert',
+      });
     } else {
-      console.log('User has notification permissions disabled');
       Alert.alert(
         'Permissions required',
-        'This app requires notification permissions to function properly. Please enable them in settings.',
+        'Enable notification permissions in settings.',
       );
     }
   };
 
   const onDisplayNotification = async (data: any) => {
-    console.log('notification', data);
-
-    const channelId = await notifee.createChannel({
-      id: 'custom_sound_channel_v5',
-      name: 'Alert Sound Channel',
-      importance: AndroidImportance.HIGH,
-      sound: 'alert',
-    });
-
     await notifee.displayNotification({
       title: data?.notification?.title,
       body: data?.notification?.body,
       android: {
-        channelId,
-        ongoing: data?.data.ongoing == 'true' ? true : false,
-        pressAction: {
-          id: 'default',
-        },
+        channelId: CHANNEL_ID,
+        ongoing: data?.data?.ongoing === 'true',
+        pressAction: { id: 'default' },
         smallIcon: '@mipmap/ic_launcher',
       },
     });
