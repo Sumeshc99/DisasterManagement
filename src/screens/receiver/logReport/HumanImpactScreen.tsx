@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ScreenLoader from '../../../components/ScreenLoader';
 import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
 import { useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Person {
   name: string;
@@ -164,6 +165,14 @@ const HumanImpactScreen = ({ navigation }: any) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      if (incidentId && userToken) {
+        getLogReportData(); // 🔥 refresh real backend status
+      }
+    }, [incidentId, userToken]),
+  );
+
   useEffect(() => {
     if (incidentId && token) {
       getLogReportData();
@@ -195,8 +204,10 @@ const HumanImpactScreen = ({ navigation }: any) => {
   const handleClose = () => {
     navigation.goBack();
   };
-  const handleNext = () => {
-    // !isSubmitted && handleSave();
+  const handleNext = async () => {
+    if (!isSubmitted) {
+      await handleSave(false); // 🔥 wait till save finishes
+    }
     navigation.navigate('AnimalImpactScreen', {
       incident_id: incidentId,
       log_report_id: logReportId,
@@ -209,7 +220,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
     ).length;
   };
 
-  const handleSave = async () => {
+  const handleSave = async (showPopup = true) => {
     if (!incidentId || !userId) {
       console.log('Missing incidentId or userId');
       return;
@@ -250,13 +261,15 @@ const HumanImpactScreen = ({ navigation }: any) => {
         console.log(res?.data, 'Saved successfully');
 
         // Show the first message in snackbar
-        const msg =
-          res?.data?.data?.messages && res.data.data.messages.length > 0
-            ? res.data.data.messages[0]
-            : res.data.message; // fallback to main message
+        if (showPopup) {
+          const msg =
+            res?.data?.data?.messages && res.data.data.messages.length > 0
+              ? res.data.data.messages[0]
+              : res.data.message; // fallback to main message
 
-        setSuccessMsg(msg);
-        successRef.current?.open();
+          setSuccessMsg(msg);
+          successRef.current?.open();
+        }
 
         // save returned id for future updates
         setLogReportId(res.data.data.id);
@@ -281,7 +294,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
     isInjured = false,
   ) => {
     return (
-      <View style={{ marginBottom: 24 }}>
+      <View style={styles.sectionBox}>
         {/* Title */}
         <View
           style={{
@@ -324,7 +337,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                       styles.input,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.name()}
+                    placeholder={TEXT.enter_name()}
                     value={item.name}
                     onChangeText={text =>
                       updatePerson(list, setList, index, 'name', text)
@@ -339,7 +352,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                       styles.input,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.address()}
+                    placeholder={TEXT.enter_address()}
                     value={item.address}
                     onChangeText={text =>
                       updatePerson(list, setList, index, 'address', text)
@@ -350,14 +363,14 @@ const HumanImpactScreen = ({ navigation }: any) => {
 
               <View style={styles.row}>
                 {/* Gender */}
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, marginRight: 4 }}>
                   <Text style={styles.label}>{TEXT.gender()}</Text>
                   <TextInput
                     style={[
                       styles.input,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.gender()}
+                    placeholder={TEXT.enter_gender()}
                     value={item.gender}
                     onChangeText={text =>
                       updatePerson(list, setList, index, 'gender', text)
@@ -366,7 +379,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 </View>
 
                 {/* Age */}
-                <View style={{ width: 80 }}>
+                <View style={{ flex: 1, marginLeft: 4 }}>
                   <Text style={styles.label}>{TEXT.age()}</Text>
                   <TextInput
                     editable={!isSubmitted}
@@ -374,7 +387,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                       styles.input,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.age()}
+                    placeholder={TEXT.enter_age()}
                     keyboardType="numeric"
                     value={item.age}
                     onChangeText={text =>
@@ -409,7 +422,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                   <Text style={styles.label}>{TEXT.type_of_injury()}</Text>
                   <TextInput
                     style={[styles.input, { marginTop: 8 }]}
-                    placeholder={TEXT.type_of_injury()}
+                    placeholder={TEXT.enter_type_of_injury()}
                     value={item.type_of_injury}
                     onChangeText={text =>
                       updatePerson(list, setList, index, 'type_of_injury', text)
@@ -490,7 +503,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               <View style={styles.topButtonRow}>
                 <ReuseButton
                   text={TEXT.save()}
-                  onPress={handleSave}
+                  onPress={() => handleSave(true)}
                   disabled={loading || isSubmitted}
                   style={{
                     width: WIDTH(40),
@@ -721,5 +734,13 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     marginBottom: 6,
     fontFamily: FONT.R_SBD_600,
+  },
+  sectionBox: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#E0E0E0',
+
+    padding: 2,
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
   },
 });

@@ -22,6 +22,8 @@ import { TEXT } from '../../../i18n/locales/Text';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ScreenLoader from '../../../components/ScreenLoader';
 import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
+import { useFocusEffect } from '@react-navigation/native';
+
 interface InfrastructureItem {
   name_of_village: string;
   type_of_property: string;
@@ -49,6 +51,14 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const successRef = useRef<any>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+      if (incident_id && userToken) {
+        getLogReport(); // 🔥 refresh real backend status
+      }
+    }, [incident_id, userToken]),
+  );
 
   /* ---------------- GET LOG REPORT ---------------- */
   useEffect(() => {
@@ -117,7 +127,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   };
 
   /* ---------------- SAVE ---------------- */
-  const handleSave = async () => {
+  const handleSave = async (showPopup = true) => {
     if (!incident_id || !user?.id) return;
 
     const payload = {
@@ -140,13 +150,15 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
         setLogReportId(res.data.data.id);
         console.log('Infrastructure saved');
         // Show the first message in snackbar
-        const msg =
-          res?.data?.data?.messages && res.data.data.messages.length > 0
-            ? res.data.data.messages[0]
-            : res.data.message; // fallback to main message
+        if (showPopup) {
+          const msg =
+            res?.data?.data?.messages && res.data.data.messages.length > 0
+              ? res.data.data.messages[0]
+              : res.data.message; // fallback to main message
 
-        setSuccessMsg(msg);
-        successRef.current?.open();
+          setSuccessMsg(msg);
+          successRef.current?.open();
+        }
 
         await getLogReport();
       }
@@ -158,8 +170,9 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   };
 
   const handleNext = async () => {
-    // await handleSave();
-    // !isSubmitted && handleSave();
+    if (!isSubmitted) {
+      await handleSave(false); // 🔥 silent save
+    }
     navigation.navigate('CropDamageReportScreen', { incident_id });
   };
 
@@ -170,7 +183,10 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       <DashBoardHeader drawer={false} setDrawer={() => {}} />
 
       <View style={styles.titleBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <BackArrow />
         </TouchableOpacity>
         <Text style={styles.title}>{TEXT.log_report()}</Text>
@@ -195,7 +211,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.name_of_village()}
+                  placeholder={TEXT.enter_name_of_village()}
                   value={item.name_of_village}
                   onChangeText={t => updateField(index, 'name_of_village', t)}
                 />
@@ -207,7 +223,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.type_of_property()}
+                  placeholder={TEXT.enter_type_of_infra()}
                   value={item.type_of_property}
                   onChangeText={t => updateField(index, 'type_of_property', t)}
                 />
@@ -220,7 +236,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                     styles.input,
                     isSubmitted && { backgroundColor: COLOR.gray },
                   ]}
-                  placeholder={TEXT.count_of_partial_damage()}
+                  placeholder={TEXT.enter_count_of_partial_damage()}
                   keyboardType="number-pad"
                   value={item.count_of_partial_damaged}
                   onChangeText={t =>
@@ -237,7 +253,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                       styles.flexInput,
                       isSubmitted && { backgroundColor: COLOR.gray },
                     ]}
-                    placeholder={TEXT.count_of_fully_damage()}
+                    placeholder={TEXT.enter_count_of_fully_damage()}
                     keyboardType="number-pad"
                     value={item.count_of_fully_damaged}
                     onChangeText={t =>
@@ -282,7 +298,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
           <View style={styles.topButtonRow}>
             <ReuseButton
               text={TEXT.save()}
-              onPress={handleSave}
+              onPress={() => handleSave(true)}
               style={styles.half}
               disabled={loadingSave || isSubmitted}
             />
@@ -299,7 +315,11 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
               text={TEXT.close()}
               bgColor="#E5E7EB"
               textColor={COLOR.white}
-              onPress={() => navigation.goBack()}
+              onPress={() =>
+                navigation.navigate('revIncidentDetails', {
+                  data: incident_id,
+                })
+              }
               style={styles.closeBtn}
             />
           </View>

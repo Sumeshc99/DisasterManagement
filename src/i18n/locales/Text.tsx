@@ -525,6 +525,62 @@ export const TEXT = {
 
   timeline: () => t('timeline', 'Timeline'),
 
+  enter_name: () => t('enter_name', 'Enter Name'),
+
+  enter_gender: () => t('enter_gender', 'Enter Gender'),
+
+  enter_name_of_village: () =>
+    t('enter_name_of_village', 'Enter Name of Village'),
+
+  enter_count_of_deceased: () =>
+    t('enter_count_of_deceased', 'Enter Count of Deceased'),
+
+  enter_count_of_missing: () =>
+    t('enter_count_of_missing', 'Enter Count of Missing'),
+
+  enter_count_of_partial_damage: () =>
+    t('enter_count_of_partial_damage', 'Enter Count of Partial Damage'),
+
+  enter_type_of_infra: () =>
+    t('enter_type_of_infra', 'Enter Type of Property / Infrastructure'),
+
+  enter_count_of_fully_damage: () =>
+    t('enter_count_of_fully_damage', 'Enter Count of Fully Damage'),
+
+  enter_age: () => t('enter_age', 'Enter Age'),
+
+  enter_type_of_animal: () => t('enter_type_of_animal', 'Enter Type of Animal'),
+
+  enter_no_of_affected_farmers: () =>
+    t('enter_no_of_affected_farmers', 'Enter no. of affected Farmers'),
+
+  enter_area_of_agriculture: () =>
+    t('enter_area_of_agriculture', 'Enter Area of Agriculture'),
+
+  enter_type_of_injury: () => t('enter_type_of_injury', 'Enter Type of Injury'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
+  media: () => t('media', 'Media'),
+
   media: () => t('media', 'Media'),
 
   media: () => t('media', 'Media'),

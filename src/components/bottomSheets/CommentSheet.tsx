@@ -98,13 +98,17 @@ const CommentSheet = forwardRef<RBSheet, Props>(
     }, [incidentId]);
 
     const ALLOWED_COMMENT_STATUSES = [
-      'Pending Review',
-      'Pending Response by Responder',
-      'Pending Closure by Responder',
-      'Pending Closure by Admin',
+      'pending review',
+      'pending response by responder',
+      'pending closure by responder',
+      'pending closure by admin',
+      'pending log report review',
+      'pending log report update',
     ];
 
-    const canComment = ALLOWED_COMMENT_STATUSES.includes(incidentStatus);
+    const canComment = ALLOWED_COMMENT_STATUSES.includes(
+      incidentStatus.toLowerCase(),
+    );
 
     const postComment = async () => {
       if (!comment.trim()) return;
