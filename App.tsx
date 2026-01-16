@@ -8,12 +8,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   LogBox.ignoreAllLogs();
+
   return (
     <Provider store={Store}>
-      <PersistGate
-        // loading={<ActivityIndicator />}
-        persistor={Persistor}
-      >
+      <PersistGate persistor={Persistor}>
         <SafeAreaProvider>
           <MainIndex />
         </SafeAreaProvider>

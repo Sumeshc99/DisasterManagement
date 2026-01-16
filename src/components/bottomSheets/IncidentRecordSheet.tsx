@@ -31,7 +31,7 @@ const IncidentRecordsSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
 
     const [refreshing, setRefreshing] = useState(false);
 
-    const timelineRef = useRef<RBSheet>(null);
+    const timelineRef = useRef<any>(null);
 
     const timelineData = [
       {
