@@ -39,13 +39,13 @@ const ReuseButton: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    width: '100%',
+    width: WIDTH(38),
     borderRadius: WIDTH(100) * 0.08, // responsive pill-like radius
-    paddingVertical: WIDTH(3.5),
+    paddingVertical: WIDTH(3.2),
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
 
     // Shadow (iOS)
     shadowColor: '#000',

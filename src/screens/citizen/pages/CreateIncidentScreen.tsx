@@ -358,10 +358,10 @@ const CreateIncidentScreen: React.FC = () => {
 
         <DropDownInput
           name="ru_ban"
-          label={'Rural / Urban'}
-          placeholder={'Select Rural / Urban'}
+          label={TEXT.rural_urban()}
+          placeholder={TEXT.select_rural_urban()}
           control={control}
-          rules={{ required: 'Rural/Urban is required' }}
+          rules={{ required: TEXT.required_rural_urban() }}
           items={addTypes}
           errors={errors}
         />
@@ -379,7 +379,7 @@ const CreateIncidentScreen: React.FC = () => {
           name="area"
           label={'Area'}
           control={control}
-          placeholder={'Select Area'}
+          placeholder={TEXT.select_area()}
           // rules={{ required: 'Area is required' }}
           items={area}
         />

@@ -18,7 +18,7 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
-import { FONT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import RevResTable from '../../../components/UI/RevResTable';
 import { TEXT } from '../../../i18n/locales/Text';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
@@ -366,6 +366,7 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontFamily: FONT.R_REG_400,
     fontSize: 14,
+    height: 45,
   },
 
   row: {
@@ -411,7 +412,7 @@ const styles = StyleSheet.create({
   },
 
   half: {
-    width: '48%',
+    width: WIDTH(40),
   },
   closeBtnWrapper: {
     marginTop: 0,
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
   },
 
   closeBtn: {
-    width: '50%',
+    width: WIDTH(40),
     backgroundColor: COLOR.textGrey,
   },
 });

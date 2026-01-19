@@ -100,6 +100,7 @@ const ResIncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
   const commentRef = useRef<RBSheet>(null);
+  const incidentId = data?.incident_auto_id || data;
 
   const {
     control,
@@ -353,7 +354,7 @@ const ResIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <Text style={styles.label}>{TEXT.rural_urban()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
                 </View>
@@ -469,7 +470,7 @@ const ResIncidentDetails: React.FC = () => {
                   <ReuseButton
                     text="Comment"
                     style={{
-                      width: WIDTH(50),
+                      width: WIDTH(44),
                       marginTop: 12,
                     }}
                     onPress={() => commentRef.current?.open()}
@@ -499,6 +500,12 @@ const ResIncidentDetails: React.FC = () => {
         ref={rejectRef}
         data={incidentData}
         getIncidentDetails={getIncidentDetails}
+      />
+      <CommentSheet
+        ref={commentRef}
+        incidentId={incidentId}
+        userToken={userToken}
+        userId={user?.id}
       />
     </SafeAreaView>
   );

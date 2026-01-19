@@ -397,7 +397,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                   {/* Actions Row */}
                   <View style={styles.actionRow}>
                     <TouchableOpacity
-                      style={[styles.uploadBtn, { flex: 1, marginRight: 8 }]} // takes left space
+                      style={[styles.uploadBtn]} // takes left space
                       onPress={() => mediaRef.current?.pickImages()}
                     >
                       <View style={styles.uploadContent}>
@@ -411,7 +411,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                     <TouchableOpacity
                       style={[
                         styles.sendBtn,
-                        { flex: 1, marginLeft: 8 },
+
                         (!comment || loading) && { opacity: 0.5 },
                       ]}
                       disabled={!comment || loading}
@@ -499,15 +499,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   inputContainer: {
-    borderTopWidth: 1,
-    borderColor: '#eee',
-    paddingTop: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   input: {
     minHeight: 70,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
+
     padding: 10,
     textAlignVertical: 'top',
   },
@@ -520,16 +520,19 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     marginTop: 15,
-    justifyContent: 'space-between', // puts buttons on edges
-    alignItems: 'center', // vertically center buttons
+    alignItems: 'center',
+    gap: 2, // ✅ THIS adds space between buttons
+
+    justifyContent: 'space-between',
   },
   uploadBtn: {
     borderWidth: 1,
     borderColor: COLOR.blue,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 20,
     alignItems: 'center',
+    flexDirection: 'row',
   },
   uploadText: {
     color: COLOR.blue,
@@ -538,7 +541,7 @@ const styles = StyleSheet.create({
   sendBtn: {
     backgroundColor: COLOR.blue,
     paddingVertical: 12,
-    paddingHorizontal: 28,
+    paddingHorizontal: 30, // 👈 reduced
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',

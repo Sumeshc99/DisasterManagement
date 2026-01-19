@@ -435,7 +435,7 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <Text style={styles.label}>{TEXT.rural_urban()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
                 </View>
@@ -607,7 +607,7 @@ const IncidentDetails: React.FC = () => {
                   <ReuseButton
                     text="Comment"
                     style={{
-                      width: WIDTH(50),
+                      width: WIDTH(44),
                       alignSelf: 'center',
                       marginTop: 12,
                     }}

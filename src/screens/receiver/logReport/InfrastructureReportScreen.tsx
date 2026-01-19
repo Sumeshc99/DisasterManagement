@@ -17,7 +17,7 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
-import { FONT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import { TEXT } from '../../../i18n/locales/Text';
 import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ScreenLoader from '../../../components/ScreenLoader';
@@ -151,10 +151,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
         console.log('Infrastructure saved');
         // Show the first message in snackbar
         if (showPopup) {
-          const msg =
-            res?.data?.data?.messages && res.data.data.messages.length > 0
-              ? res.data.data.messages[0]
-              : res.data.message; // fallback to main message
+          const msg = res?.data?.message;
 
           setSuccessMsg(msg);
           successRef.current?.open();
@@ -291,39 +288,39 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                 </View>
               </View>
             ))}
+
+            <View style={styles.footer}>
+              <View style={styles.topButtonRow}>
+                <ReuseButton
+                  text={TEXT.save()}
+                  onPress={() => handleSave(true)}
+                  style={styles.half}
+                  disabled={loadingSave || isSubmitted}
+                />
+                <ReuseButton
+                  text={TEXT.next()}
+                  onPress={handleNext}
+                  style={styles.half}
+                  disabled={loadingSave}
+                />
+              </View>
+
+              <View style={styles.closeWrapper}>
+                <ReuseButton
+                  text={TEXT.close()}
+                  bgColor="#E5E7EB"
+                  textColor={COLOR.white}
+                  onPress={() =>
+                    navigation.navigate('revIncidentDetails', {
+                      data: incident_id,
+                    })
+                  }
+                  style={styles.closeBtn}
+                />
+              </View>
+            </View>
           </ScrollView>
         )}
-
-        <View style={styles.footer}>
-          <View style={styles.topButtonRow}>
-            <ReuseButton
-              text={TEXT.save()}
-              onPress={() => handleSave(true)}
-              style={styles.half}
-              disabled={loadingSave || isSubmitted}
-            />
-            <ReuseButton
-              text={TEXT.next()}
-              onPress={handleNext}
-              style={styles.half}
-              disabled={loadingSave}
-            />
-          </View>
-
-          <View style={styles.closeWrapper}>
-            <ReuseButton
-              text={TEXT.close()}
-              bgColor="#E5E7EB"
-              textColor={COLOR.white}
-              onPress={() =>
-                navigation.navigate('revIncidentDetails', {
-                  data: incident_id,
-                })
-              }
-              style={styles.closeBtn}
-            />
-          </View>
-        </View>
       </View>
 
       <SuccessSheet ref={successRef} message={successMsg} showOk={false} />
@@ -356,7 +353,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  half: { width: '48%' },
+  half: { width: WIDTH(40) },
 
   input: {
     borderWidth: 1,
@@ -364,6 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+    height: 45,
   },
   addBtn: {
     backgroundColor: COLOR.blue,
@@ -378,10 +376,10 @@ const styles = StyleSheet.create({
   icon: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 
   title: { fontSize: 20, fontWeight: '700', color: COLOR.blue },
-  footer: { paddingHorizontal: 4, backgroundColor: '#fff' },
+
   topButtonRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  halfButton: { width: '48%', marginTop: 0 },
-  closeButton: { width: '60%', alignSelf: 'center', marginTop: 12 },
+  halfButton: { width: WIDTH(40), marginTop: 0 },
+  closeButton: { width: WIDTH(40), alignSelf: 'center', marginTop: 12 },
   plusIcon: { fontSize: 16, color: COLOR.blue, fontWeight: 'bold' },
   crossIcon: { fontSize: 24, color: 'red', fontWeight: 'bold' },
   dynamicRow: {
@@ -399,6 +397,7 @@ const styles = StyleSheet.create({
   flexInput: {
     flex: 1,
     marginBottom: 0, // IMPORTANT
+    height: 45,
   },
 
   inlineBtn: {
@@ -425,11 +424,11 @@ const styles = StyleSheet.create({
 
   closeWrapper: {
     alignItems: 'center',
-    marginTop: 12,
+    // marginTop: 12,
   },
 
   closeBtn: {
-    width: '60%',
+    width: WIDTH(40),
     backgroundColor: COLOR.textGrey,
   },
   label: {
