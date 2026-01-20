@@ -13,7 +13,7 @@ import { COLOR } from '../../themes/Colors';
 import ImageContainer from '../ImageContainer';
 import CommentMediaPicker from '../inputs/CommentMediaPicker';
 import ApiManager from '../../apis/ApiManager';
-import { Alert } from 'react-native';
+import { Alert, TouchableWithoutFeedback } from 'react-native';
 import CommentImageContainer from '../UI/CommentImageContainer';
 import ScreenLoader from '../ScreenLoader';
 import { TEXT } from '../../i18n/locales/Text';
@@ -230,6 +230,7 @@ const CommentSheet = forwardRef<any, Props>(
 
     return (
       <RBSheet
+        onClose={() => setMenuVisibleFor(null)}
         ref={ref}
         height={560}
         openDuration={250}
@@ -248,7 +249,7 @@ const CommentSheet = forwardRef<any, Props>(
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Comments</Text>
+            <Text style={styles.title}>{TEXT.comment()}</Text>
 
             <TouchableOpacity
               style={styles.closeBtn}
@@ -276,6 +277,7 @@ const CommentSheet = forwardRef<any, Props>(
                     ? item.comment_id.toString()
                     : index.toString()
                 }
+                onScrollBeginDrag={() => setMenuVisibleFor(null)}
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item, index }) => (
@@ -490,7 +492,7 @@ const styles = StyleSheet.create({
   commentText: {
     fontSize: 14,
     color: COLOR.textGrey,
-    marginTop: 8,
+
     lineHeight: 20,
   },
   divider: {
@@ -561,7 +563,8 @@ const styles = StyleSheet.create({
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center', // 👈 change this
+    marginBottom: 4,
   },
   dotsBtn: {
     paddingHorizontal: 8,

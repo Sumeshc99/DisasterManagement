@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { COLOR } from '../../themes/Colors';
@@ -31,6 +32,7 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(
     const [openDropdown, setOpenDropdown] = useState(false);
     const [selectedResponders, setSelectedResponders] = useState<any[]>([]);
     const [error, setError] = useState('');
+    const [assignLoading, setAssignLoading] = useState(false);
 
     const snackbar = useSnackbar();
 
@@ -62,12 +64,14 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(
 
     // Assign responder API
     const assignResponders = async () => {
+      if (assignLoading) return;
       if (selectedResponders.length === 0) {
         setError('Please select at least one responder type.');
         return;
       }
 
       setError('');
+      setAssignLoading(true);
 
       const typeIds = selectedResponders.map(item => item.typeId).join(',');
       const userIds = selectedResponders.map(item => item.value).join(',');
@@ -104,6 +108,8 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(
         setTimeout(() => {
           snackbar(message, 'error');
         }, 300);
+      } finally {
+        setAssignLoading(false);
       }
     };
 
@@ -219,8 +225,16 @@ const AssignResponderSheet = forwardRef<any, AssignProps>(
         </View>
 
         {/* Save Button */}
-        <TouchableOpacity style={styles.saveBtn} onPress={assignResponders}>
-          <Text style={styles.saveText}>{TEXT.save()}</Text>
+        <TouchableOpacity
+          style={[styles.saveBtn, assignLoading && { opacity: 0.6 }]}
+          onPress={assignResponders}
+          disabled={assignLoading}
+        >
+          {assignLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.saveText}>{TEXT.save()}</Text>
+          )}
         </TouchableOpacity>
       </RBSheet>
     );
