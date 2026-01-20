@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   closeIcon: { width: 30, height: 30 },
   todayCard: {
     marginTop: 16,
-    width: WIDTH(65),
+    width: WIDTH(92),
     alignSelf: 'center',
     borderRadius: 14,
     paddingVertical: 14,
