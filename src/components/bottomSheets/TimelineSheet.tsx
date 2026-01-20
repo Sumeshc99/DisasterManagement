@@ -28,7 +28,7 @@ interface Props {
   onClose?: () => void;
 }
 
-const TimelineSheet = forwardRef<RBSheet, Props>(
+const TimelineSheet = forwardRef<any, Props>(
   ({ incidentId, onClose }: any, ref) => {
     const { userToken } = useSelector((state: RootState) => state.auth);
     const [timelineData, setTimelineData] = useState([]);
@@ -87,7 +87,7 @@ const TimelineSheet = forwardRef<RBSheet, Props>(
             <TouchableOpacity
               style={styles.closeBtn}
               onPress={() => {
-                ref?.current?.close();
+                (ref as any)?.current?.close();
                 onClose && onClose();
               }}
             >
@@ -167,10 +167,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  /* TIMELINE */
   timelineItem: {
     flexDirection: 'row',
-    marginBottom: 20,
     gap: 12,
   },
   dotContainer: {
@@ -200,7 +198,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderWidth: 1.5,
     borderColor: '#D0D0D0',
-    // marginTop: 6,
   },
 
   /* CONTENT */
@@ -233,6 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#555',
     marginTop: 2,
+    marginBottom: 10,
   },
   dragIndicator: {
     alignSelf: 'center',
