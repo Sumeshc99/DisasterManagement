@@ -8,8 +8,8 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import Sound from 'react-native-sound';
-import SystemSetting from 'react-native-system-setting';
+// import Sound from 'react-native-sound';
+// import SystemSetting from 'react-native-system-setting';
 import { COLOR } from '../themes/Colors';
 import { FONT } from '../themes/AppConst';
 import { TEXT } from '../i18n/locales/Text';
@@ -31,41 +31,41 @@ const AlertModal: React.FC<AlertModalProps> = ({
   onViewDetails,
   onClose,
 }) => {
-  const soundRef = useRef<Sound | null>(null);
+  // const soundRef = useRef<Sound | null>(null);
 
-  const fileName = Platform.OS === 'ios' ? 'alert.caf' : 'alert.mp3';
+  // const fileName = Platform.OS === 'ios' ? 'alert.caf' : 'alert.mp3';
 
-  useEffect(() => {
-    if (!visible) {
-      stopSound();
-      return;
-    }
+  // useEffect(() => {
+  //   if (!visible) {
+  //     stopSound();
+  //     return;
+  //   }
 
-    SystemSetting.setVolume(1.0);
-    Sound.setCategory('Playback', true);
+  //   SystemSetting.setVolume(1.0);
+  //   Sound.setCategory('Playback', true);
 
-    const sound = new Sound(fileName, Sound.MAIN_BUNDLE, error => {
-      if (error) {
-        console.log(TEXT.failed_load_sound(), error);
-        return;
-      }
+  //   const sound = new Sound(fileName, Sound.MAIN_BUNDLE, error => {
+  //     if (error) {
+  //       console.log(TEXT.failed_load_sound(), error);
+  //       return;
+  //     }
 
-      sound.setNumberOfLoops(-1);
-      sound.play();
-      soundRef.current = sound;
-    });
+  //     sound.setNumberOfLoops(-1);
+  //     sound.play();
+  //     soundRef.current = sound;
+  //   });
 
-    return () => stopSound();
-  }, [visible]);
+  //   return () => stopSound();
+  // }, [visible]);
 
-  const stopSound = () => {
-    if (soundRef.current) {
-      soundRef.current.stop(() => {
-        soundRef.current?.release();
-        soundRef.current = null;
-      });
-    }
-  };
+  // const stopSound = () => {
+  //   if (soundRef.current) {
+  //     soundRef.current.stop(() => {
+  //       soundRef.current?.release();
+  //       soundRef.current = null;
+  //     });
+  //   }
+  // };
 
   return (
     <Modal
@@ -73,7 +73,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
       transparent
       animationType="fade"
       onRequestClose={() => {
-        stopSound();
+        // stopSound();
         onClose?.();
       }}
     >
@@ -98,7 +98,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
                 style={[styles.button, styles.outlinedButton]}
                 activeOpacity={0.8}
                 onPress={() => {
-                  stopSound();
+                  // stopSound();
                   onAcknowledge?.();
                 }}
               >
@@ -111,7 +111,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
                 style={[styles.button, styles.outlinedButton]}
                 activeOpacity={0.8}
                 onPress={() => {
-                  stopSound();
+                  // stopSound();
                   onViewDetails?.();
                 }}
               >

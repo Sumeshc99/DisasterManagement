@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   icon: {
-    width: 60,
+    width: WIDTH(16),
     height: 60,
     resizeMode: 'contain',
     marginLeft: 'auto',

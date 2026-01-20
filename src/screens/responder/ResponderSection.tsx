@@ -7,7 +7,7 @@ import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
 
-const POLLING_INTERVAL = 2000;
+const POLLING_INTERVAL = 8000;
 
 const ResponderSection = () => {
   const navigation = useNavigation<AppStackNavigationProp<'incidentDetails'>>();
