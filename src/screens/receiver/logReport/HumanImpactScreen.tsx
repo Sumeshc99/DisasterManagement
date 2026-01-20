@@ -64,6 +64,11 @@ const HumanImpactScreen = ({ navigation }: any) => {
   const successRef = useRef<any>(null);
   const [successMsg, setSuccessMsg] = useState('');
 
+  const toNumber = (value: string) => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  };
+
   const snackbar = useSnackbar();
 
   type HumanImpactRouteParams = {
@@ -122,7 +127,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               type_of_injury: p.type_of_injury ?? '',
             })),
           );
-          setInjuredCount(String(data.injured_names.length));
+          setInjuredCount(String(data.injured_count ?? 0));
         } else {
           setInjuredList([{ ...emptyPerson }]);
         }
@@ -137,7 +142,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               address: p.address ?? '',
             })),
           );
-          setDeceasedCount(String(data.deceased_names.length));
+          setDeceasedCount(String(data.deceased_count ?? 0));
         } else {
           setDeceasedList([{ ...emptyPerson }]);
         }
@@ -152,7 +157,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               address: p.address ?? '',
             })),
           );
-          setMissingCount(String(data.missing_names.length));
+          setMissingCount(String(data.missing_count ?? 0));
         } else {
           setMissingList([{ ...emptyPerson }]);
         }
@@ -213,16 +218,16 @@ const HumanImpactScreen = ({ navigation }: any) => {
     });
   };
 
-  const getValidCount = (list: Person[]) => {
-    return list.filter(
-      p =>
-        p.name.trim() ||
-        p.age.trim() ||
-        p.gender.trim() ||
-        p.address.trim() ||
-        p.type_of_injury.trim(),
-    ).length;
-  };
+  // const getValidCount = (list: Person[]) => {
+  //   return list.filter(
+  //     p =>
+  //       p.name.trim() ||
+  //       p.age.trim() ||
+  //       p.gender.trim() ||
+  //       p.address.trim() ||
+  //       p.type_of_injury.trim(),
+  //   ).length;
+  // };
 
   const handleSave = async (showPopup = true) => {
     if (!incidentId || !userId) {
@@ -230,9 +235,9 @@ const HumanImpactScreen = ({ navigation }: any) => {
       return;
     }
 
-    const injuredValidCount = getValidCount(injuredList);
-    const deceasedValidCount = getValidCount(deceasedList);
-    const missingValidCount = getValidCount(missingList);
+    // const injuredValidCount = getValidCount(injuredList);
+    // const deceasedValidCount = getValidCount(deceasedList);
+    // const missingValidCount = getValidCount(missingList);
 
     const filterValid = (list: Person[]) =>
       list.filter(
@@ -246,14 +251,20 @@ const HumanImpactScreen = ({ navigation }: any) => {
       user_id: userId,
       submit_status: 'pending',
 
-      injured_count: injuredValidCount,
-      injured_names: filterValid(injuredList),
+      injured_count: toNumber(injuredCount),
+      injured_names: injuredList.filter(
+        p => p.name || p.age || p.gender || p.address || p.type_of_injury,
+      ),
 
-      deceased_count: deceasedValidCount,
-      deceased_names: filterValid(deceasedList),
+      deceased_count: toNumber(deceasedCount),
+      deceased_names: deceasedList.filter(
+        p => p.name || p.age || p.gender || p.address,
+      ),
 
-      missing_count: missingValidCount,
-      missing_names: filterValid(missingList),
+      missing_count: toNumber(missingCount),
+      missing_names: missingList.filter(
+        p => p.name || p.age || p.gender || p.address,
+      ),
     };
 
     try {
@@ -273,9 +284,9 @@ const HumanImpactScreen = ({ navigation }: any) => {
         // save returned id for future updates
         setLogReportId(res.data.data.id);
 
-        setInjuredCount(String(injuredValidCount));
-        setDeceasedCount(String(deceasedValidCount));
-        setMissingCount(String(missingValidCount));
+        // setInjuredCount(String(injuredValidCount));
+        // setDeceasedCount(String(deceasedValidCount));
+        // setMissingCount(String(missingValidCount));
       }
     } catch (e) {
       console.log('Save log report error', e);
