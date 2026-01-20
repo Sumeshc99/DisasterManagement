@@ -13,21 +13,29 @@ import { FONT } from '../themes/AppConst';
 import { COLOR } from '../themes/Colors';
 import { TEXT } from '../i18n/locales/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Video from 'react-native-video';
 
 const { width, height } = Dimensions.get('window');
 
 const ImageContainer = ({ data }: any) => {
   const [visible, setVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const openGallery = () => {
-    setVisible(true);
+  const isVideoFile = (item: any) => {
+    if (item?.type) {
+      return item.type.startsWith('video');
+    }
+    return /\.(mp4|mov|mkv|avi|webm)$/i.test(item?.blob_url);
   };
 
   return (
     <View>
       <Text style={styles.title}>{TEXT.media()}</Text>
 
-      <TouchableOpacity onPress={openGallery} style={styles.thumbnailWrapper}>
+      <TouchableOpacity
+        onPress={() => setVisible(true)}
+        style={styles.thumbnailWrapper}
+      >
         <Image
           source={{ uri: data[0]?.blob_url }}
           style={styles.thumbnailImage}
@@ -57,15 +65,40 @@ const ImageContainer = ({ data }: any) => {
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={styles.fullImageWrapper}>
-                <Image
-                  source={{ uri: item?.blob_url }}
-                  style={styles.fullImage}
-                  resizeMode="contain"
-                />
-              </View>
-            )}
+            keyExtractor={(_, index) => index.toString()}
+            onViewableItemsChanged={({ viewableItems }) => {
+              if (viewableItems.length > 0) {
+                setActiveIndex(viewableItems[0].index ?? 0);
+              }
+            }}
+            viewabilityConfig={{ viewAreaCoveragePercentThreshold: 80 }}
+            renderItem={({ item, index }) => {
+              const isVideo = isVideoFile(item);
+
+              return (
+                <View style={styles.fullImageWrapper}>
+                  {isVideo ? (
+                    <Video
+                      source={{ uri: item.blob_url }}
+                      style={styles.fullImage1}
+                      resizeMode="contain"
+                      controls
+                      paused={activeIndex !== index}
+                      repeat
+                      ignoreSilentSwitch="ignore"
+                      playInBackground={false}
+                      playWhenInactive={false}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: item.blob_url }}
+                      style={styles.fullImage}
+                      resizeMode="contain"
+                    />
+                  )}
+                </View>
+              );
+            }}
           />
         </SafeAreaView>
       </Modal>
@@ -115,6 +148,10 @@ const styles = StyleSheet.create({
   fullImage: {
     width,
     height,
+  },
+  fullImage1: {
+    width,
+    height: '90%',
   },
   closeIconContainer: {
     position: 'absolute',
