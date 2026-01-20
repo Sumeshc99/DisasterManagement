@@ -559,13 +559,14 @@ export const TEXT = {
 
   enter_type_of_injury: () => t('enter_type_of_injury', 'Enter Type of Injury'),
 
-  media: () => t('media', 'Media'),
+  rural_urban: () => t('rural_urban', 'Rural / Urban'),
 
-  media: () => t('media', 'Media'),
+  select_rural_urban: () => t('select_rural_urban', 'Select Rural / Urban'),
 
-  media: () => t('media', 'Media'),
+  required_rural_urban: () =>
+    t('required_rural_urban', 'Rural/Urban is required'),
 
-  media: () => t('media', 'Media'),
+  select_area: () => t('select_area', 'Select Area'),
 
   media: () => t('media', 'Media'),
 

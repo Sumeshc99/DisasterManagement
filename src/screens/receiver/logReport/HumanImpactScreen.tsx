@@ -59,7 +59,6 @@ const HumanImpactScreen = ({ navigation }: any) => {
     { ...emptyPerson },
   ]);
 
-  const [typeOfInjury, setTypeOfInjury] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const successRef = useRef<any>(null);
@@ -111,7 +110,6 @@ const HumanImpactScreen = ({ navigation }: any) => {
         setIsSubmitted(data?.is_submitted === true);
 
         setLogReportId(data.log_report_id);
-        setTypeOfInjury(data.type_of_injury ?? '');
 
         // Injured
         if (data.injured_names?.length) {
@@ -121,6 +119,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
               age: p.age ?? '',
               gender: p.gender ?? '',
               address: p.address ?? '',
+              type_of_injury: p.type_of_injury ?? '',
             })),
           );
           setInjuredCount(String(data.injured_names.length));
@@ -216,7 +215,12 @@ const HumanImpactScreen = ({ navigation }: any) => {
 
   const getValidCount = (list: Person[]) => {
     return list.filter(
-      p => p.name.trim() || p.age.trim() || p.gender.trim() || p.address.trim(),
+      p =>
+        p.name.trim() ||
+        p.age.trim() ||
+        p.gender.trim() ||
+        p.address.trim() ||
+        p.type_of_injury.trim(),
     ).length;
   };
 
@@ -241,7 +245,6 @@ const HumanImpactScreen = ({ navigation }: any) => {
       incident_id: incidentId,
       user_id: userId,
       submit_status: 'pending',
-      type_of_injury: typeOfInjury,
 
       injured_count: injuredValidCount,
       injured_names: filterValid(injuredList),
@@ -262,11 +265,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
 
         // Show the first message in snackbar
         if (showPopup) {
-          const msg =
-            res?.data?.data?.messages && res.data.data.messages.length > 0
-              ? res.data.data.messages[0]
-              : res.data.message; // fallback to main message
-
+          const msg = res?.data?.message;
           setSuccessMsg(msg);
           successRef.current?.open();
         }
@@ -366,6 +365,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 <View style={{ flex: 1, marginRight: 4 }}>
                   <Text style={styles.label}>{TEXT.gender()}</Text>
                   <TextInput
+                    editable={!isSubmitted}
                     style={[
                       styles.input,
                       isSubmitted && { backgroundColor: COLOR.gray },
@@ -397,7 +397,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 </View>
 
                 {/* Delete */}
-                {!isSubmitted && (
+                {!isSubmitted && !isInjured && (
                   <TouchableOpacity
                     style={styles.deleteBtn}
                     onPress={() => removePerson(list, setList, index)}
@@ -407,7 +407,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 )}
 
                 {/* Add */}
-                {isLast && !isSubmitted && (
+                {isLast && !isSubmitted && !isInjured && (
                   <TouchableOpacity
                     style={styles.addBtn}
                     onPress={() => addPerson(list, setList)}
@@ -418,16 +418,46 @@ const HumanImpactScreen = ({ navigation }: any) => {
               </View>
 
               {isInjured && (
-                <View>
-                  <Text style={styles.label}>{TEXT.type_of_injury()}</Text>
-                  <TextInput
-                    style={[styles.input, { marginTop: 8 }]}
-                    placeholder={TEXT.enter_type_of_injury()}
-                    value={item.type_of_injury}
-                    onChangeText={text =>
-                      updatePerson(list, setList, index, 'type_of_injury', text)
-                    }
-                  />
+                <View style={styles.row}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.label}>{TEXT.type_of_injury()}</Text>
+                    <TextInput
+                      editable={!isSubmitted}
+                      style={[
+                        styles.input,
+                        isSubmitted && { backgroundColor: COLOR.gray },
+                      ]}
+                      placeholder={TEXT.enter_type_of_injury()}
+                      value={item.type_of_injury}
+                      onChangeText={text =>
+                        updatePerson(
+                          list,
+                          setList,
+                          index,
+                          'type_of_injury',
+                          text,
+                        )
+                      }
+                    />
+                  </View>
+
+                  {!isSubmitted && (
+                    <TouchableOpacity
+                      style={styles.deleteBtn}
+                      onPress={() => removePerson(list, setList, index)}
+                    >
+                      <Text style={styles.iconText}>✕</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {isLast && !isSubmitted && (
+                    <TouchableOpacity
+                      style={styles.addBtn}
+                      onPress={() => addPerson(list, setList)}
+                    >
+                      <Text style={styles.iconText}>＋</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -529,7 +559,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 style={[
                   styles.closeButton,
                   {
-                    width: WIDTH(50),
+                    width: WIDTH(40),
                     alignSelf: 'center',
                   },
                 ]}
@@ -620,12 +650,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 8,
     fontSize: 14,
-    height: 40,
+    height: 45,
   },
 
   addBtn: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     marginLeft: 2,
     backgroundColor: COLOR.blue,
     borderRadius: 6,
@@ -634,8 +664,8 @@ const styles = StyleSheet.create({
   },
 
   deleteBtn: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     marginLeft: 8,
     backgroundColor: COLOR.red,
     borderRadius: 6,
@@ -707,8 +737,8 @@ const styles = StyleSheet.create({
   },
 
   countInput: {
-    width: 64,
-    height: 36,
+    width: '50%',
+    height: 45,
     borderWidth: 1,
     borderColor: '#D1D5DB',
     borderRadius: 6,

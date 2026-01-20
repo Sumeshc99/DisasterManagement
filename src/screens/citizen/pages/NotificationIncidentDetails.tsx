@@ -284,9 +284,9 @@ const NotificationIncidentDetails: React.FC = () => {
                     </Text>
 
                     <ReuseButton
-                      text="Comment"
+                      text={TEXT.comment()}
                       style={{
-                        width: WIDTH(50),
+                        width: WIDTH(44),
                         alignSelf: 'center',
                         marginTop: 12,
                       }}

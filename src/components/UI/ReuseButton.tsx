@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { COLOR } from '../../themes/Colors';
-import { FONT } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 // import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 interface ButtonProps {
@@ -39,13 +39,13 @@ const ReuseButton: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    width: '100%',
-    borderRadius: 50,
-    paddingVertical: 12,
+    width: WIDTH(38),
+    borderRadius: WIDTH(100) * 0.08, 
+    paddingVertical: WIDTH(3.2),
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 3 },

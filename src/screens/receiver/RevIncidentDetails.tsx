@@ -240,9 +240,9 @@ const RevIncidentDetails: React.FC = () => {
     'Pending Log Report Update',
   ];
 
-  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.includes(
-    incidentData?.status,
-  );
+  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.map(status =>
+    status.toLowerCase(),
+  ).includes(incidentData?.status?.toLowerCase());
 
   const COMMENT_ALLOWED_STATUSES = [
     'pending review',
@@ -319,7 +319,7 @@ const RevIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <Text style={styles.label}>{TEXT.rural_urban()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
                 </View>
@@ -477,9 +477,9 @@ const RevIncidentDetails: React.FC = () => {
                       </Text>
 
                       <ReuseButton
-                        text="Comment"
+                        text={TEXT.comment()}
                         style={{
-                          width: WIDTH(50),
+                          width: WIDTH(44),
                           marginTop: 12,
                         }}
                         onPress={() => commentRef.current?.open()}

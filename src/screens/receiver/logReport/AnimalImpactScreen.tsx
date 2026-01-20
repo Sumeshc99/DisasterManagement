@@ -23,6 +23,7 @@ import { useSnackbar } from '../../../hooks/SnackbarProvider';
 import ScreenLoader from '../../../components/ScreenLoader';
 import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
 import { useFocusEffect } from '@react-navigation/native';
+import { WIDTH } from '../../../themes/AppConst';
 
 interface AnimalItem {
   name_of_village: string;
@@ -155,10 +156,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
 
         // Show the first message in snackbar
         if (showPopup) {
-          const msg =
-            res?.data?.data?.messages && res.data.data.messages.length > 0
-              ? res.data.data.messages[0]
-              : res.data.message; // fallback to main message
+          const msg = res?.data?.message;
 
           setSuccessMsg(msg);
           successRef.current?.open();
@@ -194,7 +192,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
       </View>
 
       <View style={styles.container}>
-        {loadingGet ? (
+        {loadingGet || loadingSave ? (
           <ScreenLoader />
         ) : (
           <ScrollView contentContainerStyle={styles.content}>
@@ -364,13 +362,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+    height: 45,
   },
 
   topButtonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  half: { width: '48%' },
+  half: { width: WIDTH(40) },
   inlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -380,6 +379,7 @@ const styles = StyleSheet.create({
   flexInput: {
     flex: 1,
     marginBottom: 0,
+    height: 45,
   },
 
   inlineBtn: {
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeBtn: {
-    width: '60%',
+    width: WIDTH(40),
     backgroundColor: COLOR.textGrey,
   },
   label: {
