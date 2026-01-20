@@ -189,10 +189,13 @@ const ResIncidentDetails: React.FC = () => {
             incidentId: inc?.incident_id,
             incidentType: inc.other_incident_type || inc?.incident_type_name,
             address: inc?.address,
+            tehsil: inc?.tehsil_name,
             mobileNumber: inc?.mobile_number,
             description: inc?.description,
             media: inc?.media,
             status: inc?.status,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
             dateTime: inc?.date_reporting,
           });
         }

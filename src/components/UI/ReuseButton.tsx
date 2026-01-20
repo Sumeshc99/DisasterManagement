@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { COLOR } from '../../themes/Colors';
-import { WIDTH } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 // import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 interface ButtonProps {
@@ -52,13 +52,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
-
-    // Shadow (Android)
     elevation: 3,
   },
   buttonText: {
-    fontSize: WIDTH(3.5),
-    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: FONT.R_SBD_600,
   },
 });
 
