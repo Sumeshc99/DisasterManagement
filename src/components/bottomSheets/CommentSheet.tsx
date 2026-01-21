@@ -277,7 +277,7 @@ const CommentSheet = forwardRef<any, Props>(
                     ? item.comment_id.toString()
                     : index.toString()
                 }
-                onScrollBeginDrag={() => setMenuVisibleFor(null)}
+                contentContainerStyle={{ paddingBottom: 50 }}
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item, index }) => (
@@ -312,14 +312,7 @@ const CommentSheet = forwardRef<any, Props>(
                         )}
 
                         {menuVisibleFor === item.comment_id && (
-                          <View
-                            style={[
-                              styles.menuContainer,
-                              index >= comments.length - 2
-                                ? { bottom: 28 } // ⬆️ open upward
-                                : { top: 28 }, // ⬇️ open downward
-                            ]}
-                          >
+                          <View style={[styles.menuContainer]}>
                             <TouchableOpacity
                               style={styles.menuItem}
                               onPress={() => {
@@ -572,7 +565,8 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: 'absolute',
-    right: 0,
+    right: 15,
+    top: 30,
     backgroundColor: '#fff',
     borderRadius: 8,
     elevation: 6,
@@ -580,7 +574,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
-    zIndex: 1000,
+    zIndex: 5000,
     width: 120,
   },
 

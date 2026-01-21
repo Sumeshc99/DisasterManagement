@@ -16,133 +16,136 @@ import { TEXT } from '../../i18n/locales/Text';
 interface props {
   ref: any;
   data: any;
-  getIncidentDetails?: () => void;
+  getIncidentDetails?: any;
 }
 
-const RejectReasonSheet1: React.FC<props> = forwardRef(({ data }, ref: any) => {
-  const { userToken } = useSelector((state: RootState) => state.auth);
+const RejectReasonSheet1: React.FC<props> = forwardRef(
+  ({ data, getIncidentDetails }, ref: any) => {
+    const { userToken } = useSelector((state: RootState) => state.auth);
 
-  const { showLoader, hideLoader } = useGlobalLoader();
-  const snackbar = useSnackbar();
+    const { showLoader, hideLoader } = useGlobalLoader();
+    const snackbar = useSnackbar();
 
-  const [selectedReason, setSelectedReason] = useState<'duplicate' | 'cancel'>(
-    'duplicate',
-  );
-  const [idList, setidList] = useState([]);
-  const [details, setDetails] = useState('');
+    const [selectedReason, setSelectedReason] = useState<
+      'duplicate' | 'cancel'
+    >('duplicate');
+    const [idList, setidList] = useState([]);
+    const [details, setDetails] = useState('');
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      insId: '',
-      reason: '',
-    },
-  });
+    const {
+      control,
+      handleSubmit,
+      formState: { errors },
+    } = useForm({
+      defaultValues: {
+        insId: '',
+        reason: '',
+      },
+    });
 
-  useEffect(() => {
-    const getIncidentIds = () => {
-      ApiManager.getIncidentIds(data.tehsil_id, data.id, userToken)
+    useEffect(() => {
+      const getIncidentIds = () => {
+        ApiManager.getIncidentIds(data.tehsil_id, data.id, userToken)
+          .then(resp => {
+            if (resp.data.status) {
+              setidList(
+                (resp?.data?.data || []).map((item: any) => ({
+                  label: item.incident_id,
+                  value: item.id,
+                })),
+              );
+            }
+          })
+          .catch(err => console.log('err', err.response))
+          .finally(() => '');
+      };
+
+      getIncidentIds();
+    }, []);
+
+    const incidentUpdateStatus = (item: any) => {
+      const body = {
+        incident_id: data.id,
+        button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
+        cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
+        duplicate_incident_id:
+          selectedReason === 'duplicate' ? item?.insId : '',
+        reason_for_cancellation: selectedReason === 'cancel' ? details : '',
+      };
+
+      showLoader();
+      ApiManager.incidentStatusUpdate(body, userToken)
         .then(resp => {
           if (resp.data.status) {
-            setidList(
-              (resp?.data?.data || []).map((item: any) => ({
-                label: item.incident_id,
-                value: item.id,
-              })),
-            );
+            snackbar(resp?.data?.message, 'success');
+            getIncidentDetails();
+            ref?.current?.close();
           }
         })
         .catch(err => console.log('err', err.response))
-        .finally(() => '');
+        .finally(() => hideLoader());
     };
 
-    getIncidentIds();
-  }, []);
+    return (
+      <RBSheet
+        ref={ref}
+        height={480}
+        customStyles={{
+          wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
+          draggableIcon: { backgroundColor: '#ccc' },
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          },
+        }}
+      >
+        <View style={styles.container}>
+          <View style={styles.dragIndicator} />
 
-  const incidentUpdateStatus = (item: any) => {
-    const body = {
-      incident_id: data.id,
-      button_type: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
-      cancel_reason: selectedReason === 'duplicate' ? 'Duplicate' : 'Cancel',
-      duplicate_incident_id: selectedReason === 'duplicate' ? item?.insId : '',
-      reason_for_cancellation: selectedReason === 'cancel' ? details : '',
-    };
-
-    showLoader();
-    ApiManager.incidentStatusUpdate(body, userToken)
-      .then(resp => {
-        if (resp.data.status) {
-          snackbar(resp?.data?.message, 'success');
-          // 🔥 Refresh parent screen after Reject
-          data.getIncidentDetails && data.getIncidentDetails();
-          ref?.current?.close();
-        }
-      })
-      .catch(err => console.log('err', err.response))
-      .finally(() => hideLoader());
-  };
-
-  return (
-    <RBSheet
-      ref={ref}
-      height={480}
-      customStyles={{
-        wrapper: { backgroundColor: 'rgba(0,0,0,0.5)' },
-        draggableIcon: { backgroundColor: '#ccc' },
-        container: {
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-        },
-      }}
-    >
-      <View style={styles.container}>
-        <View style={styles.dragIndicator} />
-
-        <View style={styles.headerRow}>
-          <Text style={styles.titleHeader}>
-            {TEXT.select_reason_rejection()}
-          </Text>
-
-          <TouchableOpacity
-            style={styles.closeBtn}
-            onPress={() => (ref as { current: any })?.current?.close()}
-          >
-            <Image
-              source={require('../../assets/cancel.png')}
-              style={{ width: WIDTH(8), height: WIDTH(8) }}
-            />
-          </TouchableOpacity>
-        </View>
-        {/* Radio Buttons */}
-        <View style={styles.radioRow}>
-          <TouchableOpacity
-            style={[
-              styles.radioBtn,
-              selectedReason === 'duplicate' && styles.radioBtnActiveBlue,
-            ]}
-            onPress={() => setSelectedReason('duplicate')}
-          >
-            <RadioButton
-              value="duplicate"
-              status={selectedReason === 'duplicate' ? 'checked' : 'unchecked'}
-              onPress={() => setSelectedReason('duplicate')}
-              color={COLOR.white}
-              uncheckedColor={COLOR.white}
-            />
-            <Text
-              style={[
-                styles.radioText,
-                selectedReason === 'duplicate' && { color: COLOR.white },
-              ]}
-            >
-              {TEXT.duplicate()}
+          <View style={styles.headerRow}>
+            <Text style={styles.titleHeader}>
+              {TEXT.select_reason_rejection()}
             </Text>
-          </TouchableOpacity>
 
-          {/* <TouchableOpacity
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => (ref as { current: any })?.current?.close()}
+            >
+              <Image
+                source={require('../../assets/cancel.png')}
+                style={{ width: WIDTH(8), height: WIDTH(8) }}
+              />
+            </TouchableOpacity>
+          </View>
+          {/* Radio Buttons */}
+          <View style={styles.radioRow}>
+            <TouchableOpacity
+              style={[
+                styles.radioBtn,
+                selectedReason === 'duplicate' && styles.radioBtnActiveBlue,
+              ]}
+              onPress={() => setSelectedReason('duplicate')}
+            >
+              <RadioButton
+                value="duplicate"
+                status={
+                  selectedReason === 'duplicate' ? 'checked' : 'unchecked'
+                }
+                onPress={() => setSelectedReason('duplicate')}
+                color={COLOR.white}
+                uncheckedColor={COLOR.white}
+              />
+              <Text
+                style={[
+                  styles.radioText,
+                  selectedReason === 'duplicate' && { color: COLOR.white },
+                ]}
+              >
+                {TEXT.duplicate()}
+              </Text>
+            </TouchableOpacity>
+
+            {/* <TouchableOpacity
             style={[
               styles.radioBtn,
               selectedReason === 'cancel' && styles.radioBtnActiveBlue,
@@ -165,58 +168,59 @@ const RejectReasonSheet1: React.FC<props> = forwardRef(({ data }, ref: any) => {
               Cancel
             </Text>
           </TouchableOpacity> */}
+          </View>
+
+          {/* Dynamic Input Based on Condition */}
+          {selectedReason === 'duplicate' ? (
+            <>
+              <Text style={styles.label}>
+                {TEXT.select_duplicate_incident_id()}{' '}
+                <Text style={{ color: COLOR.red }}>*</Text>
+              </Text>
+
+              <DropDownInput
+                label={TEXT.incident_id()}
+                name="insId"
+                control={control}
+                placeholder={TEXT.select_incident_id()}
+                items={idList || []}
+                rules={{ required: TEXT.incident_id_required() }}
+                errors={errors}
+              />
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>
+                {TEXT.reason_cancellation()}{' '}
+                <Text style={{ color: COLOR.red }}>*</Text>
+              </Text>
+
+              <TextInput
+                mode="outlined"
+                placeholder={TEXT.provide_reason_cancellation()}
+                value={details}
+                onChangeText={setDetails}
+                outlineColor="#D9D9D9"
+                activeOutlineColor={COLOR.blue}
+                multiline
+                numberOfLines={3}
+                style={styles.textInput}
+              />
+            </>
+          )}
+
+          {/* Save Button */}
         </View>
-
-        {/* Dynamic Input Based on Condition */}
-        {selectedReason === 'duplicate' ? (
-          <>
-            <Text style={styles.label}>
-              {TEXT.select_duplicate_incident_id()}{' '}
-              <Text style={{ color: COLOR.red }}>*</Text>
-            </Text>
-
-            <DropDownInput
-              label={TEXT.incident_id()}
-              name="insId"
-              control={control}
-              placeholder={TEXT.select_incident_id()}
-              items={idList || []}
-              rules={{ required: TEXT.incident_id_required() }}
-              errors={errors}
-            />
-          </>
-        ) : (
-          <>
-            <Text style={styles.label}>
-              {TEXT.reason_cancellation()}{' '}
-              <Text style={{ color: COLOR.red }}>*</Text>
-            </Text>
-
-            <TextInput
-              mode="outlined"
-              placeholder={TEXT.provide_reason_cancellation()}
-              value={details}
-              onChangeText={setDetails}
-              outlineColor="#D9D9D9"
-              activeOutlineColor={COLOR.blue}
-              multiline
-              numberOfLines={3}
-              style={styles.textInput}
-            />
-          </>
-        )}
-
-        {/* Save Button */}
-      </View>
-      <TouchableOpacity
-        style={styles.saveBtn}
-        onPress={handleSubmit(incidentUpdateStatus)}
-      >
-        <Text style={styles.saveText}>{TEXT.save()}</Text>
-      </TouchableOpacity>
-    </RBSheet>
-  );
-});
+        <TouchableOpacity
+          style={styles.saveBtn}
+          onPress={handleSubmit(incidentUpdateStatus)}
+        >
+          <Text style={styles.saveText}>{TEXT.save()}</Text>
+        </TouchableOpacity>
+      </RBSheet>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {

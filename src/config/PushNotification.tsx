@@ -1,4 +1,4 @@
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, Platform, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
 import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 
@@ -41,12 +41,14 @@ const PushNotification = () => {
     const settings = await notifee.requestPermission();
 
     if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-      await notifee.createChannel({
-        id: CHANNEL_ID,
-        name: 'Alert Sound Channel',
-        importance: AndroidImportance.HIGH,
-        sound: 'alert',
-      });
+      if (Platform.OS === 'android') {
+        await notifee.createChannel({
+          id: CHANNEL_ID,
+          name: 'Alert Sound Channel',
+          importance: AndroidImportance.HIGH,
+          sound: 'alert',
+        });
+      }
     } else {
       Alert.alert(
         'Permissions required',
@@ -55,15 +57,20 @@ const PushNotification = () => {
     }
   };
 
-  const onDisplayNotification = async (data: any) => {
+  const onDisplayNotification = async (remoteMessage: any) => {
     await notifee.displayNotification({
-      title: data?.notification?.title,
-      body: data?.notification?.body,
+      title: remoteMessage?.notification?.title,
+      body: remoteMessage?.notification?.body,
+
       android: {
         channelId: CHANNEL_ID,
-        ongoing: data?.data?.ongoing === 'true',
+        ongoing: remoteMessage?.data?.ongoing === 'true',
         pressAction: { id: 'default' },
         smallIcon: '@mipmap/ic_launcher',
+      },
+
+      ios: {
+        sound: 'alert.caf',
       },
     });
   };

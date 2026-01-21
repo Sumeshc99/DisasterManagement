@@ -22,53 +22,66 @@ const filterValidMedia = async (
 ): Promise<PickerAsset[]> => {
   const validAssets: PickerAsset[] = [];
   showLoader();
-  for (const asset of assets) {
-    const isVideo = asset.type?.startsWith('video');
-    const originalSize = asset.fileSize ?? 0;
 
-    // ✅ Image → always allowed
-    if (!isVideo) {
-      validAssets.push(asset);
-      continue;
-    }
+  try {
+    for (const asset of assets) {
+      const isVideo = asset.type?.startsWith('video');
 
-    console.log(`📹 Original video size: ${bytesToMB(originalSize)} MB`);
+      // ✅ Image → always allowed
+      if (!isVideo) {
+        validAssets.push(asset);
+        continue;
+      }
 
-    // ✅ Video under 10 MB → allowed
-    if (originalSize <= MAX_VIDEO_SIZE) {
-      validAssets.push(asset);
-      continue;
-    }
+      const originalSize = asset.fileSize ?? 0;
+      console.log(`📹 Original size: ${bytesToMB(originalSize)} MB`);
 
-    // 🔥 Compress large video
-    try {
+      // ✅ Already under limit → accept directly
+      if (originalSize <= MAX_VIDEO_SIZE) {
+        validAssets.push(asset);
+        continue;
+      }
+
+      // 🔥 Compress
       const compressedUri = await Video.compress(
         asset.uri!,
         { compressionMethod: 'auto' },
-        progress => {
-          // optional progress log
-        },
+        () => {},
       );
 
-      // 🔍 Get compressed file size
-      const fileStat = await RNFS.stat(compressedUri.replace('file://', ''));
-      const compressedSize = Number(fileStat.size);
+      let filePath = compressedUri;
 
-      console.log(`✅ Compressed video size: ${bytesToMB(compressedSize)} MB`);
-      hideLoader();
+      // 🔥 ANDROID FIX: handle content://
+      if (compressedUri.startsWith('content://')) {
+        const tempPath = `${RNFS.CachesDirectoryPath}/${Date.now()}.mp4`;
+        await RNFS.copyFile(compressedUri, tempPath);
+        filePath = `file://${tempPath}`;
+      }
+
+      const stat = await RNFS.stat(filePath.replace('file://', ''));
+      const compressedSize = Number(stat.size);
+
+      console.log(`✅ Compressed size: ${bytesToMB(compressedSize)} MB`);
+
+      // ❌ Still too large → reject
+      if (compressedSize > MAX_VIDEO_SIZE) {
+        if (showAlert) {
+          Alert.alert(
+            'Video too large',
+            'Video must be under 10 MB after compression',
+          );
+        }
+        continue;
+      }
 
       validAssets.push({
         ...asset,
-        uri: compressedUri,
+        uri: filePath,
         fileSize: compressedSize,
       });
-    } catch (error) {
-      console.error('❌ Video compression failed', error);
-
-      if (showAlert) {
-        Alert.alert('Video too large', 'Unable to compress video below 10 MB');
-      }
     }
+  } finally {
+    hideLoader();
   }
 
   return validAssets;

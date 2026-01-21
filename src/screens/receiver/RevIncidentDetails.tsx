@@ -179,6 +179,33 @@ const RevIncidentDetails: React.FC = () => {
     getIncidentDetails();
   }, []);
 
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            tehsil: inc?.tehsil_name,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
+            dateTime: formatDateTime(inc?.date_reporting),
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     const getAssignedResponder = () => {
       setLoading(true);
@@ -516,7 +543,11 @@ const RevIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet ref={rejectRef} data={incidentData} />
+      <RejectReasonSheet
+        ref={rejectRef}
+        data={incidentData}
+        getIncidentDetails={getIncidentDetails}
+      />
 
       <AssignResponderSheet
         ref={assignRef}

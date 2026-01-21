@@ -142,14 +142,7 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
     const [forecast, setForecast] = useState<any[]>([]);
     const [location, setLocation] = useState(t.currentLocation);
     const [loading, setLoading] = useState(false);
-    const [weatherAlerts, setWeatherAlerts] = useState<any[]>([
-      {
-        event: 'Heatwave',
-        description: 'Temperatures expected to exceed 45°C...',
-        start: '2026-01-20T06:00:00Z',
-        end: '2026-01-21T18:00:00Z',
-      },
-    ]);
+    const [weatherAlerts, setWeatherAlerts] = useState<any[]>([]);
 
     /* -------------------- FETCH WEATHER & ALERTS -------------------- */
     useEffect(() => {
@@ -218,6 +211,9 @@ const WeatherSheet = forwardRef<React.ComponentRef<typeof RBSheet>>(
         height={720}
         closeOnPressMask
         customStyles={{ container: styles.container }}
+        onOpen={() => {
+          fetchWeather(); // ✅ refresh every time sheet opens
+        }}
       >
         <View style={styles.content}>
           <View style={styles.dragIndicator} />
