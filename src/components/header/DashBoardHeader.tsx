@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { COLOR } from '../../themes/Colors';
 import IncidentRecordsSheet from '../bottomSheets/IncidentRecordSheet';
@@ -7,6 +7,7 @@ import { RootState } from '../../store/RootReducer';
 import IncidentRecordsSheet2 from '../bottomSheets/IncidentRecordsSheet2';
 import IncidentRecordsSheet3 from '../bottomSheets/IncidentRecordsSheet3';
 import NotificationSheet from '../bottomSheets/NotificationSheet';
+import TimelineSheet from '../bottomSheets/TimelineSheet';
 
 interface props {
   drawer: boolean;
@@ -18,6 +19,11 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
   const notificationSheetRef = useRef<any>(null);
 
   const { user } = useSelector((state: RootState) => state.auth);
+
+  const timelineSheetRef = useRef<any>(null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
+    null,
+  );
 
   return (
     <View style={styles.container}>
@@ -69,14 +75,46 @@ const DashBoardHeader: React.FC<props> = ({ drawer, setDrawer }) => {
       </View>
 
       {user?.role === 'citizen' ? (
-        <IncidentRecordsSheet ref={sheetRef} />
+        <IncidentRecordsSheet
+          ref={sheetRef}
+          onOpenTimeline={(incidentId: number) => {
+            setSelectedIncidentId(incidentId);
+
+            // Wait a little so first sheet is fully closed
+            setTimeout(() => {
+              timelineSheetRef.current?.open();
+            }, 350);
+          }}
+        />
       ) : user?.role == 'reviewer' ? (
-        <IncidentRecordsSheet2 ref={sheetRef} />
+        <IncidentRecordsSheet2
+          ref={sheetRef}
+          onOpenTimeline={(incidentId: number) => {
+            setSelectedIncidentId(incidentId);
+
+            // Wait a little so first sheet is fully closed
+            setTimeout(() => {
+              timelineSheetRef.current?.open();
+            }, 350);
+          }}
+        />
       ) : (
-        <IncidentRecordsSheet3 ref={sheetRef} />
+        <IncidentRecordsSheet3
+          ref={sheetRef}
+          onOpenTimeline={(incidentId: number) => {
+            setSelectedIncidentId(incidentId);
+
+            // Wait a little so first sheet is fully closed
+            setTimeout(() => {
+              timelineSheetRef.current?.open();
+            }, 350);
+          }}
+        />
       )}
 
       <NotificationSheet ref={notificationSheetRef} />
+
+      <TimelineSheet ref={timelineSheetRef} incidentId={selectedIncidentId} />
     </View>
   );
 };
