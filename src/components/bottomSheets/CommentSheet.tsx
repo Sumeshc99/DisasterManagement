@@ -210,22 +210,28 @@ const CommentSheet = forwardRef<any, Props>(
       }
     };
 
-    const timeAgo = (dateString: string) => {
-      // Backend sends UTC but without timezone
-      // Convert: "YYYY-MM-DD HH:mm:ss" → "YYYY-MM-DDTHH:mm:ssZ"
-      const utcDate = new Date(dateString.replace(' ', 'T') + 'Z');
+    const timeAgo = (dateString?: string) => {
+      if (!dateString) return '';
+
+      const date = new Date(dateString.replace(' ', 'T'));
+
+      // ❌ Invalid date guard
+      if (isNaN(date.getTime())) return '';
 
       const now = new Date();
-      const diffMs = now.getTime() - utcDate.getTime();
+      let diffMs = now.getTime() - date.getTime();
 
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      // ❌ Future date guard (clock mismatch)
+      if (diffMs < 0) diffMs = 0;
+
+      const diffMinutes = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
 
       if (diffMinutes < 1) return 'Just now';
       if (diffMinutes < 60) return `${diffMinutes} min ago`;
       if (diffHours < 24) return `${diffHours} hr ago`;
-      return `${diffDays} day ago`;
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
 
     return (

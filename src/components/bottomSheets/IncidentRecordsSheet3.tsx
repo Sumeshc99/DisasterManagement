@@ -18,294 +18,299 @@ import { FONT, WIDTH } from '../../themes/AppConst';
 import Filter from '../../assets/filter.svg';
 import TimelineSheet from './TimelineSheet';
 
-const IncidentRecordsSheet3 = forwardRef<React.ComponentRef<typeof RBSheet>>(
-  ({}, ref) => {
-    const navigation = useNavigation();
+interface IncidentRecordsSheetProps {
+  onOpenTimeline?: (incidentId: number) => void;
+}
 
-    const { user, userToken } = useSelector((state: RootState) => state.auth);
+const IncidentRecordsSheet3 = forwardRef<
+  React.ComponentRef<typeof RBSheet>,
+  IncidentRecordsSheetProps
+>(({ onOpenTimeline }, ref) => {
+  const navigation = useNavigation();
 
-    const [myIncident, setMyIncident] = useState([]);
-    const [assignedIncident, setAssignedIncident] = useState([]);
-    const [assignedInc, setAssignedInc] = useState([]);
-    const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
-    const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
-      null,
-    );
+  const { user, userToken } = useSelector((state: RootState) => state.auth);
 
-    const [showFilter, setShowFilter] = useState(false);
-    const [incType, setIncType] = useState<0 | 1>(0);
+  const [myIncident, setMyIncident] = useState([]);
+  const [assignedIncident, setAssignedIncident] = useState([]);
+  const [assignedInc, setAssignedInc] = useState([]);
+  const [isAssignedTab, setIsAssignedTab] = useState<boolean>(false);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
+    null,
+  );
 
-    const [refreshing, setRefreshing] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [incType, setIncType] = useState<0 | 1>(0);
 
-    const timelineRef = useRef<RBSheet>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-    const fetchIncidentList = async () => {
-      try {
-        const resp = await ApiManager.incidentList(userToken);
-        if (resp?.data?.success) {
-          const results = resp?.data?.data?.results || [];
+  const timelineRef = useRef<RBSheet>(null);
+  const [openTimelineAfterClose, setOpenTimelineAfterClose] = useState(false);
 
-          setMyIncident(results.filter((i: any) => i.user_id === user?.id));
-          setAssignedIncident(
-            results.filter((i: any) => i.user_id !== user?.id),
-          );
-        }
-      } catch (err) {
-        console.error('Error fetching incident list:', err);
+  const fetchIncidentList = async () => {
+    try {
+      const resp = await ApiManager.incidentList(userToken);
+      if (resp?.data?.success) {
+        const results = resp?.data?.data?.results || [];
+
+        setMyIncident(results.filter((i: any) => i.user_id === user?.id));
+        setAssignedIncident(results.filter((i: any) => i.user_id !== user?.id));
       }
-    };
+    } catch (err) {
+      console.error('Error fetching incident list:', err);
+    }
+  };
 
-    const getAssignedIncident = async () => {
-      try {
-        const resp = await ApiManager.assignedToResponder(user?.id, userToken);
-        if (resp?.data?.status) {
-          const results = resp?.data?.data || [];
-          setAssignedInc(results);
-        }
-      } catch (err) {
-        console.error('Error fetching assigned incidents:', err);
+  const getAssignedIncident = async () => {
+    try {
+      const resp = await ApiManager.assignedToResponder(user?.id, userToken);
+      if (resp?.data?.status) {
+        const results = resp?.data?.data || [];
+        setAssignedInc(results);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching assigned incidents:', err);
+    }
+  };
 
-    const refreshIncidents = async () => {
-      await fetchIncidentList();
-      await getAssignedIncident();
-    };
+  const refreshIncidents = async () => {
+    await fetchIncidentList();
+    await getAssignedIncident();
+  };
 
-    // useEffect(() => {
-    //   fetchIncidentList();
-    //   getAssignedIncident();
-    // }, [userToken]);
+  // useEffect(() => {
+  //   fetchIncidentList();
+  //   getAssignedIncident();
+  // }, [userToken]);
 
-    const onRefresh = async () => {
-      setRefreshing(true);
-      await fetchIncidentList();
-      await getAssignedIncident();
-      setRefreshing(false);
-    };
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchIncidentList();
+    await getAssignedIncident();
+    setRefreshing(false);
+  };
 
-    const formatDateTime = (isoString: string) => {
-      if (!isoString) return '';
-      const date = new Date(isoString);
-
-      return (
-        'Date: ' +
-        date.toLocaleDateString('en-GB', {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit',
-        }) +
-        '   Time: ' +
-        date.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        })
-      );
-    };
-
-    const renderStatus = (status: string | undefined) => {
-      const statusColors: Record<string, string> = {
-        'Pending Review': '#EADCA7',
-        Rejected: '#FF4930',
-        New: '#A5F3B9',
-      };
-
-      const bg = statusColors[status ?? ''] || '#ddd';
-
-      return (
-        <View style={[styles.statusBadge, { backgroundColor: bg }]}>
-          <Text style={styles.statusText}>{status}</Text>
-        </View>
-      );
-    };
-
-    const renderItem = ({ item }: any) => {
-      const isMyIncident = item.user_id === user?.id;
-      const isDraft = item.status === 'New';
-
-      return (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            (ref as { current: any } | null)?.current?.close();
-            navigation.navigate(
-              !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
-              {
-                data: item.id,
-              },
-            );
-          }}
-          style={styles.card}
-        >
-          <View style={styles.headerRow1}>
-            <Text style={styles.incidentId}>
-              {TEXT.incident_id()} - {item.incident_id}
-            </Text>
-            {renderStatus(item.status)}
-          </View>
-
-          <Text style={styles.title}>{item.incident_type_name}</Text>
-          <Text style={styles.location}>{item.address}</Text>
-
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
-
-            {/* ACTION BUTTON LOGIC */}
-            {isDraft && isMyIncident ? (
-              /* Draft + My Incident → Edit */
-              <View
-                style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}
-              >
-                <Text style={[styles.statusText, { color: COLOR.white }]}>
-                  Edit
-                </Text>
-              </View>
-            ) : !isDraft ? (
-              /* Created Incident → Timeline */
-              <TouchableOpacity
-                style={[styles.timelineBadge]}
-                onPress={() => {
-                  setSelectedIncidentId(item.id);
-                  timelineRef.current?.open();
-                }}
-              >
-                <Text style={styles.timelineText}>{TEXT.timeline()}</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-
-          <View style={styles.divider} />
-        </TouchableOpacity>
-      );
-    };
-
-    const listData = isAssignedTab
-      ? assignedInc
-      : incType === 0
-      ? myIncident
-      : assignedIncident;
+  const formatDateTime = (isoString: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
 
     return (
-      <RBSheet
-        ref={ref}
-        closeOnPressMask
-        height={600}
-        onOpen={refreshIncidents}
-        customStyles={{
-          container: styles.sheetContainer,
-          draggableIcon: { backgroundColor: 'transparent' },
-        }}
-      >
-        <View style={styles.content}>
-          <View style={styles.dragIndicator} />
-
-          <View style={styles.headerRow}>
-            <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
-
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => (ref as { current: any })?.current?.close()}
-            >
-              <Image
-                source={require('../../assets/cancel.png')}
-                style={{ width: WIDTH(8), height: WIDTH(8) }}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* ------------------- TABS -------------------- */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
-              onPress={() => setIsAssignedTab(false)}
-            >
-              <Text
-                style={[styles.tabText, !isAssignedTab && styles.tabTextActive]}
-              >
-                {TEXT.my_incident_records()}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.tabButton1, isAssignedTab && styles.tabActive]}
-              onPress={() => setIsAssignedTab(true)}
-            >
-              <Text
-                style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
-              >
-                {TEXT.assigned_incident_records()}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {!isAssignedTab && (
-            <View style={styles.filterRow}>
-              <Filter />
-              <Text style={styles.filterTitle}>{TEXT.filter()} :</Text>
-
-              <View>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => setShowFilter(!showFilter)}
-                  style={styles.filterDropdownButton}
-                >
-                  <Text style={styles.filterDropdownText}>
-                    {incType === 0 ? TEXT.my_records() : TEXT.other_records()}
-                  </Text>
-
-                  <Text style={styles.dropdownArrow}>
-                    {showFilter ? '▲' : '▼'}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* DROPDOWN LIST */}
-                {showFilter && (
-                  <View style={styles.dropdownContainer}>
-                    <Text
-                      onPress={() => {
-                        setIncType(0);
-                        setShowFilter(false);
-                      }}
-                      style={styles.dropdownItem}
-                    >
-                      {TEXT.my_incident()}
-                    </Text>
-
-                    <Text
-                      onPress={() => {
-                        setIncType(1);
-                        setShowFilter(false);
-                      }}
-                      style={styles.dropdownItem}
-                    >
-                      {TEXT.other_incident()}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-          )}
-
-          <FlatList
-            data={listData}
-            renderItem={renderItem}
-            keyExtractor={(item: any, index) =>
-              item?.id?.toString() || index.toString()
-            }
-            contentContainerStyle={{ paddingBottom: 30, marginTop: 10 }}
-            showsVerticalScrollIndicator={false}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        </View>
-        <TimelineSheet ref={timelineRef} incidentId={selectedIncidentId} />
-      </RBSheet>
+      'Date: ' +
+      date.toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+      }) +
+      '   Time: ' +
+      date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
     );
-  },
-);
+  };
+
+  const renderStatus = (status: string | undefined) => {
+    const statusColors: Record<string, string> = {
+      'Pending Review': '#EADCA7',
+      Rejected: '#FF4930',
+      New: '#A5F3B9',
+    };
+
+    const bg = statusColors[status ?? ''] || '#ddd';
+
+    return (
+      <View style={[styles.statusBadge, { backgroundColor: bg }]}>
+        <Text style={styles.statusText}>{status}</Text>
+      </View>
+    );
+  };
+
+  const renderItem = ({ item }: any) => {
+    const isMyIncident = item.user_id === user?.id;
+    const isDraft = item.status === 'New';
+
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          (ref as { current: any } | null)?.current?.close();
+          navigation.navigate(
+            !isAssignedTab ? 'incidentDetails' : 'resIncidentDetails',
+            {
+              data: item.id,
+            },
+          );
+        }}
+        style={styles.card}
+      >
+        <View style={styles.headerRow1}>
+          <Text style={styles.incidentId}>
+            {TEXT.incident_id()} - {item.incident_id}
+          </Text>
+          {renderStatus(item.status)}
+        </View>
+
+        <Text style={styles.title}>{item.incident_type_name}</Text>
+        <Text style={styles.location}>{item.address}</Text>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.date}>{formatDateTime(item.created_on)}</Text>
+
+          {/* ACTION BUTTON LOGIC */}
+          {isDraft && isMyIncident ? (
+            /* Draft + My Incident → Edit */
+            <View style={[styles.statusBadge, { backgroundColor: COLOR.blue }]}>
+              <Text style={[styles.statusText, { color: COLOR.white }]}>
+                Edit
+              </Text>
+            </View>
+          ) : !isDraft ? (
+            /* Created Incident → Timeline */
+            <TouchableOpacity
+              style={[styles.timelineBadge]}
+              onPress={() => {
+                onOpenTimeline?.(item.id); // <- call parent callback
+                (ref as { current: any })?.current?.close();
+              }}
+            >
+              <Text style={styles.timelineText}>{TEXT.timeline()}</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        <View style={styles.divider} />
+      </TouchableOpacity>
+    );
+  };
+
+  const listData = isAssignedTab
+    ? assignedInc
+    : incType === 0
+    ? myIncident
+    : assignedIncident;
+
+  return (
+    <RBSheet
+      ref={ref}
+      closeOnPressMask
+      height={600}
+      onOpen={refreshIncidents}
+      customStyles={{
+        container: styles.sheetContainer,
+        draggableIcon: { backgroundColor: 'transparent' },
+      }}
+      onClose={() => {
+        if (openTimelineAfterClose) {
+          setOpenTimelineAfterClose(false);
+          timelineRef.current?.open();
+        }
+      }}
+    >
+      <View style={styles.content}>
+        <View style={styles.dragIndicator} />
+
+        <View style={styles.headerRow}>
+          <Text style={styles.titleHeader}>{TEXT.incident_records()}</Text>
+
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => (ref as { current: any })?.current?.close()}
+          >
+            <Image
+              source={require('../../assets/cancel.png')}
+              style={{ width: WIDTH(8), height: WIDTH(8) }}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* ------------------- TABS -------------------- */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tabButton, !isAssignedTab && styles.tabActive]}
+            onPress={() => setIsAssignedTab(false)}
+          >
+            <Text
+              style={[styles.tabText, !isAssignedTab && styles.tabTextActive]}
+            >
+              {TEXT.my_incident_records()}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tabButton1, isAssignedTab && styles.tabActive]}
+            onPress={() => setIsAssignedTab(true)}
+          >
+            <Text
+              style={[styles.tabText, isAssignedTab && styles.tabTextActive]}
+            >
+              {TEXT.assigned_incident_records()}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {!isAssignedTab && (
+          <View style={styles.filterRow}>
+            <Filter />
+            <Text style={styles.filterTitle}>{TEXT.filter()} :</Text>
+
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setShowFilter(!showFilter)}
+                style={styles.filterDropdownButton}
+              >
+                <Text style={styles.filterDropdownText}>
+                  {incType === 0 ? TEXT.my_records() : TEXT.other_records()}
+                </Text>
+
+                <Text style={styles.dropdownArrow}>
+                  {showFilter ? '▲' : '▼'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* DROPDOWN LIST */}
+              {showFilter && (
+                <View style={styles.dropdownContainer}>
+                  <Text
+                    onPress={() => {
+                      setIncType(0);
+                      setShowFilter(false);
+                    }}
+                    style={styles.dropdownItem}
+                  >
+                    {TEXT.my_incident()}
+                  </Text>
+
+                  <Text
+                    onPress={() => {
+                      setIncType(1);
+                      setShowFilter(false);
+                    }}
+                    style={styles.dropdownItem}
+                  >
+                    {TEXT.other_incident()}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
+        <FlatList
+          data={listData}
+          renderItem={renderItem}
+          keyExtractor={(item: any, index) =>
+            item?.id?.toString() || index.toString()
+          }
+          contentContainerStyle={{ paddingBottom: 30, marginTop: 10 }}
+          showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      </View>
+    </RBSheet>
+  );
+});
 
 export default IncidentRecordsSheet3;
 
