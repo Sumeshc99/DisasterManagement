@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		041129BC2F0F8214007BA3C6 /* alert.caf in Resources */ = {isa = PBXBuildFile; fileRef = 041129BB2F0F8214007BA3C6 /* alert.caf */; };
 		043D2D512F07A10800740C7C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 043D2D502F07A10800740C7C /* GoogleService-Info.plist */; };
+		0476CCF12F2228D900EAFF40 /* alert.caf in Resources */ = {isa = PBXBuildFile; fileRef = 0476CCF02F2228D900EAFF40 /* alert.caf */; };
 		055E310EA93643C6AEB903E3 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2DB9FFBC22E494CAB2DB66A /* Roboto-Thin.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		18C15CD214E241CA80A90869 /* Roboto-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0DCB22C8C55D41308099A034 /* Roboto-ExtraLight.ttf */; };
@@ -36,8 +36,8 @@
 
 /* Begin PBXFileReference section */
 		0404AD352F05488300D5D074 /* DisasterMgmt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DisasterMgmt.entitlements; path = DisasterMgmt/DisasterMgmt.entitlements; sourceTree = "<group>"; };
-		041129BB2F0F8214007BA3C6 /* alert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = alert.caf; sourceTree = "<group>"; };
 		043D2D502F07A10800740C7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0476CCF02F2228D900EAFF40 /* alert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = alert.caf; sourceTree = "<group>"; };
 		088342B94FD640B580ECEEE1 /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		0C382B7F31FB47098274393B /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		0DCB22C8C55D41308099A034 /* Roboto-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraLight.ttf"; path = "../assets/fonts/Roboto-ExtraLight.ttf"; sourceTree = "<group>"; };
@@ -83,12 +83,12 @@
 		13B07FAE1A68108700A75B9A /* DisasterMgmt */ = {
 			isa = PBXGroup;
 			children = (
+				0476CCF02F2228D900EAFF40 /* alert.caf */,
 				043D2D502F07A10800740C7C /* GoogleService-Info.plist */,
 				0404AD352F05488300D5D074 /* DisasterMgmt.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				041129BB2F0F8214007BA3C6 /* alert.caf */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
@@ -248,7 +248,7 @@
 				C7841858E70B45148B9E2EFF /* Roboto-Regular.ttf in Resources */,
 				802C627A3ADE40E2A7016F4A /* Roboto-SemiBold.ttf in Resources */,
 				043D2D512F07A10800740C7C /* GoogleService-Info.plist in Resources */,
-				041129BC2F0F8214007BA3C6 /* alert.caf in Resources */,
+				0476CCF12F2228D900EAFF40 /* alert.caf in Resources */,
 				9BBCF45A47EA45D09893C160 /* Roboto-SemiBoldItalic.ttf in Resources */,
 				055E310EA93643C6AEB903E3 /* Roboto-Thin.ttf in Resources */,
 				4566196D96534E2CA8A19CFD /* Roboto-ThinItalic.ttf in Resources */,
