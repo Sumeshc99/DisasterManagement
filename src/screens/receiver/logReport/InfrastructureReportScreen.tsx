@@ -51,6 +51,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const successRef = useRef<any>(null);
   const [successMsg, setSuccessMsg] = useState('');
+  const snackbar = useSnackbar();
 
   useFocusEffect(
     useCallback(() => {
@@ -103,6 +104,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Infra GET error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingGet(false);
     }
@@ -161,6 +163,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Infra SAVE error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingSave(false);
     }
