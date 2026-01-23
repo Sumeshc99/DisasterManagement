@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, ScrollView } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
@@ -8,43 +8,57 @@ import { useDispatch } from 'react-redux';
 import { clearUser } from '../../store/slices/authSlice';
 import BlinkingIcon from '../../components/UI/BlinkingIcon';
 import { FONT } from '../../themes/AppConst';
+import CitizensMetric from '../../components/Overview/CitizensMetric';
+import IncidentsVolumeSection from '../../components/Overview/IncidentsVolumeSection';
+import SeverityMetrics from '../../components/Overview/SeverityMetrics';
+import ResolutionMetrics from '../../components/Overview/ResolutionMetrics';
 
 const Community = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const logOut = () => {
-    dispatch(clearUser());
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'loginScreen' }],
-      }),
-    );
-  };
+  // const logOut = () => {
+  //   dispatch(clearUser());
+  //   navigation.dispatch(
+  //     CommonActions.reset({
+  //       index: 0,
+  //       routes: [{ name: 'loginScreen' }],
+  //     }),
+  //   );
+  // };
 
+  const role = 'reviewer'; // change to citizen / responder
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLOR.blue }}>
       <DashBoardHeader drawer={false} setDrawer={() => ''} />
 
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: COLOR.white,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+      {/* MAIN CONTENT */}
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: '20%' }}
       >
-        {/* <BlinkingIcon size={120} /> */}
-        {/* <Button title="Log out" onPress={() => logOut()} /> */}
-        <Text style={{ fontSize: 20, fontFamily: FONT.R_SBD_600 }}>
-          Coming Soon...
-        </Text>
-      </View>
+        {/* Sections will come here step-by-step */}
+        {(role === 'reviewer' || role === 'responder') && <CitizensMetric />}
+
+        <IncidentsVolumeSection role={role} />
+
+        <SeverityMetrics />
+        <ResolutionMetrics />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 export default Community;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLOR.blue,
+  },
+  content: {
+    backgroundColor: COLOR.white,
+    padding: 16,
+  },
+});
