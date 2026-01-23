@@ -61,6 +61,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Incident details error', e);
+      snackbar(e?.response?.data?.message, 'error');
     }
   };
 
@@ -96,6 +97,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Crop GET error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingGet(false);
     }
@@ -157,6 +159,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Crop SAVE error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingSave(false);
     }

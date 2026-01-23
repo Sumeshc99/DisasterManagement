@@ -397,8 +397,9 @@ const CommentSheet = forwardRef<any, Props>(
                   {/* Actions Row */}
                   <View style={styles.actionRow}>
                     <TouchableOpacity
-                      style={[styles.uploadBtn]} // takes left space
+                      style={[styles.uploadBtn, isEditing && { opacity: 0.3 }]} // takes left space
                       onPress={() => mediaRef.current?.pickImages()}
+                      disabled={isEditing}
                     >
                       <View style={styles.uploadContent}>
                         <GallaryIcon width={20} height={20} />

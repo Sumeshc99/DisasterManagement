@@ -11,7 +11,11 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  CommonActions,
+} from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
@@ -650,7 +654,20 @@ const IncidentDetails: React.FC = () => {
         }}
       />
 
-      <ResponderListSheet ref={listRef} responders={filteredList} />
+      <ResponderListSheet
+        ref={listRef}
+        responders={filteredList}
+        onClose={() => {
+          listRef.current?.close();
+
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'mainAppSelector' }],
+            }),
+          );
+        }}
+      />
       <CommentSheet
         ref={commentRef}
         incidentId={incidentId}

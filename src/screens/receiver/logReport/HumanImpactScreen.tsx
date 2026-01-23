@@ -164,6 +164,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
       }
     } catch (e) {
       console.log('GET log report error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -289,7 +290,8 @@ const HumanImpactScreen = ({ navigation }: any) => {
         // setMissingCount(String(missingValidCount));
       }
     } catch (e) {
-      console.log('Save log report error', e);
+      console.log('Save log report error', e.response);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoading(false);
     }

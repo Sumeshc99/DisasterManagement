@@ -110,6 +110,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
       }
     } catch (e) {
       console.log('Animal GET error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingGet(false);
     }
@@ -165,6 +166,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
       }
     } catch (e) {
       console.log('Animal SAVE error', e);
+      snackbar(e?.response?.data?.message, 'error');
     } finally {
       setLoadingSave(false);
     }
