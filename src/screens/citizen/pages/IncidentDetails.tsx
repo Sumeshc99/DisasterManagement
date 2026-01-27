@@ -127,7 +127,7 @@ const IncidentDetails: React.FC = () => {
 
   const [tapCount, setTapCount] = useState(0);
   const tapTimeout = useRef<number | null>(null);
-  const commentRef = useRef<RBSheet>(null);
+  const commentRef = useRef<any>(null);
   const incidentId = data?.incident_auto_id || data;
 
   const {
@@ -247,6 +247,7 @@ const IncidentDetails: React.FC = () => {
 
   const getPdf = () => {
     setLoading(true);
+
     ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
       .then(resp => {
         // console.log('downloadPdf', resp?.data?.data?.pdfUrl);

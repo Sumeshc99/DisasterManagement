@@ -14,7 +14,7 @@ import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
 import { FONT, WIDTH } from '../../../themes/AppConst';
@@ -162,7 +162,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
           setMissingList([{ ...emptyPerson }]);
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('GET log report error', e);
       snackbar(e?.response?.data?.message, 'error');
     } finally {
@@ -206,9 +206,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
     const updated = list.filter((_, i) => i !== index);
     setList(updated);
   };
-  const handleClose = () => {
-    navigation.goBack();
-  };
+
   const handleNext = async () => {
     if (!isSubmitted) {
       await handleSave(false); // 🔥 wait till save finishes
@@ -289,7 +287,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
         // setDeceasedCount(String(deceasedValidCount));
         // setMissingCount(String(missingValidCount));
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('Save log report error', e.response);
       snackbar(e?.response?.data?.message, 'error');
     } finally {
@@ -541,7 +539,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
             )}
 
             {/* Footer */}
-            <View style={styles.footer}>
+            <View>
               {/* Save + Next row */}
               <View style={styles.topButtonRow}>
                 <ReuseButton
@@ -568,7 +566,7 @@ const HumanImpactScreen = ({ navigation }: any) => {
                 text={TEXT.close()}
                 bgColor="#E5E7EB"
                 textColor={COLOR.white}
-                onPress={handleClose}
+                onPress={() => navigation.pop()}
                 style={[
                   styles.closeButton,
                   {

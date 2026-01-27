@@ -108,7 +108,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
       } else {
         setAnimals([getEmptyAnimal()]);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('Animal GET error', e);
       snackbar(e?.response?.data?.message, 'error');
     } finally {
@@ -164,7 +164,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
           await getLogReport();
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('Animal SAVE error', e);
       snackbar(e?.response?.data?.message, 'error');
     } finally {
@@ -295,7 +295,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
               </View>
             ))}
 
-            <View style={styles.footer}>
+            <View>
               <View style={styles.topButtonRow}>
                 <ReuseButton
                   text={TEXT.save()}
@@ -315,11 +315,7 @@ const AnimalImpactScreen = ({ navigation }: any) => {
                   text={TEXT.close()}
                   bgColor="#E5E7EB"
                   textColor={COLOR.white}
-                  onPress={() =>
-                    navigation.navigate('revIncidentDetails', {
-                      data: incident_id,
-                    })
-                  }
+                  onPress={() => navigation.pop(2)}
                   style={styles.closeBtn}
                 />
               </View>

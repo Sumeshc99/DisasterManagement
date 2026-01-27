@@ -43,7 +43,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   };
 
   return (
-    <View style={[styles.container, { zIndex }]}>
+    <View style={styles.container}>
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         {isRequired && <Text style={styles.requiredMark}>*</Text>}
@@ -71,6 +71,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             textStyle={styles.textStyle}
             selectedItemContainerStyle={styles.selectedItemContainerStyle}
             selectedItemLabelStyle={styles.selectedItemLabelStyle}
+            zIndex={zIndex}
             listMode="SCROLLVIEW"
             arrowIconStyle={{ tintColor: COLOR.darkGray }}
             setValue={callback => {

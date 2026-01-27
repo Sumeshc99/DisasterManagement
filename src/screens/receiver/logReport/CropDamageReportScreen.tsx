@@ -302,11 +302,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
                 <ReuseButton
                   text={TEXT.close()}
                   style={styles.closeBtn}
-                  onPress={() =>
-                    navigation.navigate('revIncidentDetails', {
-                      data: incident_id,
-                    })
-                  }
+                  onPress={() => navigation.pop(4)}
                 />
               </View>
             </View>
