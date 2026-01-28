@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -27,10 +28,10 @@ import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
-import { downloadPDF } from '../../Utils/downloadPDF';
 import CommentSheet from '../../components/bottomSheets/CommentSheet';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import ReuseButton from '../../components/UI/ReuseButton';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
+import RNBlobUtil from 'react-native-blob-util';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -96,6 +97,7 @@ const RevIncidentDetails: React.FC = () => {
   const { userToken, user } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
+  const snackbar = useSnackbar();
   const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setIncidentData] = useState<any>('');
@@ -283,6 +285,64 @@ const RevIncidentDetails: React.FC = () => {
   const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
     incidentData?.status?.toLowerCase(),
   );
+
+  const downloadPDF = async (pdfUrl: string) => {
+    if (!pdfUrl) {
+      snackbar(TEXT.pdf_url_notavailable(), 'error');
+      return;
+    }
+
+    const { fs } = RNBlobUtil;
+    const { dirs } = fs;
+
+    const fileName = `myfile_${Date.now()}.pdf`;
+
+    const downloadPath =
+      Platform.OS === 'android'
+        ? `${dirs.DownloadDir}/${fileName}`
+        : `${dirs.DocumentDir}/${fileName}`;
+
+    try {
+      RNBlobUtil.config(
+        Platform.OS === 'android'
+          ? {
+              fileCache: true,
+              appendExt: 'pdf',
+              path: downloadPath,
+              addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                title: fileName,
+                description: 'Downloading PDF...',
+                mime: 'application/pdf',
+                mediaScannable: true,
+                path: downloadPath,
+              },
+            }
+          : {
+              fileCache: true,
+              path: downloadPath,
+            },
+      )
+        .fetch('GET', pdfUrl)
+        .then(async res => {
+          console.log('File downloaded to:', res.path());
+
+          if (Platform.OS === 'ios') {
+            RNBlobUtil.ios.openDocument(res.path());
+          } else {
+            snackbar('PDF Downloaded Successfully', 'success');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar('Download Failed', 'error');
+        });
+    } catch (e) {
+      console.log(e);
+      snackbar('Something went wrong!', 'error');
+    }
+  };
 
   const getPdf = () => {
     setLoading(true);
