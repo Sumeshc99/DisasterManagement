@@ -14,6 +14,7 @@ interface DropDownInputProps {
   placeholder?: string;
   errors?: any;
   onSelect?: (value: any) => void;
+  zIndex?: number;
 }
 
 const DropDownInput: React.FC<DropDownInputProps> = ({
@@ -25,6 +26,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   placeholder,
   errors,
   onSelect,
+  zIndex = 1000,
 }) => {
   const [open, setOpen] = useState(false);
   const [localItems, setLocalItems] = useState(items);
@@ -69,6 +71,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             textStyle={styles.textStyle}
             selectedItemContainerStyle={styles.selectedItemContainerStyle}
             selectedItemLabelStyle={styles.selectedItemLabelStyle}
+            zIndex={zIndex}
             listMode="SCROLLVIEW"
             arrowIconStyle={{ tintColor: COLOR.darkGray }}
             setValue={callback => {
@@ -91,7 +94,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
 export default DropDownInput;
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 16 },
+  container: { marginBottom: 16, backgroundColor: COLOR.white },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -111,8 +114,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 46,
     paddingHorizontal: 10,
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    // shadowOpacity: 0.05,
+    // shadowRadius: 2,
     zIndex: 100,
   },
   dropdownContainer: {
@@ -121,6 +124,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     backgroundColor: '#fff',
+    zIndex: 2000,
   },
   textStyle: {
     fontSize: 16,

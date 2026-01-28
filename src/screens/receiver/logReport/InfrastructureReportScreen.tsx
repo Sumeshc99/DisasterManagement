@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,8 +17,12 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
-import { FONT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import { TEXT } from '../../../i18n/locales/Text';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
+import ScreenLoader from '../../../components/ScreenLoader';
+import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface InfrastructureItem {
   name_of_village: string;
@@ -42,6 +46,20 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   const [infraList, setInfraList] = useState<InfrastructureItem[]>([
     getEmptyInfra(),
   ]);
+  const [loadingGet, setLoadingGet] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const successRef = useRef<any>(null);
+  const [successMsg, setSuccessMsg] = useState('');
+  const snackbar = useSnackbar();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (incident_id && userToken) {
+        getLogReport(); // 🔥 refresh real backend status
+      }
+    }, [incident_id, userToken]),
+  );
 
   /* ---------------- GET LOG REPORT ---------------- */
   useEffect(() => {
@@ -52,12 +70,14 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
 
   const getLogReport = async () => {
     try {
+      setLoadingGet(true);
       const res = await ApiManager.getLogReport(incident_id, userToken);
       if (!res?.data?.status) return;
 
       const data = res.data.data;
 
       // No log report yet
+      setIsSubmitted(data?.is_submitted === true);
       if (
         data?.status === false ||
         data?.infrastructure_damage_report === undefined
@@ -84,6 +104,9 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Infra GET error', e);
+      snackbar(e?.response?.data?.message, 'error');
+    } finally {
+      setLoadingGet(false);
     }
   };
 
@@ -106,7 +129,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
   };
 
   /* ---------------- SAVE ---------------- */
-  const handleSave = async () => {
+  const handleSave = async (showPopup = true) => {
     if (!incident_id || !user?.id) return;
 
     const payload = {
@@ -123,18 +146,33 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
     };
 
     try {
+      setLoadingSave(true);
       const res = await ApiManager.createIncidentLogReport(payload, userToken);
       if (res?.data?.status) {
         setLogReportId(res.data.data.id);
         console.log('Infrastructure saved');
+        // Show the first message in snackbar
+        if (showPopup) {
+          const msg = res?.data?.message;
+
+          setSuccessMsg(msg);
+          successRef.current?.open();
+        }
+
+        await getLogReport();
       }
     } catch (e) {
       console.log('Infra SAVE error', e);
+      snackbar(e?.response?.data?.message, 'error');
+    } finally {
+      setLoadingSave(false);
     }
   };
 
   const handleNext = async () => {
-    await handleSave();
+    if (!isSubmitted) {
+      await handleSave(false); // 🔥 silent save
+    }
     navigation.navigate('CropDamageReportScreen', { incident_id });
   };
 
@@ -145,7 +183,10 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       <DashBoardHeader drawer={false} setDrawer={() => {}} />
 
       <View style={styles.titleBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <BackArrow />
         </TouchableOpacity>
         <Text style={styles.title}>{TEXT.log_report()}</Text>
@@ -153,98 +194,135 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
       </View>
 
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>
-            {TEXT.property_damage_report()}
-          </Text>
+        {loadingGet || loadingSave ? (
+          <ScreenLoader />
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            <Text style={styles.sectionTitle}>
+              {TEXT.property_damage_report()}
+            </Text>
 
-          {infraList.map((item, index) => (
-            <View key={index} style={{ marginBottom: 16 }}>
-              <Text style={styles.label}>{TEXT.name_of_village()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.name_of_village()}
-                value={item.name_of_village}
-                onChangeText={t => updateField(index, 'name_of_village', t)}
-              />
-
-              <Text style={styles.label}>{TEXT.type_of_property()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.type_of_property()}
-                value={item.type_of_property}
-                onChangeText={t => updateField(index, 'type_of_property', t)}
-              />
-              <Text style={styles.label}>{TEXT.count_of_partial_damage()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.count_of_partial_damage()}
-                keyboardType="number-pad"
-                value={item.count_of_partial_damaged}
-                onChangeText={t =>
-                  updateField(index, 'count_of_partial_damaged', t)
-                }
-              />
-              <Text style={styles.label}>{TEXT.count_of_fully_damage()}</Text>
-
-              <View style={styles.inlineRow}>
+            {infraList.map((item, index) => (
+              <View key={index} style={{ marginBottom: 16 }}>
+                <Text style={styles.label}>{TEXT.name_of_village()}</Text>
                 <TextInput
-                  style={[styles.input, styles.flexInput]}
-                  placeholder={TEXT.count_of_fully_damage()}
-                  keyboardType="number-pad"
-                  value={item.count_of_fully_damaged}
-                  onChangeText={t =>
-                    updateField(index, 'count_of_fully_damaged', t)
-                  }
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.enter_name_of_village()}
+                  value={item.name_of_village}
+                  onChangeText={t => updateField(index, 'name_of_village', t)}
                 />
 
-                {index === infraList.length - 1 ? (
-                  <TouchableOpacity
-                    style={[styles.inlineBtn, { backgroundColor: COLOR.blue }]}
-                    onPress={addInfra}
-                  >
-                    <Text style={styles.inlinePlus}>＋</Text>
-                  </TouchableOpacity>
-                ) : (
-                  infraList.length > 1 && (
-                    <TouchableOpacity
-                      style={[styles.inlineBtn, { backgroundColor: COLOR.red }]}
-                      onPress={() => removeInfra(index)}
-                    >
-                      <Text style={styles.inlineCross}>×</Text>
-                    </TouchableOpacity>
-                  )
-                )}
+                <Text style={styles.label}>{TEXT.type_of_property()}</Text>
+                <TextInput
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.enter_type_of_infra()}
+                  value={item.type_of_property}
+                  onChangeText={t => updateField(index, 'type_of_property', t)}
+                />
+                <Text style={styles.label}>
+                  {TEXT.count_of_partial_damage()}
+                </Text>
+                <TextInput
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.enter_count_of_partial_damage()}
+                  keyboardType="number-pad"
+                  value={item.count_of_partial_damaged}
+                  onChangeText={t =>
+                    updateField(index, 'count_of_partial_damaged', t)
+                  }
+                />
+                <Text style={styles.label}>{TEXT.count_of_fully_damage()}</Text>
+
+                <View style={styles.inlineRow}>
+                  <TextInput
+                    editable={!isSubmitted}
+                    style={[
+                      styles.input,
+                      styles.flexInput,
+                      isSubmitted && { backgroundColor: COLOR.gray },
+                    ]}
+                    placeholder={TEXT.enter_count_of_fully_damage()}
+                    keyboardType="number-pad"
+                    value={item.count_of_fully_damaged}
+                    onChangeText={t =>
+                      updateField(index, 'count_of_fully_damaged', t)
+                    }
+                  />
+
+                  <View style={{ flexDirection: 'row' }}>
+                    {/* Delete */}
+                    {!isSubmitted && infraList.length > 1 && (
+                      <TouchableOpacity
+                        style={[
+                          styles.inlineBtn,
+                          { backgroundColor: COLOR.red },
+                        ]}
+                        onPress={() => removeInfra(index)}
+                      >
+                        <Text style={styles.inlineCross}>×</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {/* Add (only on last row) */}
+                    {!isSubmitted && index === infraList.length - 1 && (
+                      <TouchableOpacity
+                        style={[
+                          styles.inlineBtn,
+                          { backgroundColor: COLOR.blue },
+                        ]}
+                        onPress={addInfra}
+                      >
+                        <Text style={styles.inlinePlus}>＋</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              </View>
+            ))}
+
+            <View style={styles.footer}>
+              <View style={styles.topButtonRow}>
+                <ReuseButton
+                  text={TEXT.save()}
+                  onPress={() => handleSave(true)}
+                  style={styles.half}
+                  disabled={loadingSave || isSubmitted}
+                />
+                <ReuseButton
+                  text={TEXT.next()}
+                  onPress={handleNext}
+                  style={styles.half}
+                  disabled={loadingSave}
+                />
+              </View>
+
+              <View style={styles.closeWrapper}>
+                <ReuseButton
+                  text={TEXT.close()}
+                  bgColor="#E5E7EB"
+                  textColor={COLOR.white}
+                  onPress={() => navigation.pop(3)}
+                  style={styles.closeBtn}
+                />
               </View>
             </View>
-          ))}
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <View style={styles.topButtonRow}>
-            <ReuseButton
-              text={TEXT.save()}
-              onPress={handleSave}
-              style={styles.half}
-            />
-            <ReuseButton
-              text={TEXT.next()}
-              onPress={handleNext}
-              style={styles.half}
-            />
-          </View>
-
-          <View style={styles.closeWrapper}>
-            <ReuseButton
-              text={TEXT.close()}
-              bgColor="#E5E7EB"
-              textColor={COLOR.white}
-              onPress={() => navigation.goBack()}
-              style={styles.closeBtn}
-            />
-          </View>
-        </View>
+          </ScrollView>
+        )}
       </View>
+
+      <SuccessSheet ref={successRef} message={successMsg} showOk={false} />
     </SafeAreaView>
   );
 };
@@ -274,7 +352,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  half: { width: '48%' },
+  half: { width: WIDTH(40) },
 
   input: {
     borderWidth: 1,
@@ -282,6 +360,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+    height: 45,
   },
   addBtn: {
     backgroundColor: COLOR.blue,
@@ -296,10 +375,10 @@ const styles = StyleSheet.create({
   icon: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 
   title: { fontSize: 20, fontWeight: '700', color: COLOR.blue },
-  footer: { padding: 16, backgroundColor: '#fff' },
+
   topButtonRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  halfButton: { width: '48%', marginTop: 0 },
-  closeButton: { width: '60%', alignSelf: 'center', marginTop: 12 },
+  halfButton: { width: WIDTH(40), marginTop: 0 },
+  closeButton: { width: WIDTH(40), alignSelf: 'center', marginTop: 12 },
   plusIcon: { fontSize: 16, color: COLOR.blue, fontWeight: 'bold' },
   crossIcon: { fontSize: 24, color: 'red', fontWeight: 'bold' },
   dynamicRow: {
@@ -317,6 +396,7 @@ const styles = StyleSheet.create({
   flexInput: {
     flex: 1,
     marginBottom: 0, // IMPORTANT
+    height: 45,
   },
 
   inlineBtn: {
@@ -343,11 +423,11 @@ const styles = StyleSheet.create({
 
   closeWrapper: {
     alignItems: 'center',
-    marginTop: 12,
+    // marginTop: 12,
   },
 
   closeBtn: {
-    width: '60%',
+    width: WIDTH(40),
     backgroundColor: COLOR.textGrey,
   },
   label: {

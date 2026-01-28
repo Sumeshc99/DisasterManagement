@@ -298,6 +298,7 @@ const CreateIncidentScreen: React.FC = () => {
           rules={{ required: TEXT.please_specify() }}
           errors={errors}
           onSelect={value => handleIncidentTypeChange(value)}
+          zIndex={4000}
         />
 
         {/* Custom Other Type */}
@@ -358,12 +359,13 @@ const CreateIncidentScreen: React.FC = () => {
 
         <DropDownInput
           name="ru_ban"
-          label={'Rural / Urban'}
-          placeholder={'Select Rural / Urban'}
+          label={TEXT.rural_urban()}
+          placeholder={TEXT.select_rural_urban()}
           control={control}
-          rules={{ required: 'Rural/Urban is required' }}
+          rules={{ required: TEXT.required_rural_urban() }}
           items={addTypes}
           errors={errors}
+          zIndex={3000}
         />
 
         <DropDownInput
@@ -373,13 +375,14 @@ const CreateIncidentScreen: React.FC = () => {
           placeholder={TEXT.select_tehsil()}
           rules={{ required: TEXT.tehsil_is_required() }}
           items={tahsilList}
+          zIndex={2000}
         />
 
         <DropDownInput
           name="area"
           label={'Area'}
           control={control}
-          placeholder={'Select Area'}
+          placeholder={TEXT.select_area()}
           // rules={{ required: 'Area is required' }}
           items={area}
         />

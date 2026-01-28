@@ -12,6 +12,8 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { COLOR } from '../../themes/Colors';
 import MediaOptionSheet from '../bottomSheets/MediaOptionSheet';
 import { TEXT } from '../../i18n/locales/Text';
+import filterValidMedia from '../../helper/filterValidMedia';
+import { useGlobalLoader } from '../../hooks/GlobalLoaderContext';
 
 interface MediaAsset {
   uri?: string;
@@ -44,6 +46,8 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
   const isRequired = !!rules?.required;
   const sheetRef = useRef<any>(null);
   const isPickingRef = useRef(false); // 🔐 prevent double open
+
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   const openSheet = useCallback(() => {
     if (isPickingRef.current) return;
@@ -91,8 +95,26 @@ const FormMediaPicker: React.FC<FormMediaPickerProps> = ({
 
         if (result.didCancel || result.errorCode) return;
 
-        if (result.assets?.length) {
+        if (!result.assets?.length) return;
+
+        // 🔍 Check if selection contains any video
+        const hasVideo = result.assets.some(asset =>
+          asset.type?.startsWith('video'),
+        );
+
+        // 🖼 IMAGE ONLY → use directly
+        if (!hasVideo) {
           onChangeMedia?.(result.assets);
+          return;
+        }
+
+        const filteredAssets = await filterValidMedia(
+          result.assets,
+          showLoader,
+          hideLoader,
+        );
+        if (filteredAssets.length) {
+          onChangeMedia?.(filteredAssets);
         }
       } finally {
         isPickingRef.current = false;

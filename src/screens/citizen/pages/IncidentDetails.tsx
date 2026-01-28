@@ -9,14 +9,19 @@ import {
   Alert,
   Image,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  CommonActions,
+} from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH } from '../../../themes/AppConst';
+import { FONT, HEIGHT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -120,10 +125,11 @@ const IncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>('');
   const [filteredList, setfilteredList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loading1, setloading1] = useState(false);
 
   const [tapCount, setTapCount] = useState(0);
   const tapTimeout = useRef<number | null>(null);
-  const commentRef = useRef<RBSheet>(null);
+  const commentRef = useRef<any>(null);
   const incidentId = data?.incident_auto_id || data;
 
   const {
@@ -205,6 +211,11 @@ const IncidentDetails: React.FC = () => {
 
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = async () => {
+    setloading1(true);
+    if (successRef?.current?.close) {
+      successRef.current.close();
+    }
+
     try {
       const body = {
         user_id: user?.id,
@@ -215,15 +226,9 @@ const IncidentDetails: React.FC = () => {
         reason_for_cancellation: '',
       };
 
-      showLoader();
-
       const resp = await ApiManager.incidentStatusUpdate(body, userToken);
 
       if (resp?.data?.status === true) {
-        if (successRef?.current?.close) {
-          successRef.current.close();
-        }
-
         setTimeout(() => {
           if (acceptRef?.current?.open) {
             acceptRef.current.open();
@@ -237,7 +242,7 @@ const IncidentDetails: React.FC = () => {
     } catch (err) {
       console.log('Incident update error:', err);
     } finally {
-      hideLoader();
+      setloading1(false);
     }
   };
 
@@ -373,6 +378,8 @@ const IncidentDetails: React.FC = () => {
     'pending response by responder',
     'pending closure by responder',
     'pending closure by admin',
+    'pending log report review',
+    'pending log report update',
   ];
 
   const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
@@ -433,7 +440,7 @@ const IncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <Text style={styles.label}>{TEXT.rural_urban()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
                 </View>
@@ -605,7 +612,7 @@ const IncidentDetails: React.FC = () => {
                   <ReuseButton
                     text="Comment"
                     style={{
-                      width: WIDTH(50),
+                      width: WIDTH(44),
                       alignSelf: 'center',
                       marginTop: 12,
                     }}
@@ -648,13 +655,32 @@ const IncidentDetails: React.FC = () => {
         }}
       />
 
-      <ResponderListSheet ref={listRef} responders={filteredList} />
+      <ResponderListSheet
+        ref={listRef}
+        responders={filteredList}
+        onClose={() => {
+          listRef.current?.close();
+
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'mainAppSelector' }],
+            }),
+          );
+        }}
+      />
       <CommentSheet
         ref={commentRef}
         incidentId={incidentId}
         userToken={userToken}
         userId={user?.id}
       />
+
+      {loading1 && (
+        <View style={styles.newLoader}>
+          <ActivityIndicator size="large" color={COLOR.white} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -756,5 +782,14 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
     textAlign: 'center',
+  },
+  newLoader: {
+    position: 'absolute',
+    zIndex: 100000,
+    width: WIDTH(100),
+    height: HEIGHT(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });

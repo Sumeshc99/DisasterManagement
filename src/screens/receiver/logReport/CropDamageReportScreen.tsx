@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,9 +18,13 @@ import BackArrow from '../../../assets/svg/backArrow.svg';
 import ReuseButton from '../../../components/UI/ReuseButton';
 import ApiManager from '../../../apis/ApiManager';
 import { RootState } from '../../../store/RootReducer';
-import { FONT } from '../../../themes/AppConst';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 import RevResTable from '../../../components/UI/RevResTable';
 import { TEXT } from '../../../i18n/locales/Text';
+import { useSnackbar } from '../../../hooks/SnackbarProvider';
+import ScreenLoader from '../../../components/ScreenLoader';
+import SuccessSheet from '../../../components/bottomSheets/SuccessSheet';
+
 /* ---------------- TYPES ---------------- */
 interface CropDamageItem {
   name_of_village: string;
@@ -41,6 +45,13 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
   const [logReportId, setLogReportId] = useState<number | null>(null);
   const [cropList, setCropList] = useState<CropDamageItem[]>([getEmptyCrop()]);
   const [incidentDetails, setIncidentDetails] = useState<any>(null);
+  const [loadingGet, setLoadingGet] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const successRef = useRef<any>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const snackbar = useSnackbar();
 
   const getIncidentDetails = async () => {
     try {
@@ -50,6 +61,7 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Incident details error', e);
+      snackbar(e?.response?.data?.message, 'error');
     }
   };
 
@@ -63,12 +75,14 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
 
   const getLogReport = async () => {
     try {
+      setLoadingGet(true);
       const res = await ApiManager.getLogReport(incident_id, userToken);
       if (!res?.data?.status) return;
 
       const data = res.data.data;
 
       setLogReportId(data?.log_report_id ?? data?.id ?? null);
+      setIsSubmitted(data?.is_submitted === true);
 
       if (data?.crop_damage_report?.length) {
         setCropList(
@@ -83,6 +97,9 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       }
     } catch (e) {
       console.log('Crop GET error', e);
+      snackbar(e?.response?.data?.message, 'error');
+    } finally {
+      setLoadingGet(false);
     }
   };
 
@@ -121,21 +138,36 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
     };
 
     try {
+      setLoadingSave(true);
       const res = await ApiManager.createIncidentLogReport(payload, userToken);
       if (res?.data?.status) {
         setLogReportId(res.data.data.id);
-        Alert.alert(
-          'Success',
-          status === 'submitted'
-            ? 'Crop damage report submitted'
-            : 'Crop damage report saved',
-        );
+
         if (status === 'submitted') {
-          navigation.goBack();
+          setSuccessMsg(
+            'Report has been successfully submitted for Admin closure. The report is no longer available for updates.',
+          );
+        } else {
+          setSuccessMsg(
+            'The report has been saved successfully. Until it is submitted, the report is open for revisions.',
+          );
         }
+
+        successRef.current?.open();
+
+        await getLogReport();
       }
     } catch (e) {
       console.log('Crop SAVE error', e);
+      snackbar(e?.response?.data?.message, 'error');
+    } finally {
+      setLoadingSave(false);
+    }
+  };
+
+  const handleSuccessClose = () => {
+    if (successMsg.includes('submitted')) {
+      navigation.goBack(); // go to Incident Details
     }
   };
 
@@ -147,7 +179,10 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
 
       {/* Title Bar */}
       <View style={styles.titleBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <BackArrow />
         </TouchableOpacity>
         <Text style={styles.title}>{TEXT.log_report()}</Text>
@@ -155,101 +190,127 @@ const CropDamageReportScreen = ({ navigation, route }: any) => {
       </View>
 
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>{TEXT.crop_damage_report()}</Text>
+        {loadingGet || loadingSave ? (
+          <ScreenLoader />
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            <Text style={styles.sectionTitle}>{TEXT.crop_damage_report()}</Text>
 
-          {cropList.map((item, index) => (
-            <View key={index} style={{ marginBottom: 16 }}>
-              <Text style={styles.label}>{TEXT.name_of_village()}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.name_of_village()}
-                value={item.name_of_village}
-                onChangeText={t => updateField(index, 'name_of_village', t)}
-              />
-
-              <Text style={styles.label}>{TEXT.no_of_affected_farmers()}</Text>
-
-              <TextInput
-                style={styles.input}
-                placeholder={TEXT.no_of_affected_farmers()}
-                keyboardType="number-pad"
-                value={item.no_of_affected_farmers}
-                onChangeText={t =>
-                  updateField(index, 'no_of_affected_farmers', t)
-                }
-              />
-
-              <Text style={styles.label}>
-                {TEXT.area_of_agricultural_damage()}
-              </Text>
-
-              <View style={styles.row}>
+            {cropList.map((item, index) => (
+              <View key={index} style={{ marginBottom: 16 }}>
+                <Text style={styles.label}>{TEXT.name_of_village()}</Text>
                 <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  placeholder={TEXT.area_of_agricultural_damage()}
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.enter_name_of_village()}
+                  value={item.name_of_village}
+                  onChangeText={t => updateField(index, 'name_of_village', t)}
+                />
+
+                <Text style={styles.label}>
+                  {TEXT.no_of_affected_farmers()}
+                </Text>
+
+                <TextInput
+                  editable={!isSubmitted}
+                  style={[
+                    styles.input,
+                    isSubmitted && { backgroundColor: COLOR.gray },
+                  ]}
+                  placeholder={TEXT.enter_no_of_affected_farmers()}
                   keyboardType="number-pad"
-                  value={item.area_of_damage_hecter}
+                  value={item.no_of_affected_farmers}
                   onChangeText={t =>
-                    updateField(index, 'area_of_damage_hecter', t)
+                    updateField(index, 'no_of_affected_farmers', t)
                   }
                 />
 
-                {/* REMOVE button (always visible if more than one item) */}
-                {cropList.length > 1 && (
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => removeCrop(index)}
-                  >
-                    <Text style={styles.icon}>×</Text>
-                  </TouchableOpacity>
-                )}
+                <Text style={styles.label}>
+                  {TEXT.area_of_agricultural_damage()}
+                </Text>
 
-                {/* ADD button (only on last item) */}
-                {index === cropList.length - 1 && (
-                  <TouchableOpacity style={styles.addBtn} onPress={addCrop}>
-                    <Text style={styles.icon}>+</Text>
-                  </TouchableOpacity>
-                )}
+                <View style={styles.row}>
+                  <TextInput
+                    editable={!isSubmitted}
+                    style={[
+                      styles.input,
+                      isSubmitted && { backgroundColor: COLOR.gray },
+                      { flex: 1 },
+                    ]}
+                    placeholder={TEXT.enter_area_of_agriculture()}
+                    keyboardType="number-pad"
+                    value={item.area_of_damage_hecter}
+                    onChangeText={t =>
+                      updateField(index, 'area_of_damage_hecter', t)
+                    }
+                  />
+
+                  {/* REMOVE button (always visible if more than one item) */}
+                  {!isSubmitted && cropList.length > 1 && (
+                    <TouchableOpacity
+                      style={styles.removeBtn}
+                      onPress={() => removeCrop(index)}
+                    >
+                      <Text style={styles.icon}>×</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* ADD button (only on last item) */}
+                  {!isSubmitted && index === cropList.length - 1 && (
+                    <TouchableOpacity style={styles.addBtn} onPress={addCrop}>
+                      <Text style={styles.icon}>+</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            ))}
+
+            {incidentDetails?.reviewers?.length > 0 && (
+              <RevResTable title="Reviewer" data={incidentDetails.reviewers} />
+            )}
+
+            {incidentDetails?.responders?.length > 0 && (
+              <RevResTable
+                title="Responder"
+                data={incidentDetails.responders}
+              />
+            )}
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              {/* Save + Submit */}
+              <View style={styles.topButtonRow}>
+                <ReuseButton
+                  text={TEXT.save()}
+                  style={styles.half}
+                  disabled={isSubmitted}
+                  onPress={() => saveReport('pending')}
+                />
+                <ReuseButton
+                  text={TEXT.submit()}
+                  style={styles.half}
+                  disabled={isSubmitted}
+                  onPress={() => saveReport('submitted')}
+                />
+              </View>
+
+              {/* Close button */}
+              <View style={styles.closeBtnWrapper}>
+                <ReuseButton
+                  text={TEXT.close()}
+                  style={styles.closeBtn}
+                  onPress={() => navigation.pop(4)}
+                />
               </View>
             </View>
-          ))}
-
-          {incidentDetails?.reviewers?.length > 0 && (
-            <RevResTable title="Reviewer" data={incidentDetails.reviewers} />
-          )}
-
-          {incidentDetails?.responders?.length > 0 && (
-            <RevResTable title="Responder" data={incidentDetails.responders} />
-          )}
-        </ScrollView>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          {/* Save + Submit */}
-          <View style={styles.topButtonRow}>
-            <ReuseButton
-              text={TEXT.save()}
-              style={styles.half}
-              onPress={() => saveReport('pending')}
-            />
-            <ReuseButton
-              text={TEXT.submit()}
-              style={styles.half}
-              onPress={() => saveReport('submitted')}
-            />
-          </View>
-
-          {/* Close button */}
-          <View style={styles.closeBtnWrapper}>
-            <ReuseButton
-              text={TEXT.close()}
-              style={styles.closeBtn}
-              onPress={() => navigation.goBack()}
-            />
-          </View>
-        </View>
+          </ScrollView>
+        )}
       </View>
+
+      <SuccessSheet ref={successRef} message={successMsg} showOk={false} />
     </SafeAreaView>
   );
 };
@@ -282,6 +343,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
   },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   title: {
     fontSize: 20,
@@ -298,6 +365,7 @@ const styles = StyleSheet.create({
     color: COLOR.textGrey,
     fontFamily: FONT.R_REG_400,
     fontSize: 14,
+    height: 45,
   },
 
   row: {
@@ -333,7 +401,7 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    padding: 10,
+    marginTop: 15,
     backgroundColor: '#fff',
   },
 
@@ -343,7 +411,7 @@ const styles = StyleSheet.create({
   },
 
   half: {
-    width: '48%',
+    width: WIDTH(40),
   },
   closeBtnWrapper: {
     marginTop: 0,
@@ -351,7 +419,7 @@ const styles = StyleSheet.create({
   },
 
   closeBtn: {
-    width: '50%',
+    width: WIDTH(40),
     backgroundColor: COLOR.textGrey,
   },
 });

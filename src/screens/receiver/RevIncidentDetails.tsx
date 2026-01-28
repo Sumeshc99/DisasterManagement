@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../components/header/DashBoardHeader';
 import FormTextInput from '../../components/inputs/FormTextInput';
 import { COLOR } from '../../themes/Colors';
-import { WIDTH } from '../../themes/AppConst';
+import { FONT, WIDTH } from '../../themes/AppConst';
 import ApiManager from '../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/RootReducer';
@@ -27,10 +28,10 @@ import RejectReasonSheet from '../../components/bottomSheets/RejectReasonSheet';
 import AssignResponderSheet from '../../components/bottomSheets/AssignResponderSheet';
 import ImageContainer from '../../components/ImageContainer';
 import SuccessSheet from '../../components/bottomSheets/SuccessSheet';
-import { downloadPDF } from '../../Utils/downloadPDF';
 import CommentSheet from '../../components/bottomSheets/CommentSheet';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import ReuseButton from '../../components/UI/ReuseButton';
+import { useSnackbar } from '../../hooks/SnackbarProvider';
+import RNBlobUtil from 'react-native-blob-util';
 
 interface IncidentDetailsForm {
   incidentId: string;
@@ -96,13 +97,14 @@ const RevIncidentDetails: React.FC = () => {
   const { userToken, user } = useSelector((state: RootState) => state.auth);
   const { showLoader, hideLoader } = useGlobalLoader();
 
+  const snackbar = useSnackbar();
   const data = (route as { params?: { data?: any } })?.params?.data;
 
   const [incidentData, setIncidentData] = useState<any>('');
   const [loading, setLoading] = useState(false);
   const [assignInc, setassignInc] = useState([]);
 
-  const commentRef = useRef<RBSheet>(null);
+  const commentRef = useRef<any>(null);
   const incidentId = data?.incident_auto_id || data;
 
   const {
@@ -179,6 +181,33 @@ const RevIncidentDetails: React.FC = () => {
     getIncidentDetails();
   }, []);
 
+  const getIncidentDetails = () => {
+    setLoading(true);
+    ApiManager.incidentDetails(data?.incident_auto_id || data, userToken)
+      .then(resp => {
+        if (resp?.data?.status) {
+          const inc = resp?.data?.data;
+          setIncidentData(inc);
+
+          reset({
+            incidentId: inc?.incident_id,
+            incidentType: inc.other_incident_type || inc?.incident_type_name,
+            address: inc?.address,
+            tehsil: inc?.tehsil_name,
+            mobileNumber: inc?.mobile_number,
+            description: inc?.description,
+            media: inc?.media,
+            status: inc?.status,
+            ru_ban: inc?.rural_urban_name,
+            area: inc?.area_name,
+            dateTime: formatDateTime(inc?.date_reporting),
+          });
+        }
+      })
+      .catch(err => console.log('err', err.response))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     const getAssignedResponder = () => {
       setLoading(true);
@@ -240,9 +269,9 @@ const RevIncidentDetails: React.FC = () => {
     'Pending Log Report Update',
   ];
 
-  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.includes(
-    incidentData?.status,
-  );
+  const canShowLogReport = LOG_REPORT_ALLOWED_STATUS.map(status =>
+    status.toLowerCase(),
+  ).includes(incidentData?.status?.toLowerCase());
 
   const COMMENT_ALLOWED_STATUSES = [
     'pending review',
@@ -256,6 +285,64 @@ const RevIncidentDetails: React.FC = () => {
   const isCommentVisible = COMMENT_ALLOWED_STATUSES.includes(
     incidentData?.status?.toLowerCase(),
   );
+
+  const downloadPDF = async (pdfUrl: string) => {
+    if (!pdfUrl) {
+      snackbar(TEXT.pdf_url_notavailable(), 'error');
+      return;
+    }
+
+    const { fs } = RNBlobUtil;
+    const { dirs } = fs;
+
+    const fileName = `myfile_${Date.now()}.pdf`;
+
+    const downloadPath =
+      Platform.OS === 'android'
+        ? `${dirs.DownloadDir}/${fileName}`
+        : `${dirs.DocumentDir}/${fileName}`;
+
+    try {
+      RNBlobUtil.config(
+        Platform.OS === 'android'
+          ? {
+              fileCache: true,
+              appendExt: 'pdf',
+              path: downloadPath,
+              addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                title: fileName,
+                description: 'Downloading PDF...',
+                mime: 'application/pdf',
+                mediaScannable: true,
+                path: downloadPath,
+              },
+            }
+          : {
+              fileCache: true,
+              path: downloadPath,
+            },
+      )
+        .fetch('GET', pdfUrl)
+        .then(async res => {
+          console.log('File downloaded to:', res.path());
+
+          if (Platform.OS === 'ios') {
+            RNBlobUtil.ios.openDocument(res.path());
+          } else {
+            snackbar('PDF Downloaded Successfully', 'success');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          snackbar('Download Failed', 'error');
+        });
+    } catch (e) {
+      console.log(e);
+      snackbar('Something went wrong!', 'error');
+    }
+  };
 
   const getPdf = () => {
     setLoading(true);
@@ -319,7 +406,7 @@ const RevIncidentDetails: React.FC = () => {
               />
 
               <View style={{ marginBottom: 10, marginTop: -4 }}>
-                <Text style={styles.label}>{'Urban / Rural'}</Text>
+                <Text style={styles.label}>{TEXT.rural_urban()}</Text>
                 <View style={styles.disabledBox}>
                   <Text style={styles.disabledText}>{watch('ru_ban')}</Text>
                 </View>
@@ -428,14 +515,12 @@ const RevIncidentDetails: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               ) : (
-                <View style={{ marginTop: 24 }}>
-                  {/* ROW: Download PDF + Log Report */}
+                <>
                   <View
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'center',
-                      gap: 16,
-                      flexWrap: 'wrap', // ✅ prevents overflow
+                      gap: 20,
                     }}
                   >
                     <TouchableOpacity
@@ -463,7 +548,6 @@ const RevIncidentDetails: React.FC = () => {
                     )}
                   </View>
 
-                  {/* COLUMN: Comment alert + button */}
                   {isCommentVisible && (
                     <View style={{ alignItems: 'center', marginTop: 18 }}>
                       <Text
@@ -472,23 +556,24 @@ const RevIncidentDetails: React.FC = () => {
                           color: '#6E6E6E',
                           textAlign: 'center',
                           lineHeight: 18,
-                          marginHorizontal: 20, // ✅ prevents text cutoff
+                          marginHorizontal: 20,
+                          fontFamily: FONT.R_MED_500,
                         }}
                       >
                         {TEXT.comment_alert()}
                       </Text>
 
                       <ReuseButton
-                        text="Comment"
+                        text={TEXT.comment()}
                         style={{
-                          width: WIDTH(50),
+                          width: WIDTH(44),
                           marginTop: 12,
                         }}
                         onPress={() => commentRef.current?.open()}
                       />
                     </View>
                   )}
-                </View>
+                </>
               )}
             </View>
           </ScrollView>
@@ -518,12 +603,18 @@ const RevIncidentDetails: React.FC = () => {
         onClose={() => console.log('Closed')}
       />
 
-      <RejectReasonSheet ref={rejectRef} data={incidentData} />
+      <RejectReasonSheet
+        ref={rejectRef}
+        data={incidentData}
+        getIncidentDetails={getIncidentDetails}
+      />
+
       <AssignResponderSheet
         ref={assignRef}
         data={incidentData}
         assignRes={assignInc}
       />
+
       <SuccessSheet
         ref={successRef}
         message={TEXT.responder_assigned_success()}
@@ -589,7 +680,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#FFF',
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FONT.R_SBD_600,
   },
 
   // === Reviewer Table Styles ===
@@ -635,7 +726,7 @@ const styles = StyleSheet.create({
   submitButtonText1: {
     color: COLOR.blue,
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FONT.R_SBD_600,
   },
   logButton: {
     backgroundColor: COLOR.orange, // or COLOR.blue

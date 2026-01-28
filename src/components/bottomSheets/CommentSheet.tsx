@@ -13,7 +13,7 @@ import { COLOR } from '../../themes/Colors';
 import ImageContainer from '../ImageContainer';
 import CommentMediaPicker from '../inputs/CommentMediaPicker';
 import ApiManager from '../../apis/ApiManager';
-import { Alert } from 'react-native';
+import { Alert, TouchableWithoutFeedback } from 'react-native';
 import CommentImageContainer from '../UI/CommentImageContainer';
 import ScreenLoader from '../ScreenLoader';
 import { TEXT } from '../../i18n/locales/Text';
@@ -22,10 +22,10 @@ import GallaryIcon from '../../assets/svg/Group.svg';
 interface Props {
   incidentId: number;
   userToken: string;
-  userId: number;
+  userId: any;
 }
 
-const CommentSheet = forwardRef<RBSheet, Props>(
+const CommentSheet = forwardRef<any, Props>(
   ({ incidentId, userToken, userId }, ref) => {
     const { control, reset } = useForm();
     const [comment, setComment] = useState('');
@@ -34,7 +34,6 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
     const [incidentStatus, setIncidentStatus] = useState<string>('');
     const [loading, setLoading] = useState(false);
-    console.log('Selected media:', media);
 
     const [comments, setComments] = useState<any[]>([]);
 
@@ -98,13 +97,17 @@ const CommentSheet = forwardRef<RBSheet, Props>(
     }, [incidentId]);
 
     const ALLOWED_COMMENT_STATUSES = [
-      'Pending Review',
-      'Pending Response by Responder',
-      'Pending Closure by Responder',
-      'Pending Closure by Admin',
+      'pending review',
+      'pending response by responder',
+      'pending closure by responder',
+      'pending closure by admin',
+      'pending log report review',
+      'pending log report update',
     ];
 
-    const canComment = ALLOWED_COMMENT_STATUSES.includes(incidentStatus);
+    const canComment = ALLOWED_COMMENT_STATUSES.includes(
+      incidentStatus.toLowerCase(),
+    );
 
     const postComment = async () => {
       if (!comment.trim()) return;
@@ -207,26 +210,33 @@ const CommentSheet = forwardRef<RBSheet, Props>(
       }
     };
 
-    const timeAgo = (dateString: string) => {
-      // Backend sends UTC but without timezone
-      // Convert: "YYYY-MM-DD HH:mm:ss" → "YYYY-MM-DDTHH:mm:ssZ"
-      const utcDate = new Date(dateString.replace(' ', 'T') + 'Z');
+    const timeAgo = (dateString?: string) => {
+      if (!dateString) return '';
+
+      const date = new Date(dateString.replace(' ', 'T'));
+
+      // ❌ Invalid date guard
+      if (isNaN(date.getTime())) return '';
 
       const now = new Date();
-      const diffMs = now.getTime() - utcDate.getTime();
+      let diffMs = now.getTime() - date.getTime();
 
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      // ❌ Future date guard (clock mismatch)
+      if (diffMs < 0) diffMs = 0;
+
+      const diffMinutes = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
 
       if (diffMinutes < 1) return 'Just now';
       if (diffMinutes < 60) return `${diffMinutes} min ago`;
       if (diffHours < 24) return `${diffHours} hr ago`;
-      return `${diffDays} day ago`;
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
 
     return (
       <RBSheet
+        onClose={() => setMenuVisibleFor(null)}
         ref={ref}
         height={560}
         openDuration={250}
@@ -245,11 +255,11 @@ const CommentSheet = forwardRef<RBSheet, Props>(
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Comments</Text>
+            <Text style={styles.title}>{TEXT.comment()}</Text>
 
             <TouchableOpacity
               style={styles.closeBtn}
-              onPress={() => ref?.current?.close()}
+              onPress={() => (ref as any)?.current?.close()}
             >
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
@@ -273,6 +283,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                     ? item.comment_id.toString()
                     : index.toString()
                 }
+                contentContainerStyle={{ paddingBottom: 50 }}
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item, index }) => (
@@ -307,14 +318,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                         )}
 
                         {menuVisibleFor === item.comment_id && (
-                          <View
-                            style={[
-                              styles.menuContainer,
-                              index >= comments.length - 2
-                                ? { bottom: 28 } // ⬆️ open upward
-                                : { top: 28 }, // ⬇️ open downward
-                            ]}
-                          >
+                          <View style={[styles.menuContainer]}>
                             <TouchableOpacity
                               style={styles.menuItem}
                               onPress={() => {
@@ -343,7 +347,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                       {item.media?.length > 0 && (
                         <View style={{ marginTop: 10 }}>
                           <CommentImageContainer
-                            data={item.media.map(m => ({
+                            data={item.media.map((m: any) => ({
                               blob_url: m.media_url,
                             }))}
                           />
@@ -393,8 +397,9 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                   {/* Actions Row */}
                   <View style={styles.actionRow}>
                     <TouchableOpacity
-                      style={[styles.uploadBtn, { flex: 1, marginRight: 8 }]} // takes left space
+                      style={[styles.uploadBtn, isEditing && { opacity: 0.3 }]} // takes left space
                       onPress={() => mediaRef.current?.pickImages()}
+                      disabled={isEditing}
                     >
                       <View style={styles.uploadContent}>
                         <GallaryIcon width={20} height={20} />
@@ -407,7 +412,7 @@ const CommentSheet = forwardRef<RBSheet, Props>(
                     <TouchableOpacity
                       style={[
                         styles.sendBtn,
-                        { flex: 1, marginLeft: 8 },
+
                         (!comment || loading) && { opacity: 0.5 },
                       ]}
                       disabled={!comment || loading}
@@ -487,7 +492,7 @@ const styles = StyleSheet.create({
   commentText: {
     fontSize: 14,
     color: COLOR.textGrey,
-    marginTop: 8,
+
     lineHeight: 20,
   },
   divider: {
@@ -495,15 +500,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   inputContainer: {
-    borderTopWidth: 1,
-    borderColor: '#eee',
-    paddingTop: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   input: {
     minHeight: 70,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
+
     padding: 10,
     textAlignVertical: 'top',
   },
@@ -516,16 +521,19 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     marginTop: 15,
-    justifyContent: 'space-between', // puts buttons on edges
-    alignItems: 'center', // vertically center buttons
+    alignItems: 'center',
+    gap: 2, // ✅ THIS adds space between buttons
+
+    justifyContent: 'space-between',
   },
   uploadBtn: {
     borderWidth: 1,
     borderColor: COLOR.blue,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 20,
     alignItems: 'center',
+    flexDirection: 'row',
   },
   uploadText: {
     color: COLOR.blue,
@@ -534,7 +542,7 @@ const styles = StyleSheet.create({
   sendBtn: {
     backgroundColor: COLOR.blue,
     paddingVertical: 12,
-    paddingHorizontal: 28,
+    paddingHorizontal: 30, // 👈 reduced
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
@@ -555,7 +563,8 @@ const styles = StyleSheet.create({
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center', // 👈 change this
+    marginBottom: 4,
   },
   dotsBtn: {
     paddingHorizontal: 8,
@@ -563,7 +572,8 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: 'absolute',
-    right: 0,
+    right: 15,
+    top: 30,
     backgroundColor: '#fff',
     borderRadius: 8,
     elevation: 6,
@@ -571,7 +581,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
-    zIndex: 1000,
+    zIndex: 5000,
     width: 120,
   },
 
