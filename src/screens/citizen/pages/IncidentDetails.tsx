@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -20,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import DashBoardHeader from '../../../components/header/DashBoardHeader';
 import FormTextInput from '../../../components/inputs/FormTextInput';
 import { COLOR } from '../../../themes/Colors';
-import { FONT, WIDTH } from '../../../themes/AppConst';
+import { FONT, HEIGHT, WIDTH } from '../../../themes/AppConst';
 import ApiManager from '../../../apis/ApiManager';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/RootReducer';
@@ -124,6 +125,7 @@ const IncidentDetails: React.FC = () => {
   const [incidentData, setIncidentData] = useState<any>('');
   const [filteredList, setfilteredList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loading1, setloading1] = useState(false);
 
   const [tapCount, setTapCount] = useState(0);
   const tapTimeout = useRef<number | null>(null);
@@ -209,6 +211,11 @@ const IncidentDetails: React.FC = () => {
 
   // ====================== SEND INCIDENT ============================
   const incidentUpdateStatus = async () => {
+    setloading1(true);
+    if (successRef?.current?.close) {
+      successRef.current.close();
+    }
+
     try {
       const body = {
         user_id: user?.id,
@@ -219,15 +226,9 @@ const IncidentDetails: React.FC = () => {
         reason_for_cancellation: '',
       };
 
-      showLoader();
-
       const resp = await ApiManager.incidentStatusUpdate(body, userToken);
 
       if (resp?.data?.status === true) {
-        if (successRef?.current?.close) {
-          successRef.current.close();
-        }
-
         setTimeout(() => {
           if (acceptRef?.current?.open) {
             acceptRef.current.open();
@@ -241,13 +242,12 @@ const IncidentDetails: React.FC = () => {
     } catch (err) {
       console.log('Incident update error:', err);
     } finally {
-      hideLoader();
+      setloading1(false);
     }
   };
 
   const getPdf = () => {
     setLoading(true);
-
     ApiManager.downloadPdf(data?.incident_auto_id || data, userToken)
       .then(resp => {
         // console.log('downloadPdf', resp?.data?.data?.pdfUrl);
@@ -675,6 +675,12 @@ const IncidentDetails: React.FC = () => {
         userToken={userToken}
         userId={user?.id}
       />
+
+      {loading1 && (
+        <View style={styles.newLoader}>
+          <ActivityIndicator size="large" color={COLOR.white} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -776,5 +782,14 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
     textAlign: 'center',
+  },
+  newLoader: {
+    position: 'absolute',
+    zIndex: 100000,
+    width: WIDTH(100),
+    height: HEIGHT(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
