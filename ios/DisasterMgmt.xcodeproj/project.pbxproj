@@ -38,6 +38,7 @@
 		0404AD352F05488300D5D074 /* DisasterMgmt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DisasterMgmt.entitlements; path = DisasterMgmt/DisasterMgmt.entitlements; sourceTree = "<group>"; };
 		043D2D502F07A10800740C7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0476CCF02F2228D900EAFF40 /* alert.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = alert.caf; sourceTree = "<group>"; };
+		0476CCF22F2251E300EAFF40 /* DisasterMgmt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DisasterMgmt.entitlements; sourceTree = "<group>"; };
 		088342B94FD640B580ECEEE1 /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		0C382B7F31FB47098274393B /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		0DCB22C8C55D41308099A034 /* Roboto-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraLight.ttf"; path = "../assets/fonts/Roboto-ExtraLight.ttf"; sourceTree = "<group>"; };
@@ -83,6 +84,7 @@
 		13B07FAE1A68108700A75B9A /* DisasterMgmt */ = {
 			isa = PBXGroup;
 			children = (
+				0476CCF22F2251E300EAFF40 /* DisasterMgmt.entitlements */,
 				0476CCF02F2228D900EAFF40 /* alert.caf */,
 				043D2D502F07A10800740C7C /* GoogleService-Info.plist */,
 				0404AD352F05488300D5D074 /* DisasterMgmt.entitlements */,

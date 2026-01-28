@@ -257,19 +257,22 @@ const styles = StyleSheet.create({
     color: COLOR.white,
     marginBottom: 30,
   },
+
   languageRow: {
     flexDirection: 'row',
-    gap: WIDTH(4),
+    justifyContent: 'space-between',
     marginTop: HEIGHT(10),
     flexWrap: 'wrap',
   },
+
   languageCard: {
     backgroundColor: '#dcdcdc',
     borderRadius: 12,
-    width: WIDTH(44),
+    width: '48%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: WIDTH(4),
+    marginBottom: HEIGHT(2),
   },
   selectedCard: {
     backgroundColor: COLOR.blue,

@@ -85,6 +85,7 @@ const TermsAndConditions = () => {
                 marginTop: 20,
                 flexDirection: 'row',
                 alignItems: 'center',
+                gap: 10,
               }}
             >
               <CheckBox

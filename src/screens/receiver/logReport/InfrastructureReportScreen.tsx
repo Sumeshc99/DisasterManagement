@@ -313,11 +313,7 @@ const InfrastructureReportScreen = ({ navigation, route }: any) => {
                   text={TEXT.close()}
                   bgColor="#E5E7EB"
                   textColor={COLOR.white}
-                  onPress={() =>
-                    navigation.navigate('revIncidentDetails', {
-                      data: incident_id,
-                    })
-                  }
+                  onPress={() => navigation.pop(3)}
                   style={styles.closeBtn}
                 />
               </View>
