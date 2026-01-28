@@ -15,6 +15,8 @@ import { WIDTH } from '../themes/AppConst';
 import { useNavigation } from '@react-navigation/native';
 import { AppStackNavigationProp } from './AppNavigation';
 import { TEXT } from '../i18n/locales/Text';
+import ActiveOverviewSvg from '../assets/svg/pajamas_overview (1).svg';
+import OverviewSvg from '../assets/svg/pajamas_overview.svg';
 
 const Tab = createBottomTabNavigator();
 
@@ -95,20 +97,15 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              {TEXT.community()}
+              Overview
             </Text>
           ),
-          tabBarIcon: ({ focused }) => (
-            <Image
-              resizeMode="contain"
-              source={
-                focused
-                  ? require('../assets/community1.png')
-                  : require('../assets/community.png')
-              }
-              style={{ width: 24, height: 24 }}
-            />
-          ),
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <ActiveOverviewSvg width={24} height={24} />
+            ) : (
+              <OverviewSvg width={24} height={24} />
+            ),
         }}
       />
     </Tab.Navigator>
