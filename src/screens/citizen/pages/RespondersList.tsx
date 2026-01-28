@@ -5,8 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
+  Platform,
+  Linking,
+  Alert,
 } from 'react-native';
 import { TEXT } from '../../../i18n/locales/Text';
+import { COLOR } from '../../../themes/Colors';
+import { FONT, WIDTH } from '../../../themes/AppConst';
 
 interface props {
   responders: any[];
@@ -18,6 +24,7 @@ interface ResponderItem {
   tehsil_name: string;
   resource_type: string;
   image?: any;
+  mobile?: string;
 }
 
 const RespondersList: React.FC<props> = ({ responders }) => {
@@ -57,6 +64,18 @@ const RespondersList: React.FC<props> = ({ responders }) => {
     return categories;
   }, [responders]);
 
+  const makeCall = async (num: any) => {
+    try {
+      const cleaned = num.replace(/[^0-9+]/g, '');
+      const url =
+        Platform.OS === 'ios' ? `telprompt:${cleaned}` : `tel:${cleaned}`;
+      await Linking.openURL(url);
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Error', 'Unable to make call');
+    }
+  };
+
   const renderSection = (title: any, items: ResponderItem[]) => {
     if (items.length === 0) return null;
 
@@ -66,13 +85,20 @@ const RespondersList: React.FC<props> = ({ responders }) => {
           <Text style={styles.sectionTitle}>{title}</Text>
         </View>
         {items.map(item => (
-          <TouchableOpacity key={item.id} style={styles.listItem}>
+          <View key={item.id} style={styles.listItem}>
             {/* <Image source={{ uri: item.image }} style={styles.itemImage} /> */}
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>{item.owner_full_name}</Text>
               <Text style={styles.itemLocation}>{item.tehsil_name}</Text>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => makeCall(item?.mobile)}>
+              <Image
+                style={{ width: 34, height: 34 }}
+                resizeMode="contain"
+                source={require('../../../assets/call.png')}
+              />
+            </TouchableOpacity>
+          </View>
         ))}
       </View>
     );
@@ -103,7 +129,7 @@ export default React.memo(RespondersList);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLOR.white,
   },
   content: {
     flex: 1,
@@ -115,16 +141,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
   },
-  section: {
-    marginBottom: 16,
-  },
+  section: {},
   sectionHeader: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#f0f0f0',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    marginHorizontal: WIDTH(3),
+    borderRadius: 6,
+    marginVertical: 10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#0D5FB3',
   },
@@ -133,9 +160,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    paddingVertical: 10,
+    marginHorizontal: WIDTH(3),
   },
   itemImage: {
     width: 60,
@@ -153,7 +179,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   itemLocation: {
-    fontSize: 14,
-    color: '#888888',
+    fontSize: 12,
+    color: COLOR.darkGray,
+    fontFamily: FONT.R_SBD_600,
   },
 });

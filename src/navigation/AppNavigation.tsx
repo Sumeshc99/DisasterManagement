@@ -24,6 +24,7 @@ import HumanImpactScreen from '../screens/receiver/logReport/HumanImpactScreen';
 import AnimalImpactScreen from '../screens/receiver/logReport/AnimalImpactScreen';
 import InfrastructureReportScreen from '../screens/receiver/logReport/InfrastructureReportScreen';
 import CropDamageReportScreen from '../screens/receiver/logReport/CropDamageReportScreen';
+import InformationPage from '../screens/InformationPage';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -91,6 +92,7 @@ const AppNavigation = () => {
           name="CropDamageReportScreen"
           component={CropDamageReportScreen}
         />
+        <Stack.Screen name="informationPage" component={InformationPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -119,4 +121,5 @@ type AppStackParamList = {
   notification: undefined;
   termsAndConditions: undefined;
   NotificationIncidentDetails: undefined;
+  informationPage: undefined;
 };

@@ -95,7 +95,7 @@ const TabNavigation = () => {
                 color: focused ? COLOR.blue : COLOR.darkGray,
               }}
             >
-              {TEXT.community()}
+              {'Overview'}
             </Text>
           ),
           tabBarIcon: ({ focused }) => (
@@ -103,8 +103,8 @@ const TabNavigation = () => {
               resizeMode="contain"
               source={
                 focused
-                  ? require('../assets/community1.png')
-                  : require('../assets/community.png')
+                  ? require('../assets/overView1.png')
+                  : require('../assets/overView.png')
               }
               style={{ width: 24, height: 24 }}
             />
