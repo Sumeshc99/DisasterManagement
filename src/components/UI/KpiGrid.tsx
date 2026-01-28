@@ -10,7 +10,7 @@ const KpiGrid = ({ data, variant = 'grid' }) => {
           key={index}
           style={[styles.item, variant === 'wide' && styles.wideItem]}
         >
-          <KpiCard value={item.value} label={item.label} />
+          <KpiCard value={item.value} label={item.label} icon={item.icon} />
         </View>
       ))}
     </View>

@@ -14,4 +14,5 @@ export const COLOR = {
   orange: '#FB7805',
   textGrey: '#525151',
   lightTextGrey: '#8C8C8C',
+  lightTextGrey2: '#666666',
 };

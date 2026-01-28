@@ -38,6 +38,9 @@ const Community = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: '20%' }}
       >
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Dashboard</Text>
+        </View>
         {/* Sections will come here step-by-step */}
         {(role === 'reviewer' || role === 'responder') && <CitizensMetric />}
 
@@ -60,5 +63,13 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: COLOR.white,
     padding: 16,
+  },
+  header: {
+    paddingVertical: 10,
+  },
+  headerText: {
+    fontFamily: FONT.R_SBD_600,
+    fontSize: 18,
+    color: COLOR.textGrey,
   },
 });

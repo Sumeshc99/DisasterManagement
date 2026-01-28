@@ -1,11 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import KpiCard from '../UI/KpiCard';
-import { FONT } from '../../themes/AppConst';
 import KpiGrid from '../UI/KpiGrid';
+import { FONT } from '../../themes/AppConst';
+import { COLOR } from '../../themes/Colors';
 
+import MeterSvg from '../../assets/svg/Rectangle 1210.svg';
 const ResolutionMetrics = () => {
-  const data = [{ value: '1 hour', label: 'Mean Time to Resolve Incident' }];
+  const data = [
+    {
+      value: '1 hour',
+      label: 'Mean Time to Resolve Incident',
+      icon: MeterSvg, // temporary icon
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Resolution and Closure Metrics</Text>
@@ -26,5 +34,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FONT.R_SBD_600,
     marginBottom: 12,
+    color: COLOR.lightTextGrey2,
   },
 });
